@@ -14,7 +14,14 @@ export const routes: Routes = [
                 path: 'login',
                 loadComponent: () => import('./features/public/login/login.component').then(m => m.LoginComponent)
             },
-            { path: 'register', redirectTo: '', pathMatch: 'full' }
+            {
+                path: 'forgot-password',
+                loadComponent: () => import('./features/public/forgot-password/forgot-password.component').then(m => m.ForgotPasswordComponent)
+            },
+            {
+                path: 'register',
+                loadComponent: () => import('./features/public/register/register.component').then(m => m.RegisterComponent)
+            }
         ]
     },
     { path: '**', redirectTo: '' }

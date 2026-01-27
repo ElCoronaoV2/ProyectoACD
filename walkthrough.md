@@ -1,44 +1,34 @@
-# Configuración del Servidor restaurant-tec.es
+# Estado del Despliegue - Restaurant-tec
 
-Se han completado los pasos de configuración del servidor para desplegar la aplicación `restaurant-tec.es`.
+Tu servidor está configurado y funcionando. Aquí tienes el resumen y los pasos finales.
 
-## Estado Actual
+## 🚀 Accesos
 
-| Componente | Estado | Detalle |
-| :--- | :--- | :--- |
-| **Nginx** | ✅ Activo | Configurado como Proxy Reverso y sirviendo Frontend. |
-| **Firewall (UFW)** | ✅ Activo | Puertos 80, 443, 22 permitidos. |
-| **Frontend** | ✅ Compilado | Build de producción en `dist/frontend/browser`. |
-| **Backend** | ✅ Iniciado | Spring Boot corriendo en puerto 8080. |
-| **Base de Datos** | ✅ Iniciado | PostgreSQL corriendo. |
-| **DNS** | ⏳ Pendiente | Los DNS actuales no apuntan a la IP del servidor todavía. |
-| **SSL/HTTPS** | ⏳ Pendiente | Requiere propagación de DNS para generar certificados. |
+| Sitio | URL | Estado | Notas |
+| :--- | :--- | :--- | :--- |
+| **Frontend (WWW)** | [https://www.restaurant-tec.es](https://www.restaurant-tec.es) | ✅ **ONLINE (Seguro)** | Carga correctamente con HTTPS. |
+| **Frontend (Raíz)** | `http://restaurant-tec.es` | ⏳ **Pendiente** | DNS apunta a IP antigua. |
+| **API Backend** | `https://www.restaurant-tec.es/api/` | ✅ **ONLINE** | Accesible a través del proxy. |
+| **n8n** | `http://n8n.n8nservidor.es` | ❌ **Error DNS** | DNS apunta a IP incorrecta (`95...`). |
 
-## Acciones Realizadas
+## 🛠️ Configuración Realizada
 
-1. **Configuración de Código**:
-   - Verificado `CorsConfig.java` para permitir orígenes `https://restaurant-tec.es`.
-   - Verificado `environment.prod.ts` apuntando a la API correcta.
+1.  **Nginx como Proxy Central (Gateway)**:
+    *   Gestiona `restaurant-tec.es` localmente.
+    *   Reenvía `n8n.n8nservidor.es` a la MV interna `192.168.1.110`.
+2.  **Seguridad**:
+    *   Certificado SSL instalado para `www.restaurant-tec.es`.
+    *   Clave SSH configurada para GitHub.
+3.  **Código**:
+    *   Repositorio subido a GitHub: [ElCoronaoV2/ProyectoACD](https://github.com/ElCoronaoV2/ProyectoACD).
 
-2. **Instalación de Sistema**:
-   - Ejecutado script de configuración.
-   - Instalado Nginx y configurado `sites-available/restaurant-tec.es`.
-   - Permisos de lectura corregidos para Nginx sobre el directorio de usuario.
+## ⚠️ Pasos Pendientes (IMPORTANTES)
 
-3. **Verificación**:
-   - `curl http://localhost` (simulando dominio) devuelve **200 OK**.
-   - Backend iniciado correctamente.
+Para que todo funcione al 100%, necesitas corregir tus registros DNS en tu proveedor de dominio:
 
-## Pasos Pendientes (Para el Usuario)
+1.  **restaurant-tec.es (Raíz)**:
+    *   Cambiar IP de `217.76.156.252` -> **`37.14.218.204`**
+2.  **n8n.n8nservidor.es**:
+    *   Cambiar IP de `95.17.229.81` -> **`37.14.218.204`**
 
-> [!IMPORTANT]
-> **Propagación DNS**: Debes esperar a que los cambios DNS en tu proveedor de dominio se propaguen.
-> Verifica tu dominio con: `nslookup restaurant-tec.es` (Debe devolver tu IP: `37.14.218.204`).
-
-Una vez los DNS apunten correctamente, ejecuta el siguiente comando para activar HTTPS:
-
-```bash
-sudo certbot --nginx -d restaurant-tec.es -d www.restaurant-tec.es -d api.restaurant-tec.es
-```
-
-O vuelve a ejecutar el script de configuración y responde "s" cuando pregunte por los DNS.
+Cuando hagas estos cambios y pasen unas horas, avísame para activar el SSL (candadito) en estos dominios también.

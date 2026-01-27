@@ -58,8 +58,8 @@ echo ""
 echo -e "${YELLOW}[4/7] Configurando Nginx...${NC}"
 cat > /etc/nginx/sites-available/$DOMAIN << 'EOF'
 server {
-    listen 80;
-    listen [::]:80;
+    listen 80 default_server;
+    listen [::]:80 default_server;
     
     server_name restaurant-tec.es www.restaurant-tec.es;
     

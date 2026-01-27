@@ -13,7 +13,10 @@ import java.util.Optional;
 public class UserService {
 
     @Autowired
-    private UserRepository userRepository;
+    private com.restaurant.tec.repository.UserRepository userRepository;
+
+    @Autowired
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoder;
 
     @Transactional
     public UserEntity registerUser(RegisterRequest request) {
@@ -24,8 +27,7 @@ public class UserService {
 
         UserEntity user = new UserEntity();
         user.setEmail(request.getEmail());
-        // TEMPORAL: Sin encriptación para testing
-        user.setPassword(request.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setNombre(request.getNombre());
         user.setTelefono(request.getTelefono());
         user.setAlergenos(request.getAlergenos());

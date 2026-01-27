@@ -1,0 +1,27 @@
+# Backend Development Tasks - Restaurant-tec
+
+- [x] **Review & Setup**
+    - [x] Initial Project Structure
+    - [x] Database Connection (PostgreSQL)
+    - [x] Review Entity Logic
+- [/] **User Management (Security)**
+    - [x] Implement JWT Authentication
+        - [x] Uncomment Security Dependency
+        - [x] Create JwtTokenProvider
+        - [x] Create CustomUserDetailsService
+        - [x] Create JwtAuthenticationFilter
+        - [x] Configure SecurityConfig
+    - [x] Login/Register Endpoints
+    - [ ] Role-based Access Control (Refinement needed)
+- [ ] **Restaurant Management (Locales)**
+    - [x] Basic CRUD (Controller created)
+    - [ ] Add Validations
+    - [ ] Link with User (Owner)
+- [ ] **Menu Management**
+    - [ ] CRUD for Categories and Dishes
+    - [ ] Association with Local
+- [ ] **Reservations System**
+    - [ ] Booking Logic
+    - [ ] Availability Check
+- [ ] **Reviews & Suggestions**
+    - [ ] Logic for Client Feedback

@@ -4,10 +4,10 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { RouterModule, Router } from '@angular/router';
 
 @Component({
-    selector: 'app-login',
-    standalone: true,
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
-    template: `
+  selector: 'app-login',
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
+  template: `
     <div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl border-t-4 border-secondary-500">
         <div class="text-center">
@@ -48,7 +48,7 @@ import { RouterModule, Router } from '@angular/router';
             </div>
 
             <div class="text-sm">
-              <a href="#" class="font-medium text-primary-600 hover:text-primary-500">
+              <a routerLink="/forgot-password" class="font-medium text-primary-600 hover:text-primary-500 transition-colors">
                 ¿Olvidaste tu contraseña?
               </a>
             </div>
@@ -71,24 +71,24 @@ import { RouterModule, Router } from '@angular/router';
       </div>
     </div>
   `,
-    styles: []
+  styles: []
 })
 export class LoginComponent {
-    loginForm: FormGroup;
+  loginForm: FormGroup;
 
-    constructor(private fb: FormBuilder, private router: Router) {
-        this.loginForm = this.fb.group({
-            email: ['', [Validators.required, Validators.email]],
-            password: ['', [Validators.required, Validators.minLength(6)]]
-        });
-    }
+  constructor(private fb: FormBuilder, private router: Router) {
+    this.loginForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]]
+    });
+  }
 
-    onSubmit() {
-        if (this.loginForm.valid) {
-            console.log('Login Data:', this.loginForm.value);
-            // TODO: Implement Auth Service Integration
-            // For now, redirect to home to simulate login
-            this.router.navigate(['/']);
-        }
+  onSubmit() {
+    if (this.loginForm.valid) {
+      console.log('Login Data:', this.loginForm.value);
+      // TODO: Implement Auth Service Integration
+      // For now, redirect to home to simulate login
+      this.router.navigate(['/']);
     }
+  }
 }

@@ -4,15 +4,20 @@
 
 ❯ Building...
 ✔ Building...
-Initial chunk files | Names         |  Raw size
-polyfills.js        | polyfills     |  90.20 kB | 
-styles.css          | styles        |  14.17 kB | 
-main.js             | main          |   7.56 kB | 
+Initial chunk files | Names           |  Raw size
+polyfills.js        | polyfills       |  90.20 kB | 
+styles.css          | styles          |  17.97 kB | 
+main.js             | main            |   9.15 kB | 
 
-                    | Initial total | 111.93 kB
+                    | Initial total   | 117.32 kB
 
-Application bundle generation complete. [3.564 seconds]
+Lazy chunk files    | Names           |  Raw size
+chunk-IK6SRELJ.js   | login-component |   6.89 kB | 
+chunk-GBQFBLJZ.js   | home-component  |   2.28 kB | 
+
+Application bundle generation complete. [3.855 seconds]
 
 Watch mode enabled. Watching for file changes...
 NOTE: Raw file sizes do not reflect development server per-request transformations.
+Re-optimizing dependencies because vite config has changed
   ➜  Local:   http://localhost:4200/

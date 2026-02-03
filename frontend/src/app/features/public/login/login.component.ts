@@ -99,8 +99,33 @@ export class LoginComponent {
         },
         error: (err) => {
           this.isLoading = false;
-          if (err.status === 401 || err.status === 403) {
-            this.errorMessage = "Credenciales incorrectas o cuenta no verificada.";
+          // Manejo de mensajes de error específicos del backend
+          if (err.error && err.error.message) {
+            this.errorMessage = err.error.message;
+          } else if (err.error && err.error.error) {
+            // Mensajes personalizados según el código de error
+            switch (err.error.error) {
+              case 'INVALID_CREDENTIALS':
+                this.errorMessage = "La contraseña es incorrecta. Por favor, verifica e intenta de nuevo.";
+                break;
+              case 'USER_NOT_FOUND':
+                this.errorMessage = "No existe una cuenta con ese correo electrónico.";
+                break;
+              case 'ACCOUNT_DISABLED':
+                this.errorMessage = "Tu cuenta no está verificada. Por favor, revisa tu correo electrónico para activarla.";
+                break;
+              case 'ACCOUNT_LOCKED':
+                this.errorMessage = "Tu cuenta ha sido bloqueada. Contacta al administrador.";
+                break;
+              default:
+                this.errorMessage = "Error al iniciar sesión. Inténtalo de nuevo.";
+            }
+          } else if (err.status === 401) {
+            this.errorMessage = "Credenciales incorrectas. Verifica tu correo y contraseña.";
+          } else if (err.status === 403) {
+            this.errorMessage = "Tu cuenta no está activa. Por favor, verifica tu correo electrónico.";
+          } else if (err.status === 0) {
+            this.errorMessage = "No se puede conectar con el servidor. Verifica tu conexión a internet.";
           } else {
             this.errorMessage = "Error al iniciar sesión. Inténtalo de nuevo.";
           }

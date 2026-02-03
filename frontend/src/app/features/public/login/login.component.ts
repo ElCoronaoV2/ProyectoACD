@@ -45,14 +45,26 @@ import { HttpClientModule } from '@angular/common/http';
             <div class="mb-4">
               <label for="email-address" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
               <input id="email-address" name="email" type="email" autocomplete="email" required formControlName="email"
-                class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                class="appearance-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                [ngClass]="{'border-red-500': loginForm.get('email')?.invalid && loginForm.get('email')?.touched, 'border-gray-300': !(loginForm.get('email')?.invalid && loginForm.get('email')?.touched)}"
                 placeholder="ejemplo@correo.com">
+              <!-- Mensajes de error para el email -->
+              <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
+                <span *ngIf="loginForm.get('email')?.errors?.['required']">El correo electrónico es obligatorio.</span>
+                <span *ngIf="loginForm.get('email')?.errors?.['email']">Debes introducir un correo electrónico válido (ej: usuario@dominio.com).</span>
+              </div>
             </div>
             <div>
               <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
               <input id="password" name="password" type="password" autocomplete="current-password" required formControlName="password"
-                class="appearance-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                class="appearance-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
+                [ngClass]="{'border-red-500': loginForm.get('password')?.invalid && loginForm.get('password')?.touched, 'border-gray-300': !(loginForm.get('password')?.invalid && loginForm.get('password')?.touched)}"
                 placeholder="••••••••">
+              <!-- Mensajes de error para la contraseña -->
+              <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="mt-1 text-sm text-red-600">
+                <span *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</span>
+                <span *ngIf="loginForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</span>
+              </div>
             </div>
           </div>
 
@@ -117,16 +129,14 @@ export class LoginComponent {
         error: (err) => {
           this.isLoading = false;
           // Manejo de mensajes de error específicos del backend
-          if (err.error && err.error.message) {
-            this.errorMessage = err.error.message;
-          } else if (err.error && err.error.error) {
-            // Mensajes personalizados según el código de error
+          // Manejo de mensajes de error específicos del backend
+          if (err.error && err.error.error) {
+            // ... switch case handling ...
             switch (err.error.error) {
+              // ... existing cases ...
               case 'INVALID_CREDENTIALS':
-                this.errorMessage = "La contraseña es incorrecta. Por favor, verifica e intenta de nuevo.";
-                break;
               case 'USER_NOT_FOUND':
-                this.errorMessage = "No existe una cuenta con ese correo electrónico.";
+                this.errorMessage = "El usuario o la contraseña son incorrectos.";
                 break;
               case 'ACCOUNT_DISABLED':
                 this.errorMessage = "Tu cuenta no está verificada. Por favor, revisa tu correo electrónico para activarla.";
@@ -135,10 +145,12 @@ export class LoginComponent {
                 this.errorMessage = "Tu cuenta ha sido bloqueada. Contacta al administrador.";
                 break;
               default:
-                this.errorMessage = "Error al iniciar sesión. Inténtalo de nuevo.";
+                // Si hay un mensaje específico del backend pero no es uno de los códigos anteriores,
+                // podríamos mostrarlo o mostrar uno genérico. Por seguridad en login, mejor genérico si no es cuenta bloqueada/deshabilitada.
+                this.errorMessage = err.error.message || "Error al iniciar sesión. Inténtalo de nuevo.";
             }
           } else if (err.status === 401) {
-            this.errorMessage = "Credenciales incorrectas. Verifica tu correo y contraseña.";
+            this.errorMessage = "El usuario o la contraseña son incorrectos.";
           } else if (err.status === 403) {
             this.errorMessage = "Tu cuenta no está activa. Por favor, verifica tu correo electrónico.";
           } else if (err.status === 0) {

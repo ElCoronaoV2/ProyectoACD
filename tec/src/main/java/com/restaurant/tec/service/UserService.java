@@ -50,6 +50,7 @@ public class UserService {
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = new VerificationToken(token, savedUser, "EMAIL_VERIFICATION");
         tokenRepository.save(verificationToken);
+        tokenRepository.flush(); // Asegurar que el token está persistido antes de enviar el email
 
         emailService.sendVerificationEmail(user.getEmail(), token);
 
@@ -59,16 +60,21 @@ public class UserService {
     @Transactional
     public void verifyUser(String token) {
         VerificationToken verificationToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Token inválido"));
+                .orElseThrow(() -> new RuntimeException("Token inválido o no encontrado"));
+
+        // Validar que sea un token de verificación de email
+        if (!"EMAIL_VERIFICATION".equals(verificationToken.getType())) {
+            throw new RuntimeException("Token inválido para verificación de cuenta");
+        }
 
         if (verificationToken.getExpiryDate().isBefore(LocalDateTime.now())) {
-            throw new RuntimeException("El token ha expirado");
+            throw new RuntimeException("El token ha expirado. Por favor, regístrate de nuevo.");
         }
 
         UserEntity user = verificationToken.getUser();
         user.setEnabled(true);
         userRepository.save(user); // Guarda el usuario activado
-        
+
         tokenRepository.delete(verificationToken); // Elimina el token usado
     }
 
@@ -90,7 +96,7 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("Token inválido"));
 
         if (!"PASSWORD_RESET".equals(resetToken.getType())) {
-             throw new RuntimeException("Token inválido para este propósito");
+            throw new RuntimeException("Token inválido para este propósito");
         }
 
         if (resetToken.getExpiryDate().isBefore(LocalDateTime.now())) {
@@ -113,9 +119,12 @@ public class UserService {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        if (nombre != null) user.setNombre(nombre);
-        if (telefono != null) user.setTelefono(telefono);
-        if (alergenos != null) user.setAlergenos(alergenos);
+        if (nombre != null)
+            user.setNombre(nombre);
+        if (telefono != null)
+            user.setTelefono(telefono);
+        if (alergenos != null)
+            user.setAlergenos(alergenos);
 
         return userRepository.save(user);
     }

@@ -51,7 +51,7 @@ import { HttpClientModule } from '@angular/common/http';
               <!-- Mensajes de error para el email -->
               <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
                 <span *ngIf="loginForm.get('email')?.errors?.['required']">El correo electrónico es obligatorio.</span>
-                <span *ngIf="loginForm.get('email')?.errors?.['email']">Debes introducir un correo electrónico válido (ej: usuario@dominio.com).</span>
+                <span *ngIf="loginForm.get('email')?.errors?.['email']">Debes introducir un correo electrónico válido (ej: usuario&#64;dominio.com).</span>
               </div>
             </div>
             <div>
@@ -123,7 +123,15 @@ export class LoginComponent {
           this.successMessage = "¡Inicio de sesión correcto! Redirigiendo...";
           // Esperar 1.5 segundos para que el usuario vea el mensaje antes de redirigir
           setTimeout(() => {
-            this.router.navigate(['/']);
+            if (this.authService.isDirector()) {
+              this.router.navigate(['/dashboard/director']);
+            } else if (this.authService.isCEO()) {
+              this.router.navigate(['/dashboard/ceo']);
+            } else if (this.authService.isEmployee()) {
+              this.router.navigate(['/dashboard/employee']);
+            } else {
+              this.router.navigate(['/home']);
+            }
           }, 1500);
         },
         error: (err) => {

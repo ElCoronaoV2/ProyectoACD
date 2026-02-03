@@ -26,6 +26,7 @@ export class AuthService {
                     localStorage.setItem('token', response.token);
                     if (response.email) localStorage.setItem('user_email', response.email);
                     if (response.nombre) localStorage.setItem('user_name', response.nombre);
+                    if (response.rol) localStorage.setItem('user_role', response.rol);
                 }
             })
         );
@@ -35,11 +36,21 @@ export class AuthService {
         localStorage.removeItem('token');
         localStorage.removeItem('user_email');
         localStorage.removeItem('user_name');
+        localStorage.removeItem('user_role');
     }
 
     isLoggedIn(): boolean {
         return !!localStorage.getItem('token');
     }
+
+    getUserRole(): string | null {
+        return localStorage.getItem('user_role');
+    }
+
+    isDirector(): boolean { return this.getUserRole() === 'DIRECTOR' || this.getUserRole() === 'ROLE_DIRECTOR'; }
+    isCEO(): boolean { return this.getUserRole() === 'CEO' || this.getUserRole() === 'ROLE_CEO'; }
+    isEmployee(): boolean { return this.getUserRole() === 'EMPLEADO' || this.getUserRole() === 'ROLE_EMPLEADO'; }
+    isClient(): boolean { return this.getUserRole() === 'USER' || this.getUserRole() === 'ROLE_CLIENTE' || !this.getUserRole(); }
 
     verifyEmail(token: string): Observable<any> {
         return this.http.get(`${this.apiUrl}/verify?token=${token}`);

@@ -157,9 +157,9 @@ export class RestaurantMapComponent implements OnInit, AfterViewInit, OnDestroy 
         const r = rating || 0;
         const full = Math.floor(r);
         const half = r % 1 >= 0.5 ? 1 : 0;
-        const empty = 5 - full - half;
+        const empty = Math.max(0, 5 - full - half);
 
-        return '★'.repeat(full) + (half ? '☆' : '') + '☆'.repeat(empty - half);
+        return '★'.repeat(full) + (half ? '☆' : '') + '☆'.repeat(empty);
     }
 
     openMenu(local: Local): void {

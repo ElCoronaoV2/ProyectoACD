@@ -41,7 +41,7 @@ public class UserService {
         user.setNombre(request.getNombre());
         user.setTelefono(request.getTelefono());
         user.setAlergenos(request.getAlergenos());
-        user.setRol("USER");
+        user.setRol(com.restaurant.tec.entity.Role.USER);
         user.setEnabled(false); // Usuario inactivo hasta verificar
 
         UserEntity savedUser = userRepository.save(user);

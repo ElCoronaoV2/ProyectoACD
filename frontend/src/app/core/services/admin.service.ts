@@ -1,0 +1,31 @@
+import { Injectable } from '@angular/core';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { AuthService } from './auth.service';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class AdminService {
+    private apiUrl = 'https://www.restaurant-tec.es/api/admin';
+
+    constructor(private http: HttpClient, private authService: AuthService) { }
+
+    private getHeaders(): HttpHeaders {
+        return new HttpHeaders({
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+        });
+    }
+
+    getCeos(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/ceos`, { headers: this.getHeaders() });
+    }
+
+    createCeo(ceoData: any): Observable<any> {
+        return this.http.post(`${this.apiUrl}/ceos`, ceoData, { headers: this.getHeaders() });
+    }
+
+    getAllUsers(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/users`, { headers: this.getHeaders() });
+    }
+}

@@ -1,0 +1,242 @@
+<div class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6 text-gray-800">Panel de Gestión (CEO)</h1>
+
+    <!-- Tabs o Secciones -->
+    <div class="flex space-x-4 mb-6">
+        <button (click)="activeTab = 'restaurantes'"
+            [class]="activeTab === 'restaurantes' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-700'"
+            class="px-4 py-2 rounded-lg font-semibold transition-colors">
+            Mis Restaurantes
+        </button>
+        <button (click)="activeTab = 'nuevo'"
+            [class]="activeTab === 'nuevo' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-700'"
+            class="px-4 py-2 rounded-lg font-semibold transition-colors">
+            + Nuevo Restaurante
+        </button>
+    </div>
+
+    <!-- Vista: Mis Restaurantes -->
+    <div *ngIf="activeTab === 'restaurantes'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div *ngFor="let local of restaurantes" class="bg-white rounded-lg shadow-md overflow-hidden card-hover">
+            <img [src]="local.imagenUrl || 'assets/placeholder-restaurant.jpg'" alt="{{ local.nombre }}"
+                class="w-full h-48 object-cover">
+            <div class="p-4">
+                <h3 class="text-xl font-bold mb-2">{{ local.nombre }}</h3>
+                <p class="text-gray-600 text-sm mb-2">📍 {{ local.direccion }}</p>
+                <div class="flex justify-between items-center mt-4">
+                    <button (click)="manageLocal(local)"
+                        class="text-primary-600 font-semibold hover:underline">Gestionar</button>
+                    <span class="text-sm text-gray-500">⭐ {{ local.valoracion }}</span>
+                </div>
+            </div>
+        </div>
+        <div *ngIf="restaurantes.length === 0" class="col-span-full text-center py-10 bg-gray-50 rounded-lg">
+            <p class="text-gray-500">No tienes restaurantes registrados. ¡Crea uno nuevo!</p>
+        </div>
+    </div>
+
+    <!-- Vista: Nuevo Restaurante (Mapa + Formulario) -->
+    <div *ngIf="activeTab === 'nuevo'" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Mapa -->
+        <div class="bg-gray-100 rounded-lg overflow-hidden relative" style="height: 500px;">
+            <div #mapContainer class="h-full w-full z-10"></div>
+            <div class="absolute top-4 left-4 z-20 bg-white p-3 rounded shadow-md opacity-90">
+                <p class="font-bold text-sm">📍 Haz clic en el mapa para ubicar el restaurante</p>
+                <p *ngIf="newLocal.latitud" class="text-green-600 text-xs mt-1">Ubicación seleccionada</p>
+            </div>
+        </div>
+
+        <!-- Formulario -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-bold mb-6">Datos del Restaurante</h2>
+            <form (submit)="createRestaurant()">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Nombre</label>
+                    <input [(ngModel)]="newLocal.nombre" name="nombre" type="text" class="input-field" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Dirección</label>
+                    <input [(ngModel)]="newLocal.direccion" name="direccion" type="text" class="input-field" required>
+                </div>
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Capacidad</label>
+                        <input [(ngModel)]="newLocal.capacidad" name="capacidad" type="number" class="input-field"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Imagen URL</label>
+                        <input [(ngModel)]="newLocal.imagenUrl" name="imagenUrl" type="text" class="input-field">
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2">Horario</label>
+                    <input [(ngModel)]="newLocal.horario" name="horario" type="text" class="input-field"
+                        placeholder="Ej: Lun-Vie: 09:00 - 22:00">
+                </div>
+
+                <!-- Coordenadas Hidden/Readonly -->
+                <div class="grid grid-cols-2 gap-4 mb-6 bg-gray-50 p-3 rounded">
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-1">Latitud</label>
+                        <input [ngModel]="newLocal.latitud" name="latitud" type="number" class="input-readonly" readonly
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-gray-500 text-xs font-bold mb-1">Longitud</label>
+                        <input [ngModel]="newLocal.longitud" name="longitud" type="number" class="input-readonly"
+                            readonly required>
+                    </div>
+                </div>
+
+                <button type="submit" [disabled]="!newLocal.latitud"
+                    class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md transition disabled:opacity-50 disabled:cursor-not-allowed">
+                    Crear Restaurante
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Vista: Gestión Individual (Modal o Sección) -->
+    <div *ngIf="activeTab === 'gestion' && selectedLocal" class="mt-6 bg-white rounded-lg shadow-lg p-6">
+        <div class="flex justify-between items-start mb-6">
+            <h2 class="text-2xl font-bold">Gestionando: {{ selectedLocal.nombre }}</h2>
+            <button (click)="activeTab = 'restaurantes'" class="text-gray-500 hover:text-gray-700">✕ Cerrar</button>
+        </div>
+
+        <!-- Aquí irían Tabs anidados: Empleados | Menús | Reservas -->
+        <div class="border-b border-gray-200 mb-6">
+            <nav class="-mb-px flex space-x-8 cursor-pointer">
+                <a (click)="setManagementTab('info')"
+                    [class]="activeManagementTab === 'info' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    class="border-b-2 pb-4 px-1 font-medium transition-colors">Información</a>
+                <a (click)="setManagementTab('employees')"
+                    [class]="activeManagementTab === 'employees' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    class="border-b-2 pb-4 px-1 font-medium transition-colors">Empleados</a>
+                <a (click)="setManagementTab('menus')"
+                    [class]="activeManagementTab === 'menus' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+                    class="border-b-2 pb-4 px-1 font-medium transition-colors">Menús</a>
+            </nav>
+        </div>
+
+        <!-- TAB: INFO -->
+        <div *ngIf="activeManagementTab === 'info'" class="bg-gray-50 p-6 rounded-lg">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <img [src]="selectedLocal.imagenUrl || 'assets/placeholder-restaurant.jpg'"
+                        class="w-full h-64 object-cover rounded shadow">
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Detalles</h3>
+                    <p><strong>Dirección:</strong> {{ selectedLocal.direccion }}</p>
+                    <p><strong>Capacidad:</strong> {{ selectedLocal.capacidad }} personas</p>
+                    <p><strong>Horario:</strong> {{ selectedLocal.horario || 'No definido' }}</p>
+                    <div class="mt-6">
+                        <button (click)="deleteRestaurant(selectedLocal.id)"
+                            class="text-red-600 border border-red-600 px-4 py-2 rounded hover:bg-red-50 transition">
+                            Eliminar Restaurante
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: EMPLEADOS -->
+        <div *ngIf="activeManagementTab === 'employees'">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Lista Empleados -->
+                <div class="lg:col-span-2 space-y-4">
+                    <h3 class="font-bold text-lg mb-2">Plantilla Actual</h3>
+                    <div *ngFor="let emp of employees"
+                        class="bg-white border rounded p-4 flex justify-between items-center shadow-sm">
+                        <div>
+                            <p class="font-bold">{{ emp.nombre }}</p>
+                            <p class="text-sm text-gray-600">{{ emp.email }}</p>
+                            <p class="text-xs text-gray-500">{{ emp.telefono || 'Sin teléfono' }}</p>
+                        </div>
+                        <button (click)="deleteEmployee(emp.id)"
+                            class="text-red-500 hover:text-red-700 font-bold p-2">✕</button>
+                    </div>
+                    <div *ngIf="employees.length === 0" class="text-center py-8 bg-gray-50 rounded text-gray-500">
+                        No hay empleados asignados.
+                    </div>
+                </div>
+
+                <!-- Formulario Nuevo Empleado -->
+                <div class="bg-blue-50 p-5 rounded-lg h-fit">
+                    <h3 class="font-bold text-lg mb-4 text-blue-800">Alta de Empleado</h3>
+                    <form (submit)="createEmployee()">
+                        <div class="space-y-3">
+                            <input [(ngModel)]="newEmployee.nombre" name="empName" placeholder="Nombre completo"
+                                class="input-field-sm w-full p-2 border rounded" required>
+                            <input [(ngModel)]="newEmployee.email" name="empEmail" placeholder="Correo electrónico"
+                                type="email" class="input-field-sm w-full p-2 border rounded" required>
+                            <input [(ngModel)]="newEmployee.telefono" name="empTel" placeholder="Teléfono"
+                                class="input-field-sm w-full p-2 border rounded">
+                            <input [(ngModel)]="newEmployee.password" name="empPass" placeholder="Contraseña Temporal"
+                                type="password" class="input-field-sm w-full p-2 border rounded" required>
+                            <button type="submit"
+                                class="w-full bg-blue-600 text-white py-2 rounded font-bold hover:bg-blue-700 transition">
+                                Registrar Empleado
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: MENUS -->
+        <div *ngIf="activeManagementTab === 'menus'">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Lista Menus -->
+                <div class="lg:col-span-2 space-y-4">
+                    <h3 class="font-bold text-lg mb-2">Menús Disponibles</h3>
+                    <div *ngFor="let menu of menus"
+                        class="bg-white border rounded p-4 flex justify-between items-center shadow-sm">
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <p class="font-bold">{{ menu.nombre }}</p>
+                                <span class="text-green-600 font-bold">{{ menu.precio }}€</span>
+                            </div>
+                            <p class="text-xs text-gray-500 uppercase font-bold">{{ menu.tipo }}</p>
+                            <p class="text-sm text-gray-600 mt-1">{{ menu.descripcion }}</p>
+                        </div>
+                        <button (click)="deleteMenu(menu.id)"
+                            class="ml-4 text-red-500 hover:text-red-700 font-bold p-2">✕</button>
+                    </div>
+                    <div *ngIf="menus.length === 0" class="text-center py-8 bg-gray-50 rounded text-gray-500">
+                        No hay menús disponibles.
+                    </div>
+                </div>
+
+                <!-- Formulario Nuevo Menu -->
+                <div class="bg-green-50 p-5 rounded-lg h-fit">
+                    <h3 class="font-bold text-lg mb-4 text-green-800">Nuevo Menú</h3>
+                    <form (submit)="createMenu()">
+                        <div class="space-y-3">
+                            <input [(ngModel)]="newMenu.nombre" name="menuName" placeholder="Nombre del menú"
+                                class="input-field-sm w-full p-2 border rounded" required>
+                            <textarea [(ngModel)]="newMenu.descripcion" name="menuDesc" placeholder="Descripción"
+                                class="input-field-sm w-full p-2 border rounded h-20"></textarea>
+                            <div class="flex space-x-2">
+                                <select [(ngModel)]="newMenu.tipo" name="menuType"
+                                    class="input-field-sm flex-1 p-2 border rounded">
+                                    <option value="COMIDA">Comida</option>
+                                    <option value="CENA">Cena</option>
+                                    <option value="DESAYUNO">Desayuno</option>
+                                </select>
+                                <input [(ngModel)]="newMenu.precio" name="menuPrice" type="number" placeholder="€"
+                                    class="input-field-sm w-20 p-2 border rounded" required>
+                            </div>
+                            <button type="submit"
+                                class="w-full bg-green-600 text-white py-2 rounded font-bold hover:bg-green-700 transition">
+                                Añadir Menú
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>

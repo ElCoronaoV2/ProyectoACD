@@ -19,9 +19,9 @@ public class DataInitializer {
                 admin.setEmail("admin@restaurant.com");
                 admin.setPassword(passwordEncoder.encode("admin123")); // Contraseña por defecto
                 admin.setNombre("Administrador");
-                admin.setRol("ADMIN");
+                admin.setRol(com.restaurant.tec.entity.Role.DIRECTOR);
                 admin.setTelefono("000000000");
-                
+
                 userRepository.save(admin);
                 System.out.println("✅ Usuario Admin creado: admin@restaurant.com / admin123");
             }

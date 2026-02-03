@@ -38,6 +38,11 @@ public class LocalEntity {
     // Valoración promedio (1.0 - 5.0)
     private Double valoracion;
 
+    // Propietario (CEO) del restaurante
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "propietario_id")
+    private UserEntity propietario;
+
     // Constructores
     public LocalEntity() {
     }
@@ -135,5 +140,13 @@ public class LocalEntity {
 
     public void setValoracion(Double valoracion) {
         this.valoracion = valoracion;
+    }
+
+    public UserEntity getPropietario() {
+        return propietario;
+    }
+
+    public void setPropietario(UserEntity propietario) {
+        this.propietario = propietario;
     }
 }

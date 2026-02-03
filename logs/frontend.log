@@ -4,20 +4,452 @@
 
 ❯ Building...
 ✔ Building...
-Initial chunk files | Names           |  Raw size
-polyfills.js        | polyfills       |  90.20 kB | 
-styles.css          | styles          |  17.97 kB | 
-main.js             | main            |   9.15 kB | 
+Initial chunk files | Names                     |  Raw size
+polyfills.js        | polyfills                 |  90.20 kB | 
+styles.css          | styles                    |  24.22 kB | 
+main.js             | main                      |   9.63 kB | 
 
-                    | Initial total   | 117.32 kB
+                    | Initial total             | 124.06 kB
 
-Lazy chunk files    | Names           |  Raw size
-chunk-IK6SRELJ.js   | login-component |   6.89 kB | 
-chunk-GBQFBLJZ.js   | home-component  |   2.28 kB | 
+Lazy chunk files    | Names                     |  Raw size
+chunk-AGRR4JX6.js   | home-component            |  41.46 kB | 
+chunk-7GXKV27I.js   | admin-map-component       |  22.84 kB | 
+chunk-XW7GZVEL.js   | register-component        |  17.65 kB | 
+chunk-Z6HJ3RNS.js   | login-component           |   8.60 kB | 
+chunk-WJAWUOV3.js   | forgot-password-component |   8.12 kB | 
+chunk-2NY5KFYW.js   | verify-email-component    |   6.24 kB | 
+chunk-U6VAMHGY.js   | -                         |   2.00 kB | 
+chunk-KXTLIPV7.js   | -                         |   1.42 kB | 
 
-Application bundle generation complete. [3.855 seconds]
+Application bundle generation complete. [5.413 seconds]
 
 Watch mode enabled. Watching for file changes...
 NOTE: Raw file sizes do not reflect development server per-request transformations.
-Re-optimizing dependencies because vite config has changed
   ➜  Local:   http://localhost:4200/
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [3.252 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.348 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [2.974 seconds]
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'zoomIn' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:16:38:
+[37m      16 │ ...ton class="zoom-btn" (click)="[32mzoomIn[37m()" title="Acercar">+</button>
+         ╵                                  [32m~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'zoomOut' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:17:38:
+[37m      17 │ ...n class="zoom-btn" (click)="[32mzoomOut[37m()" title="Alejar">−</button>
+         ╵                                [32m~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'resetView' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:18:44:
+[37m      18 │ ...="zoom-btn reset" (click)="[32mresetView[37m()" title="Restablecer vist...
+         ╵                               [32m~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'scale' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:19:33:
+[37m      19 │ ...<span class="zoom-level">{{ ([32mscale[37m * 100) | number:'1.0-0' }}%<...
+         ╵                                 [32m~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'isDragging' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:28:72:
+[37m      28 │ ...&& !error" [class.dragging]="[32misDragging[37m" (wheel)="onWheel($event)"
+         ╵                                 [32m~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'onWheel' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:28:93:
+[37m      28 │ ...&& !error" [class.dragging]="isDragging" (wheel)="[32monWheel[37m($event)"
+         ╵                                                      [32m~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'onMouseDown' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:29:17:
+[37m      29 │     (mousedown)="[32monMouseDown[37m($event)">
+         ╵                  [32m~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'getMapTransform' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:30:48:
+[37m      30 │     <div class="map-content" [style.transform]="[32mgetMapTransform[37m()">
+         ╵                                                 [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'onPinMouseEnter' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:35:22:
+[37m      35 │         (mouseenter)="[32monPinMouseEnter[37m(local, $event)" (mousemove)=...
+         ╵                       [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'onPinMouseMove' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:35:67:
+[37m      35 │ ...PinMouseEnter(local, $event)" (mousemove)="[32monPinMouseMove[37m($event)"
+         ╵                                               [32m~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'onPinMouseLeave' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:36:22:
+[37m      36 │         (mouseleave)="[32monPinMouseLeave[37m()" (click)="onPinClick(local...
+         ╵                       [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'onPinClick' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:36:50:
+[37m      36 │ ...useleave)="onPinMouseLeave()" (click)="[32monPinClick[37m(local, $event)">
+         ╵                                           [32m~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'hoveredLocal' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:43:14:
+[37m      43 │   <div *ngIf="[32mhoveredLocal[37m" class="tooltip" [style.left.px]="toolt...
+         ╵               [32m~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'tooltipPosition' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:43:61:
+[37m      43 │ ...oltip" [style.left.px]="[32mtooltipPosition[37m.x" [style.top.px]="tool...
+         ╵                            [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'tooltipPosition' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:43:96:
+[37m      43 │ ...e.left.px]="tooltipPosition.x" [style.top.px]="[32mtooltipPosition[37m.y">
+         ╵                                                   [32m~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'hoveredLocal' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:45:18:
+[37m      45 │       <img *ngIf="[32mhoveredLocal[37m.imagenUrl" [src]="hoveredLocal.imag...
+         ╵                   [32m~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'hoveredLocal' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:45:49:
+[37m      45 │ ...edLocal.imagenUrl" [src]="[32mhoveredLocal[37m.imagenUrl" [alt]="hovere...
+         ╵                              [32m~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'hoveredLocal' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:45:80:
+[37m      45 │ ...genUrl" [src]="hoveredLocal.imagenUrl" [alt]="[32mhoveredLocal[37m.nombre"
+         ╵                                                  [32m~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'hoveredLocal' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:47:47:
+[37m      47 │ ... <div class="tooltip-placeholder" *ngIf="![32mhoveredLocal[37m.imagenUrl">
+         ╵                                              [32m~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'hoveredLocal' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:51:15:
+[37m      51 │         <h4>{{ [32mhoveredLocal[37m.nombre }}</h4>
+         ╵                [32m~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'getStars' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:53:36:
+[37m      53 │ ...  <span *ngFor="let star of [32mgetStars[37m(hoveredLocal.valoracion)" ...
+         ╵                                [32m~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'hoveredLocal' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:53:45:
+[37m      53 │ ...For="let star of getStars([32mhoveredLocal[37m.valoracion)" class="star...
+         ╵                              [32m~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'hoveredLocal' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:54:41:
+[37m      54 │ ... class="rating-value">({{ [32mhoveredLocal[37m.valoracion || 'N/A' }})<...
+         ╵                              [32m~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG9: Property 'hoveredLocal' does not exist on type 'RestaurantMapComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.html:56:33:
+[37m      56 │         <p class="address">📍 {[32m{ hoveredLoc[37mal.direccion }}</p>
+         ╵                               [32m~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMapComponent.
+
+    src/app/shared/components/restaurant-map/restaurant-map.component.ts:17:17:
+[37m      17 │     templateUrl: [32m'./restaurant-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                     |  Raw size
+polyfills.js        | polyfills                 |  90.20 kB | 
+styles.css          | styles                    |  24.22 kB | 
+main.js             | main                      |   9.63 kB | 
+
+                    | Initial total             | 124.06 kB
+
+Lazy chunk files    | Names                     |  Raw size
+chunk-G4UFMJVI.js   | home-component            |  33.11 kB | 
+chunk-7GXKV27I.js   | admin-map-component       |  22.84 kB | 
+chunk-XW7GZVEL.js   | register-component        |  17.65 kB | 
+chunk-Z6HJ3RNS.js   | login-component           |   8.60 kB | 
+chunk-WJAWUOV3.js   | forgot-password-component |   8.12 kB | 
+chunk-2NY5KFYW.js   | verify-email-component    |   6.24 kB | 
+chunk-U6VAMHGY.js   | -                         |   2.00 kB | 
+chunk-KXTLIPV7.js   | -                         |   1.42 kB | 
+
+Application bundle generation complete. [1.641 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names          | Raw size
+main.js             | main           |  9.63 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-3VCYGY2O.js   | home-component | 31.72 kB | 
+
+Application bundle generation complete. [1.276 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [1.671 seconds]
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG5: Argument of type 'MouseEvent' is not assignable to parameter of type 'LatLng'.
+  Type 'MouseEvent' is missing the following properties from type 'LatLng': equals, distanceTo, wrap, toBounds, and 3 more.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/admin-map.component.html:16:53:
+[37m      16 │         <div class="map-wrapper" (click)="onMapClick([32m$event[37m)">
+         ╵                                                      [32m~~~~~~[0m
+
+  Error occurs in the template of component AdminMapComponent.
+
+    src/app/features/admin/admin-map.component.ts:12:17:
+[37m      12 │     templateUrl: [32m'./admin-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG1: Property 'onPinClick' does not exist on type 'AdminMapComponent'. Did you mean 'onMapClick'?[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/admin-map.component.html:21:25:
+[37m      21 │                 (click)="[32monPinClick[37m(local, $event)" [class.selecte...
+         ╵                          [32m~~~~~~~~~~[0m
+
+  Error occurs in the template of component AdminMapComponent.
+
+    src/app/features/admin/admin-map.component.ts:12:17:
+[37m      12 │     templateUrl: [32m'./admin-map.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                     |  Raw size
+polyfills.js        | polyfills                 |  90.20 kB | 
+styles.css          | styles                    |  24.22 kB | 
+main.js             | main                      |   9.63 kB | 
+
+                    | Initial total             | 124.06 kB
+
+Lazy chunk files    | Names                     |  Raw size
+chunk-3VCYGY2O.js   | home-component            |  31.72 kB | 
+chunk-K7ZAYCV3.js   | admin-map-component       |  24.32 kB | 
+chunk-XW7GZVEL.js   | register-component        |  17.65 kB | 
+chunk-Z6HJ3RNS.js   | login-component           |   8.60 kB | 
+chunk-WJAWUOV3.js   | forgot-password-component |   8.12 kB | 
+chunk-2NY5KFYW.js   | verify-email-component    |   6.24 kB | 
+chunk-U6VAMHGY.js   | -                         |   2.00 kB | 
+chunk-KXTLIPV7.js   | -                         |   1.42 kB | 
+
+Application bundle generation complete. [1.932 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names               | Raw size
+main.js             | main                |  9.63 kB | 
+
+Lazy chunk files    | Names               | Raw size
+chunk-KPOB737N.js   | admin-map-component | 24.13 kB | 
+
+Application bundle generation complete. [0.891 seconds]
+
+Page reload sent to client(s).

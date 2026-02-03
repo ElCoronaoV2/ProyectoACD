@@ -1,0 +1,92 @@
+<div class="admin-container">
+    <!-- Header -->
+    <div class="admin-header">
+        <h1>🗺️ Administrar Restaurantes</h1>
+        <p>Haz clic en el mapa para añadir un nuevo restaurante en esa ubicación</p>
+    </div>
+
+    <!-- Toast message -->
+    <div *ngIf="message" class="toast" [class.success]="message.type === 'success'"
+        [class.error]="message.type === 'error'">
+        {{ message.text }}
+    </div>
+
+    <!-- Map container -->
+    <div class="map-section">
+        <div #map class="leaflet-map"></div>
+
+        <!-- Center button -->
+        <button class="center-btn" (click)="centerOnAlicante()" title="Centrar en Alicante">🎯</button>
+
+        <!-- Instructions -->
+        <div class="instructions">
+            <span>📍 Click en mapa = Añadir | Click en marcador = Editar</span>
+        </div>
+    </div>
+
+    <!-- Form panel -->
+    <div class="form-panel" [class.visible]="showForm">
+        <div class="form-header">
+            <h2>{{ editMode ? '✏️ Editar Restaurante' : '➕ Nuevo Restaurante' }}</h2>
+            <button class="close-btn" (click)="closeForm()">✕</button>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" class="restaurant-form">
+            <div class="form-group">
+                <label for="nombre">Nombre *</label>
+                <input type="text" id="nombre" [(ngModel)]="formData.nombre" name="nombre" required
+                    placeholder="Nombre del restaurante" />
+            </div>
+
+            <div class="form-group">
+                <label for="direccion">Dirección *</label>
+                <input type="text" id="direccion" [(ngModel)]="formData.direccion" name="direccion" required
+                    placeholder="Calle y número" />
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="capacidad">Capacidad *</label>
+                    <input type="number" id="capacidad" [(ngModel)]="formData.capacidad" name="capacidad" required
+                        min="1" />
+                </div>
+
+                <div class="form-group">
+                    <label for="valoracion">Valoración</label>
+                    <input type="number" id="valoracion" [(ngModel)]="formData.valoracion" name="valoracion" min="1"
+                        max="5" step="0.1" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="horario">Horario</label>
+                <input type="text" id="horario" [(ngModel)]="formData.horario" name="horario"
+                    placeholder="Lun-Vie: 12:00-23:00" />
+            </div>
+
+            <div class="form-group">
+                <label for="imagenUrl">URL de Imagen</label>
+                <input type="url" id="imagenUrl" [(ngModel)]="formData.imagenUrl" name="imagenUrl"
+                    placeholder="https://..." />
+            </div>
+
+            <div class="form-group coordinates">
+                <label>📍 Coordenadas GPS</label>
+                <div class="coords-display">
+                    <span><strong>Lat:</strong> {{ formData.latitud | number:'1.6-6' }}</span>
+                    <span><strong>Lng:</strong> {{ formData.longitud | number:'1.6-6' }}</span>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-primary" [disabled]="loading">
+                    {{ loading ? 'Guardando...' : (editMode ? 'Actualizar' : 'Crear Restaurante') }}
+                </button>
+                <button type="button" class="btn-secondary" (click)="closeForm()">Cancelar</button>
+                <button *ngIf="editMode" type="button" class="btn-danger" (click)="deleteLocal()" [disabled]="loading">
+                    🗑️ Eliminar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

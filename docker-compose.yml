@@ -11,6 +11,34 @@ services:
             - "5432:5432"
         volumes:
             - db_data:/var/lib/postgresql/data
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U admin -d restaurant_tec"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    backend:
+        build: ./tec
+        container_name: restaurant-backend
+        restart: always
+        depends_on:
+            db:
+                condition: service_healthy
+        environment:
+            POSTGRES_DB: restaurant_tec
+            POSTGRES_USER: admin
+            POSTGRES_PASSWORD: curso
+            SPRING_DATASOURCE_URL: jdbc:postgresql://restaurant-db:5432/restaurant_tec
+
+
+    frontend:
+        build: ./frontend
+        container_name: restaurant-frontend
+        restart: always
+        depends_on:
+            - backend
+        ports:
+            - "80:80"
 
 volumes:
     db_data:

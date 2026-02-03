@@ -30,6 +30,9 @@ public class UserEntity {
     @Column(nullable = false)
     private String rol = "USER";
 
+    @Column(nullable = false)
+    private boolean enabled = false;
+
     // Campos de auditoría
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
@@ -78,6 +81,9 @@ public class UserEntity {
     
     public String getRol() { return rol; }
     public void setRol(String rol) { this.rol = rol; }
+
+    public boolean isEnabled() { return enabled; }
+    public void setEnabled(boolean enabled) { this.enabled = enabled; }
     
     public LocalDateTime getFechaCreacion() { return fechaCreacion; }
     public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }

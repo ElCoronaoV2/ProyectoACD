@@ -2,11 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, HttpClientModule],
   template: `
     <div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl border-t-4 border-secondary-500">
@@ -22,6 +24,11 @@ import { RouterModule, Router } from '@angular/router';
           </p>
         </div>
         
+        <!-- ERROR MESSAGE -->
+        <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4">
+            <span class="block sm:inline">{{ errorMessage }}</span>
+        </div>
+
         <form class="mt-8 space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <div class="rounded-md shadow-sm -space-y-px">
             <div class="mb-4">
@@ -56,15 +63,10 @@ import { RouterModule, Router } from '@angular/router';
 
           <div>
             <button type="submit" 
-              [disabled]="loginForm.invalid"
+              [disabled]="loginForm.invalid || isLoading"
               class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all hover:animate-pulsing disabled:opacity-50 disabled:cursor-not-allowed">
-              <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-                <!-- Lucide Lock Icon -->
-                <svg class="h-5 w-5 text-primary-500 group-hover:text-primary-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-                </svg>
-              </span>
-              Entrar
+              <span *ngIf="isLoading">Cargando...</span>
+              <span *ngIf="!isLoading">Entrar</span>
             </button>
           </div>
         </form>
@@ -75,8 +77,10 @@ import { RouterModule, Router } from '@angular/router';
 })
 export class LoginComponent {
   loginForm: FormGroup;
+  isLoading = false;
+  errorMessage: string | null = null;
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  constructor(private fb: FormBuilder, private router: Router, private authService: AuthService) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -85,10 +89,23 @@ export class LoginComponent {
 
   onSubmit() {
     if (this.loginForm.valid) {
-      console.log('Login Data:', this.loginForm.value);
-      // TODO: Implement Auth Service Integration
-      // For now, redirect to home to simulate login
-      this.router.navigate(['/']);
+      this.isLoading = true;
+      this.errorMessage = null;
+
+      this.authService.login(this.loginForm.value).subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          this.router.navigate(['/']);
+        },
+        error: (err) => {
+          this.isLoading = false;
+          if (err.status === 401 || err.status === 403) {
+            this.errorMessage = "Credenciales incorrectas o cuenta no verificada.";
+          } else {
+            this.errorMessage = "Error al iniciar sesión. Inténtalo de nuevo.";
+          }
+        }
+      });
     }
   }
 }

@@ -2,15 +2,31 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
+import { AuthService } from '../../../core/services/auth.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @Component({
-    selector: 'app-register',
-    standalone: true,
-    imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule],
-    template: `
+  selector: 'app-register',
+  standalone: true,
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, HttpClientModule],
+  template: `
     <div class="min-h-[90vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
       <div class="max-w-2xl w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl border-t-4 border-secondary-500">
-        <div class="text-center">
+        
+        <!-- SUCCESS STATE -->
+        <div *ngIf="successMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative text-center">
+            <strong class="font-bold">¡Registro exitoso!</strong>
+            <span class="block sm:inline">{{ successMessage }}</span>
+            <p class="mt-2 text-sm">Ya puedes cerrar esta pestaña y revisar tu correo.</p>
+        </div>
+
+        <!-- ERROR STATE -->
+        <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-center">
+            <strong class="font-bold">Error:</strong>
+            <span class="block sm:inline">{{ errorMessage }}</span>
+        </div>
+
+        <div class="text-center" *ngIf="!successMessage">
           <h2 class="mt-2 text-3xl font-extrabold text-gray-900">
             Crear Cuenta
           </h2>
@@ -22,22 +38,9 @@ import { RouterModule, Router } from '@angular/router';
           </p>
         </div>
         
-        <form class="mt-8 space-y-6" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <form *ngIf="!successMessage" class="mt-8 space-y-6" [formGroup]="registerForm" (ngSubmit)="onSubmit()">
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Profile Picture Upload -->
-            <div class="md:col-span-2 flex flex-col items-center">
-              <div class="relative group cursor-pointer w-32 h-32 rounded-full overflow-hidden border-4 border-gray-200 hover:border-primary-500 transition-colors bg-gray-100 flex items-center justify-center">
-                <img *ngIf="imagePreview" [src]="imagePreview" class="w-full h-full object-cover">
-                <span *ngIf="!imagePreview" class="text-4xl">👤</span>
-                <input type="file" (change)="onFileSelected($event)" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
-                <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity font-medium text-sm">
-                  Cambiar Foto
-                </div>
-              </div>
-              <p class="text-sm text-gray-500 mt-2">Sube una foto de perfil</p>
-            </div>
-
             <!-- Username -->
             <div>
               <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Nombre de Usuario</label>
@@ -78,7 +81,6 @@ import { RouterModule, Router } from '@angular/router';
                   <span class="text-xs font-medium">{{ allergen.name }}</span>
                 </div>
               </div>
-              <p class="mt-1 text-xs text-gray-500">Selecciona para que nuestra IA te avise de platos peligrosos.</p>
             </div>
 
             <!-- Passwords -->
@@ -101,91 +103,103 @@ import { RouterModule, Router } from '@angular/router';
           <!-- Submit Button -->
           <div class="pt-4">
             <button type="submit" 
-              [disabled]="registerForm.invalid"
+              [disabled]="registerForm.invalid || isLoading"
               class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-md text-white bg-secondary-500 hover:bg-secondary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500 transition-all hover:shadow-lg hover:animate-pulsing disabled:opacity-50 disabled:cursor-not-allowed">
-              Crear Cuenta
+              <span *ngIf="isLoading">Procesando...</span>
+              <span *ngIf="!isLoading">Crear Cuenta</span>
             </button>
           </div>
         </form>
       </div>
     </div>
   `,
-    styles: []
+  styles: []
 })
 export class RegisterComponent {
-    registerForm: FormGroup;
-    imagePreview: string | null = null;
-    selectedAllergens: string[] = [];
+  registerForm: FormGroup;
+  selectedAllergens: string[] = [];
+  isLoading = false;
+  successMessage: string | null = null;
+  errorMessage: string | null = null;
 
-    allergens = [
-        { id: 'gluten', name: 'Gluten', icon: '🌾' },
-        { id: 'crustaceans', name: 'Crustáceos', icon: '🦐' },
-        { id: 'eggs', name: 'Huevos', icon: '🥚' },
-        { id: 'fish', name: 'Pescado', icon: '🐟' },
-        { id: 'peanuts', name: 'Cacahuetes', icon: '🥜' },
-        { id: 'soy', name: 'Soja', icon: '🫘' },
-        { id: 'dairy', name: 'Lácteos', icon: '🥛' },
-        { id: 'nuts', name: 'Frutos Cáscara', icon: '🌰' },
-        { id: 'celery', name: 'Apio', icon: '🌿' },
-        { id: 'mustard', name: 'Mostaza', icon: '🌭' },
-        { id: 'sesame', name: 'Sésamo', icon: '🥯' },
-        { id: 'sulphites', name: 'Sulfitos', icon: '🍷' },
-        { id: 'lupin', name: 'Altramuces', icon: '🥨' },
-        { id: 'molluscs', name: 'Moluscos', icon: '🐙' }
-    ];
+  allergens = [
+    { id: 'gluten', name: 'Gluten', icon: '🌾' },
+    { id: 'crustaceans', name: 'Crustáceos', icon: '🦐' },
+    { id: 'eggs', name: 'Huevos', icon: '🥚' },
+    { id: 'fish', name: 'Pescado', icon: '🐟' },
+    { id: 'peanuts', name: 'Cacahuetes', icon: '🥜' },
+    { id: 'soy', name: 'Soja', icon: '🫘' },
+    { id: 'dairy', name: 'Lácteos', icon: '🥛' },
+    { id: 'nuts', name: 'Frutos Cáscara', icon: '🌰' },
+    { id: 'celery', name: 'Apio', icon: '🌿' },
+    { id: 'mustard', name: 'Mostaza', icon: '🌭' },
+    { id: 'sesame', name: 'Sésamo', icon: '🥯' },
+    { id: 'sulphites', name: 'Sulfitos', icon: '🍷' },
+    { id: 'lupin', name: 'Altramuces', icon: '🥨' },
+    { id: 'molluscs', name: 'Moluscos', icon: '🐙' }
+  ];
 
-    constructor(private fb: FormBuilder, private router: Router) {
-        this.registerForm = this.fb.group({
-            username: ['', Validators.required],
-            email: ['', [Validators.required, Validators.email]],
-            phone: ['', Validators.required],
-            password: ['', [Validators.required, Validators.minLength(6)]],
-            confirmPassword: ['', Validators.required],
-            allergens: [[]]
-        }, { validators: this.passwordMatchValidator });
+  constructor(private fb: FormBuilder, private authService: AuthService) {
+    this.registerForm = this.fb.group({
+      username: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      phone: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required],
+      allergens: [[]]
+    }, { validators: this.passwordMatchValidator });
+  }
+
+  passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
+    const password = control.get('password');
+    const confirmPassword = control.get('confirmPassword');
+    if (password && confirmPassword && password.value !== confirmPassword.value) {
+      return { mismatch: true };
     }
+    return null;
+  }
 
-    passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
-        const password = control.get('password');
-        const confirmPassword = control.get('confirmPassword');
-        if (password && confirmPassword && password.value !== confirmPassword.value) {
-            return { mismatch: true };
+  toggleAllergen(id: string) {
+    if (this.selectedAllergens.includes(id)) {
+      this.selectedAllergens = this.selectedAllergens.filter(a => a !== id);
+    } else {
+      this.selectedAllergens.push(id);
+    }
+    this.registerForm.patchValue({ allergens: this.selectedAllergens });
+  }
+
+  isSelected(id: string): boolean {
+    return this.selectedAllergens.includes(id);
+  }
+
+  onSubmit() {
+    if (this.registerForm.valid) {
+      this.isLoading = true;
+      this.errorMessage = null;
+
+      const userData = {
+        nombre: this.registerForm.get('username')?.value,
+        email: this.registerForm.get('email')?.value,
+        telefono: this.registerForm.get('phone')?.value,
+        password: this.registerForm.get('password')?.value,
+        alergenos: this.selectedAllergens.join(',')
+      };
+
+      this.authService.register(userData).subscribe({
+        next: (res) => {
+          this.isLoading = false;
+          this.successMessage = "Se ha enviado un correo de verificación a " + userData.email;
+        },
+        error: (err) => {
+          this.isLoading = false;
+          console.error('Registration error:', err);
+          if (err.error && typeof err.error === 'object') {
+            this.errorMessage = JSON.stringify(err.error);
+          } else {
+            this.errorMessage = err.error || "Error al registrar usuario";
+          }
         }
-        return null;
+      });
     }
-
-    onFileSelected(event: any) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = () => {
-                this.imagePreview = reader.result as string;
-            };
-            reader.readAsDataURL(file);
-        }
-    }
-
-    toggleAllergen(id: string) {
-        if (this.selectedAllergens.includes(id)) {
-            this.selectedAllergens = this.selectedAllergens.filter(a => a !== id);
-        } else {
-            this.selectedAllergens.push(id);
-        }
-        this.registerForm.patchValue({ allergens: this.selectedAllergens });
-    }
-
-    isSelected(id: string): boolean {
-        return this.selectedAllergens.includes(id);
-    }
-
-    onSubmit() {
-        if (this.registerForm.valid) {
-            console.log('Register Data:', {
-                ...this.registerForm.value,
-                profileImage: this.imagePreview ? 'Image Selected' : 'No Image'
-            });
-            // TODO: Implement Auth Service Registration
-            this.router.navigate(['/login']);
-        }
-    }
+  }
 }

@@ -9,12 +9,18 @@ public class LocalResponse {
     private String horario;
     private Double latitud;
     private Double longitud;
+    private Double posX;
+    private Double posY;
+    private String imagenUrl;
+    private Double valoracion;
 
     // Constructores
-    public LocalResponse() {}
+    public LocalResponse() {
+    }
 
-    public LocalResponse(Long id, String nombre, String direccion, Integer capacidad, 
-                        String horario, Double latitud, Double longitud) {
+    public LocalResponse(Long id, String nombre, String direccion, Integer capacidad,
+            String horario, Double latitud, Double longitud,
+            Double posX, Double posY, String imagenUrl, Double valoracion) {
         this.id = id;
         this.nombre = nombre;
         this.direccion = direccion;
@@ -22,27 +28,98 @@ public class LocalResponse {
         this.horario = horario;
         this.latitud = latitud;
         this.longitud = longitud;
+        this.posX = posX;
+        this.posY = posY;
+        this.imagenUrl = imagenUrl;
+        this.valoracion = valoracion;
     }
 
     // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getDireccion() { return direccion; }
-    public void setDireccion(String direccion) { this.direccion = direccion; }
+    public String getNombre() {
+        return nombre;
+    }
 
-    public Integer getCapacidad() { return capacidad; }
-    public void setCapacidad(Integer capacidad) { this.capacidad = capacidad; }
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-    public String getHorario() { return horario; }
-    public void setHorario(String horario) { this.horario = horario; }
+    public String getDireccion() {
+        return direccion;
+    }
 
-    public Double getLatitud() { return latitud; }
-    public void setLatitud(Double latitud) { this.latitud = latitud; }
+    public void setDireccion(String direccion) {
+        this.direccion = direccion;
+    }
 
-    public Double getLongitud() { return longitud; }
-    public void setLongitud(Double longitud) { this.longitud = longitud; }
+    public Integer getCapacidad() {
+        return capacidad;
+    }
+
+    public void setCapacidad(Integer capacidad) {
+        this.capacidad = capacidad;
+    }
+
+    public String getHorario() {
+        return horario;
+    }
+
+    public void setHorario(String horario) {
+        this.horario = horario;
+    }
+
+    public Double getLatitud() {
+        return latitud;
+    }
+
+    public void setLatitud(Double latitud) {
+        this.latitud = latitud;
+    }
+
+    public Double getLongitud() {
+        return longitud;
+    }
+
+    public void setLongitud(Double longitud) {
+        this.longitud = longitud;
+    }
+
+    public Double getPosX() {
+        return posX;
+    }
+
+    public void setPosX(Double posX) {
+        this.posX = posX;
+    }
+
+    public Double getPosY() {
+        return posY;
+    }
+
+    public void setPosY(Double posY) {
+        this.posY = posY;
+    }
+
+    public String getImagenUrl() {
+        return imagenUrl;
+    }
+
+    public void setImagenUrl(String imagenUrl) {
+        this.imagenUrl = imagenUrl;
+    }
+
+    public Double getValoracion() {
+        return valoracion;
+    }
+
+    public void setValoracion(Double valoracion) {
+        this.valoracion = valoracion;
+    }
 }

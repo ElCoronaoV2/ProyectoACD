@@ -1,0 +1,25 @@
+<div class="map-container">
+  <!-- Loading overlay -->
+  <div *ngIf="loading" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Cargando restaurantes...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="loadLocales()" class="btn-retry">Reintentar</button>
+  </div>
+
+  <!-- Leaflet Map -->
+  <div #map class="leaflet-map"></div>
+
+  <!-- Center button -->
+  <button *ngIf="!loading && !error" class="center-btn" (click)="centerOnAlicante()" title="Centrar en Alicante">
+    🎯
+  </button>
+
+  <!-- Menu Modal -->
+  <app-restaurant-menu-modal *ngIf="showModal && selectedLocal" [local]="selectedLocal" [menus]="menuItems"
+    (close)="closeModal()"></app-restaurant-menu-modal>
+</div>

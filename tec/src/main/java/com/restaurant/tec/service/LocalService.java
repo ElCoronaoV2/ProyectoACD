@@ -27,6 +27,10 @@ public class LocalService {
         local.setHorario(request.getHorario());
         local.setLatitud(request.getLatitud());
         local.setLongitud(request.getLongitud());
+        local.setPosX(request.getPosX());
+        local.setPosY(request.getPosY());
+        local.setImagenUrl(request.getImagenUrl());
+        local.setValoracion(request.getValoracion());
 
         LocalEntity savedLocal = localRepository.save(local);
         return convertirAResponse(savedLocal);
@@ -58,6 +62,10 @@ public class LocalService {
         local.setHorario(request.getHorario());
         local.setLatitud(request.getLatitud());
         local.setLongitud(request.getLongitud());
+        local.setPosX(request.getPosX());
+        local.setPosY(request.getPosY());
+        local.setImagenUrl(request.getImagenUrl());
+        local.setValoracion(request.getValoracion());
 
         LocalEntity updatedLocal = localRepository.save(local);
         return convertirAResponse(updatedLocal);
@@ -81,7 +89,10 @@ public class LocalService {
                 local.getCapacidad(),
                 local.getHorario(),
                 local.getLatitud(),
-                local.getLongitud()
-        );
+                local.getLongitud(),
+                local.getPosX(),
+                local.getPosY(),
+                local.getImagenUrl(),
+                local.getValoracion());
     }
 }

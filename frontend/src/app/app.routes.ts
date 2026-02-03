@@ -21,6 +21,14 @@ export const routes: Routes = [
             {
                 path: 'register',
                 loadComponent: () => import('./features/public/register/register.component').then(m => m.RegisterComponent)
+            },
+            {
+                path: 'verify',
+                loadComponent: () => import('./features/public/verify/verify-email.component').then(m => m.VerifyEmailComponent)
+            },
+            {
+                path: 'admin',
+                loadComponent: () => import('./features/admin/admin-map.component').then(m => m.AdminMapComponent)
             }
         ]
     },

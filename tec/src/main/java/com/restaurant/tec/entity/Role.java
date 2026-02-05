@@ -4,5 +4,6 @@ public enum Role {
     DIRECTOR,
     CEO,
     EMPLEADO,
-    USER
+    USER,
+    ADMIN
 }

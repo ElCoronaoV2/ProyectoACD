@@ -64,6 +64,27 @@ public class ReservaController {
         return ResponseEntity.ok(reservaService.getReservasByLocal(localId));
     }
 
+    // Verificar disponibilidad (Público/Frontend)
+    @GetMapping("/availability")
+    public ResponseEntity<Integer> checkAvailability(
+            @RequestParam Long localId,
+            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechaHora) {
+        return ResponseEntity.ok(reservaService.getRemainingCapacity(localId, fechaHora));
+    }
+
+    // Endpoint para n8n: Reservas confirmadas próximas (para recordatorios)
+    @GetMapping("/upcoming")
+    public ResponseEntity<List<ReservaEntity>> getUpcomingReservas(@RequestParam(defaultValue = "120") int minutes) {
+        return ResponseEntity.ok(reservaService.getConfirmedReservasInNextMinutes(minutes));
+    }
+
+    // Endpoint para n8n: Reservas pendientes urgentes (para cancelación automática)
+    @GetMapping("/unconfirmed-urgent")
+    public ResponseEntity<List<ReservaEntity>> getUrgentPendingReservas(
+            @RequestParam(defaultValue = "30") int minutes) {
+        return ResponseEntity.ok(reservaService.getPendingReservasStartingIn(minutes));
+    }
+
     // Actualizar estado (Empleado/CEO)
     @PutMapping("/{id}/estado")
     public ResponseEntity<ReservaEntity> updateEstado(@PathVariable Long id, @RequestBody Map<String, String> payload) {

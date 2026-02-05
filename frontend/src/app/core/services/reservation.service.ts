@@ -35,4 +35,8 @@ export class ReservationService {
     updateStatus(id: number, estado: string): Observable<any> {
         return this.http.put(`${this.apiUrl}/${id}/estado`, { estado }, { headers: this.getHeaders() });
     }
+
+    checkAvailability(localId: number, fechaHora: string): Observable<number> {
+        return this.http.get<number>(`${this.apiUrl}/availability?localId=${localId}&fechaHora=${fechaHora}`);
+    }
 }

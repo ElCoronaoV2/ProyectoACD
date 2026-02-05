@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -17,8 +16,12 @@ public class AdminController {
     @Autowired
     private UserRepository userRepository;
 
+    // @Autowired
+    // private PasswordEncoder passwordEncoder; // Removed as it is handled in
+    // UserService now
+
     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private com.restaurant.tec.service.OnlineStatusService onlineStatusService;
 
     // Listar todos los CEOs
     @GetMapping("/ceos")
@@ -26,25 +29,58 @@ public class AdminController {
         return ResponseEntity.ok(userRepository.findByRol(com.restaurant.tec.entity.Role.CEO));
     }
 
-    // Listar todos los usuarios (para gestión global)
+    // Listar usuarios (con filtro opcional por rol)
     @GetMapping("/users")
-    public ResponseEntity<List<UserEntity>> getAllUsers() {
+    public ResponseEntity<List<UserEntity>> getAllUsers(
+            @RequestParam(required = false) String role) {
+        System.out.println("DEBUG: getAllUsers called with role: " + role);
+        if (role != null && !role.trim().isEmpty()) {
+            try {
+                com.restaurant.tec.entity.Role roleEnum = com.restaurant.tec.entity.Role.valueOf(role.toUpperCase());
+                return ResponseEntity.ok(userRepository.findByRol(roleEnum));
+            } catch (IllegalArgumentException e) {
+                // Si el rol no es válido, devolvemos todo o lista vacía?
+                // Mejor ignorar filtro inválido y devolver todo, o devolver 400 explícito.
+                // Para depuración, vamos a devolver todo si el rol está mal o logear.
+                // Pero lo correcto sería 400 si el rol no existe.
+                // El error original era 400 automatico.
+                // Asumiremos que si viene cadena vacía "" es 'todos'.
+                return ResponseEntity.ok(userRepository.findAll());
+            }
+        }
         return ResponseEntity.ok(userRepository.findAll());
     }
 
-    // Crear un nuevo CEO
-    @PostMapping("/ceos")
-    public ResponseEntity<UserEntity> createCeo(@RequestBody UserEntity ceo) {
-        if (userRepository.findByEmail(ceo.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().build(); // Email ya existe
+    // Estadísticas del Dashboard
+    @GetMapping("/stats")
+    public ResponseEntity<com.restaurant.tec.dto.DashboardStatsDTO> getDashboardStats() {
+        long totalUsers = userRepository.count();
+        long usersOnline = onlineStatusService.getOnlineUserCount();
+        long guestsOnline = onlineStatusService.getOnlineGuestCount();
+        long unverifiedUsers = userRepository.countByEnabled(false);
+
+        java.util.Map<String, Long> rolesCount = new java.util.HashMap<>();
+        rolesCount.put("DIRECTOR", userRepository.countByRol(com.restaurant.tec.entity.Role.DIRECTOR));
+        rolesCount.put("CEO", userRepository.countByRol(com.restaurant.tec.entity.Role.CEO));
+        rolesCount.put("EMPLEADO", userRepository.countByRol(com.restaurant.tec.entity.Role.EMPLEADO));
+        rolesCount.put("USER", userRepository.countByRol(com.restaurant.tec.entity.Role.USER));
+
+        return ResponseEntity.ok(new com.restaurant.tec.dto.DashboardStatsDTO(
+                totalUsers, usersOnline, guestsOnline, unverifiedUsers, rolesCount));
+    }
+
+    @Autowired
+    private com.restaurant.tec.service.UserService userService;
+
+    // Crear cualquier usuario (CEO, Empleado, etc.)
+    @PostMapping("/users")
+    public ResponseEntity<UserEntity> createUser(@RequestBody com.restaurant.tec.dto.RegisterRequest request) {
+        try {
+            UserEntity createdUser = userService.registerUser(request);
+            return ResponseEntity.ok(createdUser);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().build();
         }
-
-        ceo.setRol(com.restaurant.tec.entity.Role.CEO);
-        ceo.setPassword(passwordEncoder.encode(ceo.getPassword()));
-        ceo.setEnabled(true);
-        ceo.setFechaCreacion(LocalDateTime.now());
-
-        return ResponseEntity.ok(userRepository.save(ceo));
     }
 
     // Eliminar o desactivar usuario

@@ -2689,3 +2689,717 @@ Application bundle generation failed. [0.650 seconds]
          ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
 
 
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.248 seconds]
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/profile/profile.component.html:64:23:
+[37m      64 │ ...         <input [32m[(ngModel)]="updatedUser.nombre"[37m class="input-f...
+         ╵                    [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component ProfileComponent.
+
+    src/app/features/profile/profile.component.ts:12:15:
+[37m      12 │   templateUrl: [32m'./profile.component.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/profile/profile.component.html:68:23:
+[37m      68 │ ...        <input [32m[(ngModel)]="updatedUser.telefono"[37m class="input-...
+         ╵                   [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component ProfileComponent.
+
+    src/app/features/profile/profile.component.ts:12:15:
+[37m      12 │   templateUrl: [32m'./profile.component.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG8002: Can't bind to 'ngModel' since it isn't a known property of 'input'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/profile/profile.component.html:72:23:
+[37m      72 │ ...       <input [32m[(ngModel)]="updatedUser.alergenos"[37m placeholder="...
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  Error occurs in the template of component ProfileComponent.
+
+    src/app/features/profile/profile.component.ts:12:15:
+[37m      12 │   templateUrl: [32m'./profile.component.html'[37m,
+         ╵                [32m~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                     |  Raw size
+polyfills.js        | polyfills                 |  90.20 kB | 
+styles.css          | styles                    |  36.03 kB | 
+main.js             | main                      |  13.74 kB | 
+chunk-FPBQ2DO2.js   | -                         |   2.64 kB | 
+chunk-YQOESBWP.js   | -                         | 754 bytes | 
+
+                    | Initial total             | 143.36 kB
+
+Lazy chunk files    | Names                     |  Raw size
+chunk-OTDAYQBB.js   | home-component            |  42.75 kB | 
+chunk-RRJCYAEZ.js   | ceo-component             |  41.73 kB | 
+chunk-ACZGVTSU.js   | register-component        |  23.37 kB | 
+chunk-TB5CRG7K.js   | employee-component        |  19.48 kB | 
+chunk-GTWK7YBI.js   | login-component           |  16.29 kB | 
+chunk-JTBWET2A.js   | profile-component         |  16.20 kB | 
+chunk-ZJTAIX5D.js   | director-component        |  12.02 kB | 
+chunk-ESGCZ4HX.js   | landing-page-component    |  10.18 kB | 
+chunk-DVRG4VBL.js   | verify-email-component    |   9.36 kB | 
+chunk-2OXDLMYW.js   | forgot-password-component |   8.15 kB | 
+chunk-TTE27GWQ.js   | -                         |   3.02 kB | 
+chunk-TVJK6YYL.js   | -                         |   1.53 kB | 
+
+Application bundle generation complete. [0.517 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [1.113 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.474 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               | 13.74 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-W6T4BKP5.js   | director-component | 12.44 kB | 
+
+Application bundle generation complete. [0.474 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.500 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.256 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [1.816 seconds]
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'Component'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:4:1:
+[37m      4 │ @[32mComponent[37m({
+        ╵  [32m~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'CommonModule'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:7:12:
+[37m      7 │   imports: [[32mCommonModule[37m, FormsModule, UserManagementComponent, Adm...
+        ╵             [32m~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'FormsModule'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:7:26:
+[37m      7 │   imports: [CommonModule, [32mFormsModule[37m, UserManagementComponent, Adm...
+        ╵                           [32m~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'OnInit'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:11:42:
+[37m      11 │ export class DirectorComponent implements [32mOnInit[37m {
+         ╵                                           [32m~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'AdminService'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:23:36:
+[37m      23 │   constructor(private adminService: [32mAdminService[37m) { }
+         ╵                                     [32m~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.465 seconds]
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'Component'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:4:1:
+[37m      4 │ @[32mComponent[37m({
+        ╵  [32m~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'CommonModule'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:7:12:
+[37m      7 │   imports: [[32mCommonModule[37m, FormsModule, UserManagementComponent, Adm...
+        ╵             [32m~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'FormsModule'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:7:26:
+[37m      7 │   imports: [CommonModule, [32mFormsModule[37m, UserManagementComponent, Adm...
+        ╵                           [32m~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'OnInit'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:11:42:
+[37m      11 │ export class DirectorComponent implements [32mOnInit[37m {
+         ╵                                           [32m~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'AdminService'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:23:36:
+[37m      23 │   constructor(private adminService: [32mAdminService[37m) { }
+         ╵                                     [32m~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.170 seconds]
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'Component'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:4:1:
+[37m      4 │ @[32mComponent[37m({
+        ╵  [32m~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'CommonModule'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:7:12:
+[37m      7 │   imports: [[32mCommonModule[37m, FormsModule, UserManagementComponent, Adm...
+        ╵             [32m~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'FormsModule'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:7:26:
+[37m      7 │   imports: [CommonModule, [32mFormsModule[37m, UserManagementComponent, Adm...
+        ╵                           [32m~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'OnInit'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:11:42:
+[37m      11 │ export class DirectorComponent implements [32mOnInit[37m {
+         ╵                                           [32m~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'AdminService'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/dashboard/director/director.component.ts:23:36:
+[37m      23 │   constructor(private adminService: [32mAdminService[37m) { }
+         ╵                                     [32m~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                     |  Raw size
+polyfills.js        | polyfills                 |  90.20 kB | 
+styles.css          | styles                    |  36.03 kB | 
+main.js             | main                      |  13.74 kB | 
+chunk-FPBQ2DO2.js   | -                         |   2.64 kB | 
+chunk-YQOESBWP.js   | -                         | 754 bytes | 
+
+                    | Initial total             | 143.36 kB
+
+Lazy chunk files    | Names                     |  Raw size
+chunk-5TDKGZZU.js   | director-component        |  53.74 kB | 
+chunk-RRJCYAEZ.js   | ceo-component             |  41.73 kB | 
+chunk-XRT6SF2O.js   | home-component            |  41.38 kB | 
+chunk-ACZGVTSU.js   | register-component        |  23.37 kB | 
+chunk-TB5CRG7K.js   | employee-component        |  19.48 kB | 
+chunk-GTWK7YBI.js   | login-component           |  16.29 kB | 
+chunk-JTBWET2A.js   | profile-component         |  16.20 kB | 
+chunk-ESGCZ4HX.js   | landing-page-component    |  10.18 kB | 
+chunk-DVRG4VBL.js   | verify-email-component    |   9.36 kB | 
+chunk-2OXDLMYW.js   | forgot-password-component |   8.15 kB | 
+chunk-TTE27GWQ.js   | -                         |   3.02 kB | 
+chunk-TVJK6YYL.js   | -                         |   1.53 kB | 
+chunk-KXTLIPV7.js   | -                         |   1.42 kB | 
+
+Application bundle generation complete. [0.430 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.430 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.202 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.466 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.199 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [1.597 seconds]
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mNG5: Argument of type 'MouseEvent' is not assignable to parameter of type 'PointerEvent'.
+  Type 'MouseEvent' is missing the following properties from type 'PointerEvent': height, isPrimary, pointerId, pointerType, and 8 more.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/shared/components/restaurant-menu-modal/restaurant-menu-modal.component.html:1:53:
+[37m      1 │ <div class="modal-backdrop" (click)="onBackdropClick([32m$event[37m)">
+        ╵                                                      [32m~~~~~~[0m
+
+  Error occurs in the template of component RestaurantMenuModalComponent.
+
+    src/app/shared/components/restaurant-menu-modal/restaurant-menu-modal.component.ts:12:17:
+[37m      12 │     templateUrl: [32m'./restaurant-menu-modal.component.html'[37m,
+         ╵                  [32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                     |  Raw size
+polyfills.js        | polyfills                 |  90.20 kB | 
+styles.css          | styles                    |  36.03 kB | 
+main.js             | main                      |  13.74 kB | 
+chunk-FPBQ2DO2.js   | -                         |   2.64 kB | 
+chunk-YQOESBWP.js   | -                         | 754 bytes | 
+
+                    | Initial total             | 143.36 kB
+
+Lazy chunk files    | Names                     |  Raw size
+chunk-5TDKGZZU.js   | director-component        |  53.74 kB | 
+chunk-RRJCYAEZ.js   | ceo-component             |  41.73 kB | 
+chunk-XRT6SF2O.js   | home-component            |  41.38 kB | 
+chunk-ACZGVTSU.js   | register-component        |  23.37 kB | 
+chunk-TB5CRG7K.js   | employee-component        |  19.48 kB | 
+chunk-GTWK7YBI.js   | login-component           |  16.29 kB | 
+chunk-JTBWET2A.js   | profile-component         |  16.20 kB | 
+chunk-ESGCZ4HX.js   | landing-page-component    |  10.18 kB | 
+chunk-DVRG4VBL.js   | verify-email-component    |   9.36 kB | 
+chunk-2OXDLMYW.js   | forgot-password-component |   8.15 kB | 
+chunk-TTE27GWQ.js   | -                         |   3.02 kB | 
+chunk-TVJK6YYL.js   | -                         |   1.53 kB | 
+chunk-KXTLIPV7.js   | -                         |   1.42 kB | 
+
+Application bundle generation complete. [1.650 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.459 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.710 seconds]
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2420: Class 'UserManagementComponent' incorrectly implements interface 'OnDestroy'.
+  Property 'ngOnDestroy' is missing in type 'UserManagementComponent' but required in type 'OnDestroy'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/user-management/user-management.component.ts:14:13:
+[37m      14 │ export class [32mUserManagementComponent[37m implements OnInit, OnDestroy {
+         ╵              [32m~~~~~~~~~~~~~~~~~~~~~~~[0m
+
+  'ngOnDestroy' is declared here.
+
+    node_modules/@angular/core/index.d.ts:7912:4:
+[37m      7912 │     [32mngOnDestroy(): void;[37m
+           ╵     [32m~~~~~~~~~~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                     |  Raw size
+polyfills.js        | polyfills                 |  90.20 kB | 
+styles.css          | styles                    |  36.03 kB | 
+main.js             | main                      |  13.74 kB | 
+chunk-FPBQ2DO2.js   | -                         |   2.64 kB | 
+chunk-YQOESBWP.js   | -                         | 754 bytes | 
+
+                    | Initial total             | 143.36 kB
+
+Lazy chunk files    | Names                     |  Raw size
+chunk-WEGGEYSJ.js   | director-component        |  54.18 kB | 
+chunk-RRJCYAEZ.js   | ceo-component             |  41.73 kB | 
+chunk-XRT6SF2O.js   | home-component            |  41.38 kB | 
+chunk-ACZGVTSU.js   | register-component        |  23.37 kB | 
+chunk-TB5CRG7K.js   | employee-component        |  19.48 kB | 
+chunk-GTWK7YBI.js   | login-component           |  16.29 kB | 
+chunk-JTBWET2A.js   | profile-component         |  16.20 kB | 
+chunk-ESGCZ4HX.js   | landing-page-component    |  10.18 kB | 
+chunk-DVRG4VBL.js   | verify-email-component    |   9.36 kB | 
+chunk-2OXDLMYW.js   | forgot-password-component |   8.15 kB | 
+chunk-TTE27GWQ.js   | -                         |   3.02 kB | 
+chunk-TVJK6YYL.js   | -                         |   1.53 kB | 
+chunk-KXTLIPV7.js   | -                         |   1.42 kB | 
+
+Application bundle generation complete. [0.630 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               | 13.74 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-HELR4CY3.js   | director-component | 54.23 kB | 
+
+Application bundle generation complete. [0.488 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.402 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               | 13.74 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-NEPLFF2P.js   | director-component | 54.28 kB | 
+
+Application bundle generation complete. [0.530 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.188 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               | 13.74 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-WEGGEYSJ.js   | director-component | 54.18 kB | 
+
+Application bundle generation complete. [0.435 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.207 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               | 13.74 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-SY455XA4.js   | director-component | 54.19 kB | 
+
+Application bundle generation complete. [0.846 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               | 13.74 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-DULRJLQT.js   | director-component | 54.19 kB | 
+
+Application bundle generation complete. [1.850 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               | 13.74 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-VHQWUBYL.js   | director-component | 54.20 kB | 
+
+Application bundle generation complete. [1.644 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.824 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               | 13.74 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-KL3JD2MO.js   | director-component | 54.68 kB | 
+
+Application bundle generation complete. [0.983 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.368 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.926 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               | 13.74 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-VWS5PMDM.js   | home-component     | 41.38 kB | 
+chunk-WY7M5WVM.js   | employee-component | 19.48 kB | 
+chunk-LZ6AWM6X.js   | profile-component  | 16.20 kB | 
+chunk-33UYKJEM.js   | -                  |  1.68 kB | 
+
+Application bundle generation complete. [0.438 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names          | Raw size
+main.js             | main           | 13.74 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-KGQOCNOW.js   | home-component | 42.14 kB | 
+
+Application bundle generation complete. [0.733 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names          | Raw size
+styles.css          | styles         | 36.13 kB | 
+main.js             | main           | 13.74 kB | 
+
+Lazy chunk files    | Names          | Raw size
+chunk-FMCF3GWX.js   | home-component | 44.06 kB | 
+
+Application bundle generation complete. [0.871 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [1.079 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  | 14.10 kB | 
+
+Application bundle generation complete. [0.748 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.599 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names | Raw size
+main.js             | main  | 14.27 kB | 
+
+Application bundle generation complete. [0.318 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.369 seconds]
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.638 seconds]
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2552: Cannot find name 'Subscription'. Did you mean 'PushSubscription'?[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/user-management/user-management.component.ts:27:29:
+[37m      27 │   private usersSubscription: [32mSubscription[37m | null = null;
+         ╵                              [32m~~~~~~~~~~~~[0m
+
+  'PushSubscription' is declared here.
+
+    node_modules/typescript/lib/lib.dom.d.ts:18046:12:
+[37m      18046 │ declare var [32mPushSubscription[37m: {
+            ╵             [32m~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2552: Cannot find name 'Subscription'. Did you mean 'PushSubscription'?[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/user-management/user-management.component.ts:41:29:
+[37m      41 │   private statsSubscription: [32mSubscription[37m | null = null;
+         ╵                              [32m~~~~~~~~~~~~[0m
+
+  'PushSubscription' is declared here.
+
+    node_modules/typescript/lib/lib.dom.d.ts:18046:12:
+[37m      18046 │ declare var [32mPushSubscription[37m: {
+            ╵             [32m~~~~~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS-992003: No suitable injection token for parameter 'adminService' of class 'UserManagementComponent'.
+  Consider using the @Inject decorator to specify an injection token.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/user-management/user-management.component.ts:46:12:
+[37m      46 │     private [32madminService[37m: AdminService,
+         ╵             [32m~~~~~~~~~~~~[0m
+
+  This type does not have a value, so it cannot be used as injection token.
+
+    src/app/features/admin/user-management/user-management.component.ts:46:26:
+[37m      46 │     private adminService: [32mAdminService[37m,
+         ╵                           [32m~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2304: Cannot find name 'AdminService'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/user-management/user-management.component.ts:46:26:
+[37m      46 │     private adminService: [32mAdminService[37m,
+         ╵                           [32m~~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'loadLocales' does not exist on type 'UserManagementComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/user-management/user-management.component.ts:53:9:
+[37m      53 │     this.[32mloadLocales[37m();
+         ╵          [32m~~~~~~~~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS7006: Parameter 'data' implicitly has an 'any' type.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/user-management/user-management.component.ts:79:13:
+[37m      79 │       next: ([32mdata[37m) => {
+         ╵              [32m~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS7006: Parameter 'data' implicitly has an 'any' type.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/user-management/user-management.component.ts:99:13:
+[37m      99 │       next: ([32mdata[37m) => {
+         ╵              [32m~~~~[0m
+
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS7006: Parameter 'err' implicitly has an 'any' type.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/user-management/user-management.component.ts:105:14:
+[37m      105 │       error: ([32merr[37m) => {
+          ╵               [32m~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Application bundle generation failed. [0.797 seconds]
+
+[31m✘ [41;31m[[41;97mERROR[41;31m][0m [1mTS2339: Property 'loadLocales' does not exist on type 'UserManagementComponent'.[0m [1m[35m[plugin angular-compiler][0m
+
+    src/app/features/admin/user-management/user-management.component.ts:55:9:
+[37m      55 │     this.[32mloadLocales[37m();
+         ╵          [32m~~~~~~~~~~~[0m
+
+
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names                     |  Raw size
+polyfills.js        | polyfills                 |  90.20 kB | 
+styles.css          | styles                    |  36.13 kB | 
+main.js             | main                      |  14.27 kB | 
+chunk-FPBQ2DO2.js   | -                         |   2.64 kB | 
+chunk-YQOESBWP.js   | -                         | 754 bytes | 
+
+                    | Initial total             | 144.00 kB
+
+Lazy chunk files    | Names                     |  Raw size
+chunk-VQOL5YEH.js   | director-component        |  55.22 kB | 
+chunk-FMCF3GWX.js   | home-component            |  44.06 kB | 
+chunk-RRJCYAEZ.js   | ceo-component             |  41.73 kB | 
+chunk-ACZGVTSU.js   | register-component        |  23.37 kB | 
+chunk-WY7M5WVM.js   | employee-component        |  19.48 kB | 
+chunk-GTWK7YBI.js   | login-component           |  16.29 kB | 
+chunk-LZ6AWM6X.js   | profile-component         |  16.20 kB | 
+chunk-ESGCZ4HX.js   | landing-page-component    |  10.18 kB | 
+chunk-DVRG4VBL.js   | verify-email-component    |   9.36 kB | 
+chunk-2OXDLMYW.js   | forgot-password-component |   8.15 kB | 
+chunk-TTE27GWQ.js   | -                         |   3.02 kB | 
+chunk-33UYKJEM.js   | -                         |   1.68 kB | 
+chunk-KXTLIPV7.js   | -                         |   1.42 kB | 
+
+Application bundle generation complete. [0.545 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+Initial chunk files | Names              | Raw size
+main.js             | main               | 14.27 kB | 
+
+Lazy chunk files    | Names              | Raw size
+chunk-7NOFH645.js   | director-component | 59.59 kB | 
+
+Application bundle generation complete. [0.851 seconds]
+
+Page reload sent to client(s).
+❯ Changes detected. Rebuilding...
+✔ Changes detected. Rebuilding...
+
+No output file changes.
+
+Application bundle generation complete. [0.789 seconds]
+

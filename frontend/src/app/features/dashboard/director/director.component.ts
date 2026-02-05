@@ -2,15 +2,19 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AdminService } from '../../../core/services/admin.service';
+import { UserManagementComponent } from '../../admin/user-management/user-management.component';
+import { AdminMapComponent } from '../../admin/admin-map.component';
 
 @Component({
   selector: 'app-director',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, UserManagementComponent, AdminMapComponent],
   templateUrl: './director.component.html',
   styleUrls: ['./director.component.css']
 })
 export class DirectorComponent implements OnInit {
+  activeTab: 'users' | 'map' | 'ceos' = 'ceos'; // Default, or 'users'
+
   ceos: any[] = [];
   newCeo = {
     nombre: '',

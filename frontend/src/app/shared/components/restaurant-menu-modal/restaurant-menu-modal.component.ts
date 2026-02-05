@@ -30,12 +30,15 @@ export class RestaurantMenuModalComponent implements OnInit {
         private reservationService: ReservationService
     ) { }
 
+    availableSeats: number | null = null;
+
     ngOnInit() {
         // Set default date to tomorrow
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         this.bookingData.fecha = tomorrow.toISOString().split('T')[0];
         this.bookingData.hora = '20:00';
+        this.checkAvailability();
     }
 
     onClose(): void {
@@ -46,6 +49,18 @@ export class RestaurantMenuModalComponent implements OnInit {
         if ((event.target as HTMLElement).classList.contains('modal-backdrop')) {
             this.onClose();
         }
+    }
+
+    checkAvailability() {
+        if (!this.bookingData.fecha || !this.bookingData.hora) return;
+
+        const dateTime = `${this.bookingData.fecha}T${this.bookingData.hora}:00`;
+        this.reservationService.checkAvailability(this.local.id, dateTime).subscribe({
+            next: (seats) => {
+                this.availableSeats = seats;
+            },
+            error: (err) => console.error('Error checking availability', err)
+        });
     }
 
     getStars(rating: number | undefined): string[] {
@@ -71,6 +86,11 @@ export class RestaurantMenuModalComponent implements OnInit {
             return;
         }
 
+        if (this.availableSeats !== null && this.bookingData.personas > this.availableSeats) {
+            alert(`Solo quedan ${this.availableSeats} plazas disponibles.`);
+            return;
+        }
+
         const dateTime = `${this.bookingData.fecha}T${this.bookingData.hora}:00`;
         const payload = {
             localId: this.local.id,
@@ -86,7 +106,11 @@ export class RestaurantMenuModalComponent implements OnInit {
             },
             error: (err) => {
                 console.error(err);
-                alert('Error al realizar la reserva.');
+                if (err.error?.message) {
+                    alert('Error: ' + err.error.message);
+                } else {
+                    alert('Error al realizar la reserva.');
+                }
             }
         });
     }

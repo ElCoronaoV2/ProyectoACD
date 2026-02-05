@@ -1,0 +1,129 @@
+<div class="management-container">
+    <h2>Gestión de Usuarios y Monitorización</h2>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h3>Online (Con Sesión)</h3>
+            <p class="stat-value text-green">{{ stats.usersOnline }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Online (Sin Sesión)</h3>
+            <p class="stat-value text-blue">{{ stats.guestsOnline }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Total Usuarios</h3>
+            <p class="stat-value">{{ stats.totalUsers }}</p>
+        </div>
+        <div class="stat-card">
+            <h3>Sin Verificar</h3>
+            <p class="stat-value text-orange">{{ stats.unverifiedUsers }}</p>
+        </div>
+    </div>
+
+    <!-- Actions & Filter -->
+    <div class="actions-bar">
+        <div class="filters">
+            <button [class.active]="selectedRole === ''" (click)="filterByRole('')">Todos</button>
+            <button [class.active]="selectedRole === 'DIRECTOR'" (click)="filterByRole('DIRECTOR')">Directores</button>
+            <button [class.active]="selectedRole === 'CEO'" (click)="filterByRole('CEO')">CEOs</button>
+            <button [class.active]="selectedRole === 'EMPLEADO'" (click)="filterByRole('EMPLEADO')">Empleados</button>
+            <button [class.active]="selectedRole === 'USER'" (click)="filterByRole('USER')">Clientes</button>
+        </div>
+        <button class="btn-create" (click)="openCreateModal()">+ Crear Usuario</button>
+    </div>
+
+    <!-- Users Table -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Teléfono</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let user of filteredUsers">
+                    <td>{{ user.nombre }}</td>
+                    <td>{{ user.email }}</td>
+                    <td><span class="badge" [ngClass]="getRoleBadgeClass(user.rol)">{{ user.rol }}</span></td>
+                    <td>{{ user.telefono }}</td>
+                    <td>
+                        <span *ngIf="user.enabled" class="status-dot green" title="Verificado"></span>
+                        <span *ngIf="!user.enabled" class="status-dot gray" title="No Verificado"></span>
+                    </td>
+                    <td>
+                        <button class="btn-icon delete" (click)="deleteUser(user.id)" title="Eliminar">🗑️</button>
+                        <!-- Add more actions like 'View Stats' if needed -->
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <div *ngIf="loading" class="loading">Cargando usuarios...</div>
+    </div>
+</div>
+
+<!-- Create User Modal -->
+<div class="modal" *ngIf="showCreateModal">
+    <div class="modal-content">
+        <h3>Crear Nuevo Usuario</h3>
+        <form (ngSubmit)="createUser()">
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" [(ngModel)]="newUser.nombre" name="nombre" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" [(ngModel)]="newUser.email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label>Contraseña</label>
+                <input type="password" [(ngModel)]="newUser.password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="text" [(ngModel)]="newUser.telefono" name="telefono">
+            </div>
+            <div class="form-group">
+                <label>Rol</label>
+                <select [(ngModel)]="newUser.rol" name="rol">
+                    <option value="USER">Cliente</option>
+                    <option value="EMPLEADO">Empleado</option>
+                    <option value="CEO">CEO</option>
+                    <option value="DIRECTOR">Director</option>
+                </select>
+            </div>
+
+            <!-- Selector de Restaurante para EMPLEADO -->
+            <div class="form-group" *ngIf="newUser.rol === 'EMPLEADO'">
+                <label>Asignar Restaurante de Trabajo</label>
+                <select [(ngModel)]="newUser.restauranteId" name="restauranteId" required>
+                    <option [ngValue]="null" disabled>Selecciona un restaurante...</option>
+                    <option *ngFor="let local of locales" [ngValue]="local.id">
+                        {{ local.nombre }} ({{ local.ciudad }})
+                    </option>
+                </select>
+            </div>
+
+            <!-- Selector de Restaurantes para CEO -->
+            <div class="form-group" *ngIf="newUser.rol === 'CEO'">
+                <label>Asignar Restaurantes Propios</label>
+                <select [(ngModel)]="newUser.restauranteIds" name="restauranteIds" multiple required
+                    style="height: 100px;">
+                    <option *ngFor="let local of locales" [ngValue]="local.id">
+                        {{ local.nombre }} ({{ local.ciudad }})
+                    </option>
+                </select>
+                <small class="text-hint">Manten pulsado Ctrl para seleccionar varios</small>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" (click)="closeCreateModal()">Cancelar</button>
+                <button type="submit" class="btn-submit">Crear</button>
+            </div>
+        </form>
+    </div>
+</div>

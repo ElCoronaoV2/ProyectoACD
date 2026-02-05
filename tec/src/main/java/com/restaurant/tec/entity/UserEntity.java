@@ -152,6 +152,7 @@ public class UserEntity {
         this.ultimoAcceso = ultimoAcceso;
     }
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public java.util.List<LocalEntity> getRestaurantesPropios() {
         return restaurantesPropios;
     }
@@ -160,6 +161,7 @@ public class UserEntity {
         this.restaurantesPropios = restaurantesPropios;
     }
 
+    @com.fasterxml.jackson.annotation.JsonIgnore
     public LocalEntity getRestauranteTrabajo() {
         return restauranteTrabajo;
     }

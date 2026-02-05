@@ -53,16 +53,16 @@ build_backend() {
 restart_services() {
     cd "$PROJECT_DIR"
     
-    log_info "Reiniciando servicios PM2..."
+    log_info "Reiniciando servicios PM2 (Hard Reset)..."
     
-    # Detener backend si está corriendo
-    pm2 stop restaurant-backend 2>/dev/null || true
+    # Detener y eliminar todos los procesos para asegurar un inicio limpio
+    pm2 delete all 2>/dev/null || true
     
-    # Esperar a que el proceso se detenga completamente
+    # Esperar un momento
     sleep 2
     
-    # Recargar configuración y arrancar
-    pm2 reload ecosystem.config.js --update-env
+    # Iniciar todo desde el ecosistema
+    pm2 start ecosystem.config.js --update-env
     
     # Esperar a que el backend esté completamente listo (más tiempo)
     log_info "Esperando a que el backend esté listo (esto puede tardar ~30s)..."
@@ -80,7 +80,9 @@ restart_services() {
             break
         fi
         
-        echo -n "."
+        if [ $((attempt % 5)) -eq 0 ]; then
+             echo -n "."
+        fi
         sleep 1
         attempt=$((attempt + 1))
     done

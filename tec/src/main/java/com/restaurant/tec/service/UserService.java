@@ -29,6 +29,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private com.restaurant.tec.repository.LocalRepository localRepository;
+
     @Transactional
     public UserEntity registerUser(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -41,18 +44,56 @@ public class UserService {
         user.setNombre(request.getNombre());
         user.setTelefono(request.getTelefono());
         user.setAlergenos(request.getAlergenos());
-        user.setRol(com.restaurant.tec.entity.Role.USER);
-        user.setEnabled(false); // Usuario inactivo hasta verificar
+
+        // Asignar rol
+        if (request.getRol() != null && !request.getRol().isEmpty()) {
+            try {
+                user.setRol(com.restaurant.tec.entity.Role.valueOf(request.getRol()));
+            } catch (IllegalArgumentException e) {
+                user.setRol(com.restaurant.tec.entity.Role.USER);
+            }
+        } else {
+            user.setRol(com.restaurant.tec.entity.Role.USER);
+        }
+
+        user.setEnabled(true); // Usuarios creados por admin (o CEO/Director) nacen habilitados para evitar
+                               // flujo de email si se desea
 
         UserEntity savedUser = userRepository.save(user);
 
-        // Generar token y enviar email
-        String token = UUID.randomUUID().toString();
-        VerificationToken verificationToken = new VerificationToken(token, savedUser, "EMAIL_VERIFICATION");
-        tokenRepository.save(verificationToken);
-        tokenRepository.flush(); // Asegurar que el token está persistido antes de enviar el email
+        // Lógica de asignación de restaurantes
+        if (user.getRol() == com.restaurant.tec.entity.Role.EMPLEADO && request.getRestauranteId() != null) {
+            com.restaurant.tec.entity.LocalEntity local = localRepository.findById(request.getRestauranteId())
+                    .orElseThrow(() -> new RuntimeException("Restaurante no encontrado"));
+            user.setRestauranteTrabajo(local);
+            userRepository.save(user);
+        } else if (user.getRol() == com.restaurant.tec.entity.Role.CEO && request.getRestauranteIds() != null) {
+            for (Long localId : request.getRestauranteIds()) {
+                com.restaurant.tec.entity.LocalEntity local = localRepository.findById(localId)
+                        .orElseThrow(() -> new RuntimeException("Restaurante no encontrado con ID: " + localId));
+                local.setPropietario(savedUser);
+                localRepository.save(local);
+            }
+        }
 
-        emailService.sendVerificationEmail(user.getEmail(), token);
+        // Si el usuario se registra por sí mismo (flujo normal), enviar email.
+        // Si es creado por admin, quizás no queramos enviar verificación de email sino
+        // solo activarlo.
+        // Asumo que si se pasa rol, es creación administrativa, así que no enviamos
+        // verificación
+        // pero sí un correo de bienvenida quizás (omitido por ahora).
+        // Si NO se pasa rol (registro público), mantenemos flujo original.
+        if (request.getRol() == null) {
+            user.setEnabled(false);
+            userRepository.save(user); // Re-save as disabled
+
+            // Generar token y enviar email
+            String token = UUID.randomUUID().toString();
+            VerificationToken verificationToken = new VerificationToken(token, savedUser, "EMAIL_VERIFICATION");
+            tokenRepository.save(verificationToken);
+            tokenRepository.flush();
+            emailService.sendVerificationEmail(user.getEmail(), token);
+        }
 
         return savedUser;
     }

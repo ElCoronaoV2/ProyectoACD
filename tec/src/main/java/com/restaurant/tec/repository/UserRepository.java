@@ -8,4 +8,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     Optional<UserEntity> findByEmail(String email);
 
     java.util.List<UserEntity> findByRol(com.restaurant.tec.entity.Role rol);
+
+    long countByRol(com.restaurant.tec.entity.Role rol);
+
+    long countByEnabled(boolean enabled);
 }

@@ -1,6 +1,5 @@
 package com.restaurant.tec.config;
 
-import com.restaurant.tec.entity.UserEntity;
 import com.restaurant.tec.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -10,21 +9,13 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Configuration
 public class DataInitializer {
 
+    // La inicialización de datos se realiza ahora mediante data.sql
+    // Este bean se mantiene por si se necesita lógica compleja de inicialización en
+    // el futuro
     @Bean
     public CommandLineRunner initData(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         return args -> {
-            // Verificar si existe el usuario admin
-            if (userRepository.findByEmail("admin@restaurant.com").isEmpty()) {
-                UserEntity admin = new UserEntity();
-                admin.setEmail("admin@restaurant.com");
-                admin.setPassword(passwordEncoder.encode("admin123")); // Contraseña por defecto
-                admin.setNombre("Administrador");
-                admin.setRol(com.restaurant.tec.entity.Role.DIRECTOR);
-                admin.setTelefono("000000000");
-
-                userRepository.save(admin);
-                System.out.println("✅ Usuario Admin creado: admin@restaurant.com / admin123");
-            }
+            System.out.println("🚀 Aplicación iniciada. Los datos se cargan desde data.sql si es necesario.");
         };
     }
 }

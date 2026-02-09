@@ -32,12 +32,17 @@ export class AdminMapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     formData: CreateLocalRequest = this.getEmptyForm();
 
-    // Custom icons
+    // Custom icons - Red pin for better visibility
     private restaurantIcon = L.divIcon({
-        html: '<div class="custom-marker">🍽️</div>',
+        html: `<div class="custom-marker">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="36" height="36">
+                <path fill="#DC2626" stroke="#991B1B" stroke-width="1" d="M12 0C7.58 0 4 3.58 4 8c0 5.5 8 14 8 14s8-8.5 8-14c0-4.42-3.58-8-8-8z"/>
+                <circle fill="#FEE2E2" cx="12" cy="8" r="3"/>
+            </svg>
+        </div>`,
         className: 'restaurant-marker',
-        iconSize: [40, 40],
-        iconAnchor: [20, 40]
+        iconSize: [36, 36],
+        iconAnchor: [18, 36]
     });
 
     private newPinIcon = L.divIcon({

@@ -10,6 +10,12 @@ export interface Local {
     posY?: number;
     imagenUrl?: string;
     valoracion?: number;
+
+    // Shift Hours
+    aperturaComida?: string;
+    cierreComida?: string;
+    aperturaCena?: string;
+    cierreCena?: string;
 }
 
 export interface CreateLocalRequest {
@@ -34,4 +40,16 @@ export interface Menu {
     alergenos?: string;
     disponible: boolean;
     localId: number;
+    valoracionMedia?: number;
+
+    // Estructura de platos
+    primerPlato?: string;
+    primerPlatoDesc?: string;
+    primerPlatoIngredientes?: string;
+    segundoPlato?: string;
+    segundoPlatoDesc?: string;
+    segundoPlatoIngredientes?: string;
+    postre?: string;
+    postreDesc?: string;
+    postreIngredientes?: string;
 }

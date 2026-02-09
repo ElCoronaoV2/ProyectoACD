@@ -37,8 +37,8 @@ import { AuthService } from '../../../core/services/auth.service';
             <!-- Menú Usuario (Si ESTÁ logueado) -->
             <div *ngIf="authService.isLoggedIn()" class="flex items-center space-x-4 ml-4">
               
-              <!-- Dashboard Link (Dynamic) -->
-              <a [routerLink]="getDashboardRoute()" class="text-white hover:text-secondary-100 font-medium transition-colors">
+              <!-- Dashboard Link (Dynamic) - Solo para empleados, directores y CEO -->
+              <a *ngIf="!authService.isClient()" [routerLink]="getDashboardRoute()" class="text-white hover:text-secondary-100 font-medium transition-colors">
                 Panel de Control
               </a>
 

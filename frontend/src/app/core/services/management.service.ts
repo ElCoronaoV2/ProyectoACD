@@ -72,9 +72,39 @@ export class ManagementService {
         return this.http.get<any[]>(`${this.apiUrl}/restaurantes/${localId}/menus`, { headers: this.getHeaders() });
     }
 
+    // --- MENU SCHEDULING (Menú del Día) ---
+    scheduleMenu(localId: number, menuId: number, fecha: string): Observable<any> {
+        return this.http.post(`https://www.restaurant-tec.es/api/admin/locales/${localId}/schedule`,
+            { menuId, fecha },
+            { headers: this.getHeaders() }
+        );
+    }
+
+    getMenuSchedule(localId: number, year?: number, month?: number): Observable<any[]> {
+        let url = `https://www.restaurant-tec.es/api/admin/locales/${localId}/schedule`;
+        if (year && month) {
+            url += `?year=${year}&month=${month}`;
+        }
+        return this.http.get<any[]>(url, { headers: this.getHeaders() });
+    }
+
+    deleteMenuSchedule(localId: number, fecha: string): Observable<any> {
+        return this.http.delete(`https://www.restaurant-tec.es/api/admin/locales/${localId}/schedule/${fecha}`,
+            { headers: this.getHeaders() }
+        );
+    }
 
     // --- STAFF ---
     getMyWorkRestaurant(): Observable<any> {
         return this.http.get<any>(`https://www.restaurant-tec.es/api/staff/my-restaurant`, { headers: this.getHeaders() });
     }
+
+    getGeneralMenus(): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/menus/general`, { headers: this.getHeaders() });
+    }
+
+    assignMenuToLocal(menuId: number, localId: number): Observable<any> {
+        return this.http.put(`${this.apiUrl}/menus/${menuId}/assign/${localId}`, {}, { headers: this.getHeaders() });
+    }
 }
+

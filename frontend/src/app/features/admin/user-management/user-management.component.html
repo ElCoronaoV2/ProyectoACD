@@ -57,8 +57,8 @@
                         <span *ngIf="!user.enabled" class="status-dot gray" title="No Verificado"></span>
                     </td>
                     <td>
+                        <button class="btn-icon edit" (click)="openEditModal(user)" title="Editar">✏️</button>
                         <button class="btn-icon delete" (click)="deleteUser(user.id)" title="Eliminar">🗑️</button>
-                        <!-- Add more actions like 'View Stats' if needed -->
                     </td>
                 </tr>
             </tbody>
@@ -94,7 +94,6 @@
                     <option value="USER">Cliente</option>
                     <option value="EMPLEADO">Empleado</option>
                     <option value="CEO">CEO</option>
-                    <option value="DIRECTOR">Director</option>
                 </select>
             </div>
 
@@ -123,6 +122,74 @@
             <div class="modal-actions">
                 <button type="button" class="btn-cancel" (click)="closeCreateModal()">Cancelar</button>
                 <button type="submit" class="btn-submit">Crear</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal" *ngIf="showEditModal">
+    <div class="modal-content">
+        <h3>Editar Usuario</h3>
+        <form (ngSubmit)="saveEditUser()">
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" [(ngModel)]="editUserData.nombre" name="editNombre" required>
+            </div>
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" [(ngModel)]="editUserData.email" name="editEmail" required>
+            </div>
+            <div class="form-group">
+                <label>Teléfono</label>
+                <input type="text" [(ngModel)]="editUserData.telefono" name="editTelefono">
+            </div>
+            <div class="form-group">
+                <label>Rol</label>
+                <select [(ngModel)]="editUserData.rol" name="editRol">
+                    <option value="USER">Cliente</option>
+                    <option value="EMPLEADO">Empleado</option>
+                    <option value="CEO">CEO</option>
+                </select>
+            </div>
+
+            <!-- Selector de Restaurante para EMPLEADO -->
+            <div class="form-group" *ngIf="editUserData.rol === 'EMPLEADO'">
+                <label>Restaurante de Trabajo</label>
+                <select [(ngModel)]="editUserData.restauranteTrabajoId" name="editRestauranteId">
+                    <option [ngValue]="null" disabled>Selecciona un restaurante...</option>
+                    <option *ngFor="let local of locales" [ngValue]="local.id">
+                        {{ local.nombre }} ({{ local.direccion }})
+                    </option>
+                </select>
+            </div>
+
+            <!-- Selector de Restaurantes para CEO -->
+            <div class="form-group" *ngIf="editUserData.rol === 'CEO'">
+                <label>Restaurantes Propios</label>
+                <select [(ngModel)]="editUserData.restauranteIds" name="editRestauranteIds" multiple
+                    style="height: 100px;">
+                    <option *ngFor="let local of locales" [ngValue]="local.id">
+                        {{ local.nombre }} ({{ local.direccion }})
+                    </option>
+                </select>
+                <small class="text-hint">Mantén pulsado Ctrl para seleccionar varios</small>
+            </div>
+
+            <div class="form-group">
+                <label>Alérgenos</label>
+                <input type="text" [(ngModel)]="editUserData.alergenos" name="editAlergenos"
+                    placeholder="gluten, lactosa, frutos secos...">
+            </div>
+            <div class="form-group checkbox-group">
+                <label>
+                    <input type="checkbox" [(ngModel)]="editUserData.enabled" name="editEnabled">
+                    Cuenta verificada
+                </label>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" (click)="closeEditModal()">Cancelar</button>
+                <button type="submit" class="btn-submit">Guardar Cambios</button>
             </div>
         </form>
     </div>

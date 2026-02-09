@@ -41,24 +41,126 @@
         <!-- Menu section -->
         <div *ngIf="activeTab === 'menu'" class="menu-section">
             <div *ngIf="menus.length === 0" class="no-menu">
-                <p>No hay platos disponibles en este momento.</p>
+                <div class="no-menu-icon">🍽️</div>
+                <p>No hay menús disponibles en este momento.</p>
             </div>
 
-            <div class="menu-grid" *ngIf="menus.length > 0">
-                <div *ngFor="let item of menus" class="menu-item" [class.unavailable]="!item.disponible">
-                    <div class="menu-item-header">
-                        <h4>{{ item.nombre }}</h4>
-                        <span class="price">{{ item.precio | number:'1.2-2' }}€</span>
+            <div class="menus-list" *ngIf="menus.length > 0">
+                <div *ngFor="let item of menus" class="menu-card" [class.unavailable]="!item.disponible">
+                    <!-- Header del menú -->
+                    <div class="menu-card-header">
+                        <div class="menu-title-section">
+                            <h3 class="menu-title">{{ item.nombre }}</h3>
+                            <p *ngIf="item.descripcion" class="text-sm text-gray-600 mb-2">{{ item.descripcion }}</p>
+
+                            <!-- Rating Section -->
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center text-yellow-500 text-sm"
+                                    title="Valoración media: {{ item.valoracionMedia | number:'1.1-1' }}">
+                                    <span *ngFor="let star of getStars(item.valoracionMedia)" class="mr-0.5">{{ star
+                                        }}</span>
+                                    <span class="text-gray-500 text-xs ml-1">({{ item.valoracionMedia ?
+                                        (item.valoracionMedia | number:'1.1-1') : 'Sin valoraciones' }})</span>
+                                </div>
+                                <button *ngIf="authService.isLoggedIn()" (click)="toggleReviewForm(item.id)"
+                                    class="text-xs text-primary-600 hover:text-primary-800 font-medium underline">
+                                    {{ showReviewForm[item.id] ? 'Cancelar' : 'Valorar' }}
+                                </button>
+                            </div>
+
+                            <!-- Review Form -->
+                            <div *ngIf="showReviewForm[item.id] && reviewData[item.id]"
+                                class="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
+                                <p class="text-xs font-bold text-gray-700 mb-2">Tu valoración:</p>
+                                <div class="flex mb-2">
+                                    <button *ngFor="let i of [1,2,3,4,5]" (click)="setRating(item.id, i)"
+                                        class="text-xl focus:outline-none transition-transform hover:scale-110"
+                                        [class.text-yellow-400]="getReviewRating(item.id) >= i"
+                                        [class.text-gray-300]="getReviewRating(item.id) < i">
+                                        ★
+                                    </button>
+                                </div>
+                                <textarea [(ngModel)]="reviewData[item.id].comment" rows="2"
+                                    class="w-full text-xs p-2 border rounded mb-2"
+                                    placeholder="Escribe tu opinión... (opcional)"></textarea>
+                                <button (click)="submitReview(item.id)" [disabled]="getReviewRating(item.id) === 0"
+                                    class="w-full bg-primary-600 text-white text-xs py-1.5 rounded hover:bg-primary-700 disabled:opacity-50">
+                                    Enviar Valoración
+                                </button>
+                            </div>
+                        </div>
+                        <div class="menu-price-badge">
+                            <span class="price-amount">{{ item.precio | number:'1.2-2' }}</span>
+                            <span class="price-currency">€</span>
+                        </div>
                     </div>
-                    <p *ngIf="item.descripcion" class="description">{{ item.descripcion }}</p>
-                    <p *ngIf="item.ingredientes" class="ingredients">
-                        <strong>Ingredientes:</strong> {{ item.ingredientes }}
-                    </p>
-                    <div *ngIf="item.alergenos" class="allergens">
-                        <span class="allergen-label">⚠️ Alérgenos:</span>
-                        <span *ngFor="let a of formatAlergenos(item.alergenos)" class="allergen-tag">{{ a }}</span>
+
+                    <!-- Platos del menú -->
+                    <div class="courses-section">
+                        <!-- Primer Plato -->
+                        <div *ngIf="item.primerPlato" class="course-item">
+                            <div class="course-icon primer">🍽️</div>
+                            <div class="course-content">
+                                <span class="course-label">Primer Plato</span>
+                                <span class="course-name">{{ item.primerPlato }}</span>
+                                <span *ngIf="item.primerPlatoDesc" class="course-desc">{{ item.primerPlatoDesc }}</span>
+                                <span *ngIf="item.primerPlatoIngredientes" class="course-ingredients">
+                                    🥗 {{ item.primerPlatoIngredientes }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Segundo Plato -->
+                        <div *ngIf="item.segundoPlato" class="course-item">
+                            <div class="course-icon segundo">🥘</div>
+                            <div class="course-content">
+                                <span class="course-label">Segundo Plato</span>
+                                <span class="course-name">{{ item.segundoPlato }}</span>
+                                <span *ngIf="item.segundoPlatoDesc" class="course-desc">{{ item.segundoPlatoDesc
+                                    }}</span>
+                                <span *ngIf="item.segundoPlatoIngredientes" class="course-ingredients">
+                                    🥗 {{ item.segundoPlatoIngredientes }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Postre -->
+                        <div *ngIf="item.postre" class="course-item">
+                            <div class="course-icon postre">🍰</div>
+                            <div class="course-content">
+                                <span class="course-label">Postre</span>
+                                <span class="course-name">{{ item.postre }}</span>
+                                <span *ngIf="item.postreDesc" class="course-desc">{{ item.postreDesc }}</span>
+                                <span *ngIf="item.postreIngredientes" class="course-ingredients">
+                                    🥗 {{ item.postreIngredientes }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
-                    <div *ngIf="!item.disponible" class="unavailable-badge">No disponible</div>
+
+                    <!-- Alérgenos con iconos y advertencia personalizada -->
+                    <div *ngIf="item.alergenos" class="allergens-section">
+                        <div class="allergens-header">
+                            <span class="allergens-icon">⚠️</span>
+                            <span class="allergens-title">Información de Alérgenos</span>
+                            <span *ngIf="hasUserAllergenMatch(item.alergenos)" class="user-allergy-warning">
+                                🚨 ¡Contiene alérgenos a los que eres sensible!
+                            </span>
+                        </div>
+                        <div class="allergens-grid">
+                            <div *ngFor="let allergen of formatAlergenos(item.alergenos)" class="allergen-badge"
+                                [ngClass]="[getAllergenClass(allergen), isUserAllergic(allergen) ? 'allergen-danger' : '']">
+                                <span class="allergen-emoji">{{ getAllergenEmoji(allergen) }}</span>
+                                <span class="allergen-name">{{ allergen }}</span>
+                                <span *ngIf="isUserAllergic(allergen)" class="danger-icon">⚠️</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Badge no disponible -->
+                    <div *ngIf="!item.disponible" class="unavailable-overlay">
+                        <span>🚫 No disponible temporalmente</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -67,44 +169,154 @@
         <div *ngIf="activeTab === 'booking'" class="p-4 bg-gray-50 rounded-lg">
             <div *ngIf="authService.isLoggedIn(); else loginPrompt">
                 <h3 class="text-xl font-bold mb-4 text-gray-800">Realizar Reserva</h3>
-                <form (submit)="makeReservation()" class="space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">Fecha</label>
-                            <input [(ngModel)]="bookingData.fecha" name="fecha" type="date"
-                                (change)="checkAvailability()" class="w-full p-2 border rounded shadow-sm" required>
+                <form (submit)="showPaymentStep ? confirmPaymentAndReserve() : initiateReservationProcess()"
+                    class="space-y-4">
+                    <!-- Reservation Form Fields (Hide when paying) -->
+                    <div *ngIf="!showPaymentStep">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Fecha</label>
+                                <input [(ngModel)]="bookingData.fecha" name="fecha" type="date"
+                                    (change)="checkAvailability()" class="w-full p-2 border rounded shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Turno</label>
+                                <div class="flex space-x-2">
+                                    <button type="button" (click)="selectShift('lunch')"
+                                        [class.bg-primary-600]="selectedShift === 'lunch'"
+                                        [class.text-white]="selectedShift === 'lunch'"
+                                        [class.bg-gray-200]="selectedShift !== 'lunch'"
+                                        class="flex-1 py-2 rounded font-medium transition">
+                                        ☀️ Comida
+                                    </button>
+                                    <button type="button" (click)="selectShift('dinner')"
+                                        [class.bg-primary-600]="selectedShift === 'dinner'"
+                                        [class.text-white]="selectedShift === 'dinner'"
+                                        [class.bg-gray-200]="selectedShift !== 'dinner'"
+                                        class="flex-1 py-2 rounded font-medium transition">
+                                        🌙 Cena
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-sm font-bold text-gray-700 mb-1">Hora</label>
-                            <input [(ngModel)]="bookingData.hora" name="hora" type="time" (change)="checkAvailability()"
-                                class="w-full p-2 border rounded shadow-sm" required>
+
+                        <!-- Time Slots -->
+                        <div *ngIf="selectedShift" class="mb-4">
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Selecciona Hora:</label>
+                            <div class="grid grid-cols-4 gap-2">
+                                <button *ngFor="let time of availableTimeSlots" type="button" (click)="selectTime(time)"
+                                    [class.bg-secondary-500]="bookingData.hora === time"
+                                    [class.text-white]="bookingData.hora === time"
+                                    [class.bg-gray-100]="bookingData.hora !== time"
+                                    class="py-1 px-2 rounded text-sm hover:bg-secondary-200 transition">
+                                    {{ time }}
+                                </button>
+                            </div>
+                            <p *ngIf="availableTimeSlots.length === 0" class="text-sm text-red-500 mt-1">No hay horas
+                                disponibles.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-4">
+
+                            <!-- Guest Info (Only if not logged in) -->
+                            <div *ngIf="!authService.isLoggedIn()"
+                                class="guest-info-section p-3 bg-blue-50 rounded-lg border border-blue-100 mb-2">
+                                <p class="text-sm text-blue-800 mb-3 font-medium">👋 Completa tus datos para reservar
+                                    como
+                                    invitado:</p>
+
+                                <div class="mb-3">
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre *</label>
+                                    <input [(ngModel)]="bookingData.nombreInvitado" name="nombreInvitado" type="text"
+                                        class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-primary-500"
+                                        placeholder="Tu nombre completo" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">Email *</label>
+                                    <input [(ngModel)]="bookingData.emailInvitado" name="emailInvitado" type="email"
+                                        class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-primary-500"
+                                        placeholder="correo@ejemplo.com" required>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="block text-sm font-bold text-gray-700 mb-1">Teléfono *</label>
+                                    <input [(ngModel)]="bookingData.telefonoInvitado" name="telefonoInvitado" type="tel"
+                                        class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-primary-500"
+                                        placeholder="600123456" required>
+                                </div>
+                            </div>
+
+                            <!-- Real-time Availability Display -->
+                            <div *ngIf="availableSeats !== null" class="text-sm font-medium mt-1">
+                                <span [class.text-green-600]="availableSeats > 5"
+                                    [class.text-orange-500]="availableSeats <= 5 && availableSeats > 0"
+                                    [class.text-red-600]="availableSeats === 0">
+                                    {{ availableSeats === 0 ? '🚫 Local Completo' : '✅ Plazas disponibles: ' +
+                                    availableSeats }}
+                                </span>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Personas</label>
+                                <input [(ngModel)]="bookingData.personas" name="personas" type="number" min="1" max="20"
+                                    class="w-full p-2 border rounded shadow-sm" required>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-700 mb-1">Observaciones</label>
+                                <textarea [(ngModel)]="bookingData.observaciones" name="observaciones" rows="3"
+                                    class="w-full p-2 border rounded shadow-sm"
+                                    placeholder="Alergias, mesa preferida..."></textarea>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Real-time Availability Display -->
-                    <div *ngIf="availableSeats !== null" class="text-sm font-medium mt-1">
-                        <span [class.text-green-600]="availableSeats > 5"
-                            [class.text-orange-500]="availableSeats <= 5 && availableSeats > 0"
-                            [class.text-red-600]="availableSeats === 0">
-                            {{ availableSeats === 0 ? '🚫 Local Completo' : '✅ Plazas disponibles: ' + availableSeats }}
-                        </span>
+                    <!-- Payment Step -->
+                    <div *ngIf="showPaymentStep" class="p-4 bg-white rounded border border-gray-200">
+                        <h4 class="text-lg font-bold mb-3">Pago de Reserva (1.00 €)</h4>
+
+                        <!-- Test Credentials Info -->
+                        <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded text-sm text-blue-800">
+                            <p class="font-bold mb-1">💳 Modo de Prueba</p>
+                            <p>Usa esta tarjeta para probar:</p>
+                            <ul class="list-disc list-inside mt-1 ml-1 text-xs space-y-0.5">
+                                <li><strong>Tarjeta:</strong> 4242 4242 4242 4242</li>
+                                <li><strong>Fecha:</strong> Cualquiera futura (ej. 12/30)</li>
+                                <li><strong>CVC:</strong> Cualquier número (ej. 123)</li>
+                                <li><strong>ZIP:</strong> Cualquiera (ej. 28001)</li>
+                            </ul>
+                        </div>
+
+                        <div class="mb-4">
+                            <ngx-stripe-payment [elementsOptions]="elementsOptions"
+                                [options]="paymentElementOptions"></ngx-stripe-payment>
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Personas</label>
-                        <input [(ngModel)]="bookingData.personas" name="personas" type="number" min="1" max="20"
-                            class="w-full p-2 border rounded shadow-sm" required>
+                    <div class="flex flex-col space-y-2">
+                        <div class="flex space-x-2">
+                            <button *ngIf="showPaymentStep" type="button" (click)="showPaymentStep = false"
+                                class="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400">
+                                Atrás
+                            </button>
+                            <div class="w-full relative group">
+                                <button type="submit"
+                                    [disabled]="availableSeats === 0 || isProcessingPayment || (!showPaymentStep && !isValidReservation)"
+                                    [class.opacity-50]="availableSeats === 0 || isProcessingPayment || (!showPaymentStep && !isValidReservation)"
+                                    [class.cursor-not-allowed]="availableSeats === 0 || isProcessingPayment || (!showPaymentStep && !isValidReservation)"
+                                    class="w-full bg-primary-600 text-white font-bold py-3 rounded-lg hover:bg-primary-700 transition shadow-md">
+                                    {{ availableSeats === 0 ? 'Sin disponibilidad' : (showPaymentStep ?
+                                    (isProcessingPayment ?
+                                    'Procesando...' : 'Pagar 1.00 € y Confirmar') : 'Continuar al Pago') }}
+                                </button>
+                                <!-- Tooltip for disabled state -->
+                                <div *ngIf="!showPaymentStep && !isValidReservation"
+                                    class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-gray-800 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                                    Completa fecha, hora y personas para continuar
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-1">Observaciones</label>
-                        <textarea [(ngModel)]="bookingData.observaciones" name="observaciones" rows="3"
-                            class="w-full p-2 border rounded shadow-sm"
-                            placeholder="Alergias, mesa preferida..."></textarea>
-                    </div>
-                    <button type="submit" [disabled]="availableSeats === 0" [class.opacity-50]="availableSeats === 0"
-                        class="w-full bg-primary-600 text-white font-bold py-3 rounded-lg hover:bg-primary-700 transition shadow-md">
-                        {{ availableSeats === 0 ? 'Sin disponibilidad' : 'Confirmar Reserva' }}
-                    </button>
                 </form>
             </div>
             <ng-template #loginPrompt>

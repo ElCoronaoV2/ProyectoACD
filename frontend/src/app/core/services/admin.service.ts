@@ -41,6 +41,10 @@ export class AdminService {
         return this.http.get<any>(`${this.apiUrl}/stats`, { headers: this.getHeaders() });
     }
 
+    updateUser(id: number, userData: any): Observable<any> {
+        return this.http.put(`${this.apiUrl}/users/${id}`, userData, { headers: this.getHeaders() });
+    }
+
     deleteUser(id: number): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/users/${id}`, { headers: this.getHeaders() });
     }

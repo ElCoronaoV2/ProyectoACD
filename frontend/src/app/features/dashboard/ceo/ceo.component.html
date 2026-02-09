@@ -3,16 +3,59 @@
 
     <!-- Tabs o Secciones -->
     <div class="flex space-x-4 mb-6">
-        <button (click)="activeTab = 'restaurantes'"
+        <button (click)="setTab('restaurantes')"
             [class]="activeTab === 'restaurantes' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-700'"
             class="px-4 py-2 rounded-lg font-semibold transition-colors">
             Mis Restaurantes
         </button>
-        <button (click)="activeTab = 'nuevo'"
+        <button (click)="setTab('nuevo')"
             [class]="activeTab === 'nuevo' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-700'"
             class="px-4 py-2 rounded-lg font-semibold transition-colors">
             + Nuevo Restaurante
         </button>
+        <button (click)="setTab('general')"
+            [class]="activeTab === 'general' ? 'bg-primary-600 text-white' : 'bg-gray-200 text-gray-700'"
+            class="px-4 py-2 rounded-lg font-semibold transition-colors">
+            Menús Generales
+        </button>
+    </div>
+
+    <!-- Vista: Menús Generales -->
+    <div *ngIf="activeTab === 'general'" class="grid grid-cols-1 gap-6">
+        <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-100">
+            <h2 class="text-2xl font-bold mb-4 text-indigo-900">Menús sin Asignar</h2>
+            <p class="text-indigo-700 mb-6">Estos menús se han guardado de restaurantes eliminados. Puedes reasignarlos
+                a uno de tus locales activos.</p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div *ngFor="let menu of generalMenus" class="bg-white p-4 rounded shadow border border-indigo-200">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="font-bold text-lg">{{ menu.nombre }}</h3>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-bold">{{ menu.precio
+                            }}€</span>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-4">{{ menu.descripcion }}</p>
+
+                    <div class="mt-auto pt-4 border-t border-gray-100">
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Asignar a:</label>
+                        <div class="flex space-x-2">
+                            <select [(ngModel)]="targetLocalId" class="text-sm border rounded p-1 flex-1">
+                                <option [ngValue]="null">-- Elegir Restaurante --</option>
+                                <option *ngFor="let r of restaurantes" [value]="r.id">{{ r.nombre }}</option>
+                            </select>
+                            <button (click)="selectedGeneralMenuId = menu.id; assignMenu()" [disabled]="!targetLocalId"
+                                class="bg-indigo-600 text-white px-3 py-1 rounded text-sm font-bold hover:bg-indigo-700 disabled:opacity-50">
+                                ->
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="generalMenus.length === 0" class="text-center py-12 text-gray-500">
+                <p>No hay menús generales disponibles.</p>
+            </div>
+        </div>
     </div>
 
     <!-- Vista: Mis Restaurantes -->
@@ -23,6 +66,9 @@
             <div class="p-4">
                 <h3 class="text-xl font-bold mb-2">{{ local.nombre }}</h3>
                 <p class="text-gray-600 text-sm mb-2">📍 {{ local.direccion }}</p>
+                <p class="text-xs text-blue-600 mt-1 font-semibold">
+                    👥 {{ local.numeroEmpleados || 0 }} empleados
+                </p>
                 <div class="flex justify-between items-center mt-4">
                     <button (click)="manageLocal(local)"
                         class="text-primary-600 font-semibold hover:underline">Gestionar</button>
@@ -164,7 +210,8 @@
 
                 <!-- Formulario Nuevo Empleado -->
                 <div class="bg-blue-50 p-5 rounded-lg h-fit">
-                    <h3 class="font-bold text-lg mb-4 text-blue-800">Alta de Empleado</h3>
+                    <h3 class="font-bold text-lg mb-4 text-blue-800">Alta de Empleado para {{ selectedLocal.nombre }}
+                    </h3>
                     <form (submit)="createEmployee()">
                         <div class="space-y-3">
                             <input [(ngModel)]="newEmployee.nombre" name="empName" placeholder="Nombre completo"
@@ -190,7 +237,14 @@
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <!-- Lista Menus -->
                 <div class="lg:col-span-2 space-y-4">
-                    <h3 class="font-bold text-lg mb-2">Menús Disponibles</h3>
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-lg">Menús Disponibles</h3>
+                        <button (click)="showMenuWizard = true"
+                            class="bg-blue-600 text-white px-4 py-2 rounded text-sm font-bold hover:bg-blue-700">
+                            + Crear Menú Avanzado
+                        </button>
+                    </div>
+
                     <div *ngFor="let menu of menus"
                         class="bg-white border rounded p-4 flex justify-between items-center shadow-sm">
                         <div class="flex-1">
@@ -209,34 +263,58 @@
                     </div>
                 </div>
 
-                <!-- Formulario Nuevo Menu -->
-                <div class="bg-green-50 p-5 rounded-lg h-fit">
-                    <h3 class="font-bold text-lg mb-4 text-green-800">Nuevo Menú</h3>
-                    <form (submit)="createMenu()">
-                        <div class="space-y-3">
-                            <input [(ngModel)]="newMenu.nombre" name="menuName" placeholder="Nombre del menú"
-                                class="input-field-sm w-full p-2 border rounded" required>
-                            <textarea [(ngModel)]="newMenu.descripcion" name="menuDesc" placeholder="Descripción"
-                                class="input-field-sm w-full p-2 border rounded h-20"></textarea>
-                            <div class="flex space-x-2">
-                                <select [(ngModel)]="newMenu.tipo" name="menuType"
-                                    class="input-field-sm flex-1 p-2 border rounded">
-                                    <option value="COMIDA">Comida</option>
-                                    <option value="CENA">Cena</option>
-                                    <option value="DESAYUNO">Desayuno</option>
-                                </select>
-                                <input [(ngModel)]="newMenu.precio" name="menuPrice" type="number" placeholder="€"
-                                    class="input-field-sm w-20 p-2 border rounded" required>
+                <!-- Programar Menú del Día -->
+                <div class="space-y-4">
+                    <div class="bg-orange-50 p-5 rounded-lg">
+                        <h3 class="font-bold text-lg mb-4 text-orange-800">📅 Programar Menú del Día</h3>
+                        <form (submit)="scheduleMenuForDate()">
+                            <div class="space-y-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+                                    <input [(ngModel)]="scheduleDate" name="scheduleDate" type="date"
+                                        class="w-full p-2 border rounded" required [min]="today">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Menú</label>
+                                    <select [(ngModel)]="scheduleMenuId" name="scheduleMenuId"
+                                        class="w-full p-2 border rounded" required>
+                                        <option value="">-- Selecciona menú --</option>
+                                        <option *ngFor="let m of menus" [value]="m.id">{{ m.nombre }} ({{ m.precio }}€)
+                                        </option>
+                                    </select>
+                                </div>
+                                <button type="submit" [disabled]="!scheduleDate || !scheduleMenuId"
+                                    class="w-full bg-orange-600 text-white py-2 rounded font-bold hover:bg-orange-700 transition disabled:opacity-50">
+                                    Programar
+                                </button>
                             </div>
-                            <button type="submit"
-                                class="w-full bg-green-600 text-white py-2 rounded font-bold hover:bg-green-700 transition">
-                                Añadir Menú
-                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Lista de próximas programaciones -->
+                    <div class="bg-white border rounded-lg p-4">
+                        <h4 class="font-bold mb-3 text-gray-700">📆 Próximas Programaciones</h4>
+                        <div *ngIf="menuSchedule.length === 0" class="text-sm text-gray-500 text-center py-3">
+                            No hay menús programados
                         </div>
-                    </form>
+                        <div *ngFor="let s of menuSchedule"
+                            class="flex justify-between items-center py-2 border-b last:border-0">
+                            <div>
+                                <span class="font-medium text-sm">{{ s.fecha }}</span>
+                                <p class="text-xs text-gray-600">{{ s.menuNombre }}</p>
+                            </div>
+                            <button (click)="deleteSchedule(s.fecha)"
+                                class="text-red-500 hover:text-red-700 text-sm">✕</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <!-- WIZARD OVERLAY -->
+        <app-menu-form *ngIf="showMenuWizard" [restaurantId]="selectedLocal.id" (onClose)="showMenuWizard = false"
+            (onSaved)="loadMenus()">
+        </app-menu-form>
     </div>
 
 </div>

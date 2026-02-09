@@ -192,3 +192,24 @@ th {
     border-radius: 4px;
     cursor: pointer;
 }
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.checkbox-group input[type="checkbox"] {
+    width: auto;
+    accent-color: #2ecc71;
+}
+
+.btn-icon.edit {
+    margin-right: 5px;
+}
+
+.text-hint {
+    color: #999;
+    font-size: 0.8rem;
+}

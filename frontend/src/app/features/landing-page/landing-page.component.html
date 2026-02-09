@@ -6,8 +6,13 @@
         <h1 class="animate-fade-in">Restaurant Tec</h1>
         <p class="animate-slide-up">Experiencia culinaria mediterránea de vanguardia</p>
         <div class="hero-buttons">
-          <button class="btn-primary" routerLink="/login">Iniciar Sesión</button>
-          <button class="btn-outline" routerLink="/register">Registrarse</button>
+          <ng-container *ngIf="!isLoggedIn; else dashboardBtn">
+            <button class="btn-primary" routerLink="/login">Iniciar Sesión</button>
+            <button class="btn-outline" routerLink="/register">Registrarse</button>
+          </ng-container>
+          <ng-template #dashboardBtn>
+            <button class="btn-primary" [routerLink]="dashboardRoute">Ir a mi Panel</button>
+          </ng-template>
         </div>
       </div>
     </div>
@@ -20,16 +25,16 @@
         <div class="history-text">
           <h2>Nuestra Historia</h2>
           <p>
-            Fundado en 1985 por la familia Martínez en el corazón de la costa mediterránea, 
+            Fundado en 1985 por la familia Martínez en el corazón de la costa mediterránea,
             <strong>Restaurant Tec</strong> nació con una visión simple: fusionar la tradición con la innovación.
           </p>
           <p>
-            Lo que comenzó como una pequeña taberna pesquera se ha transformado, bajo la dirección 
-            de nuestro galardonado equipo culinario, en un referente de la alta cocina. 
+            Lo que comenzó como una pequeña taberna pesquera se ha transformado, bajo la dirección
+            de nuestro galardonado equipo culinario, en un referente de la alta cocina.
             Respetamos el producto local, elevando cada ingrediente a su máxima expresión.
           </p>
           <p>
-            Nuestra arquitectura, una mezcla de muros de piedra centenarios y diseño moderno, 
+            Nuestra arquitectura, una mezcla de muros de piedra centenarios y diseño moderno,
             refleja nuestra filosofía: raíces profundas y mirada al futuro.
           </p>
         </div>
@@ -51,12 +56,12 @@
         <div class="dish-text">
           <h3>Sabores que Cuentan Historias</h3>
           <p>
-            Cada plato en nuestra carta es una obra de arte. Nuestra famosa <strong>Paella Real</strong>, 
-            reinterpretada con técnicas de vanguardia, mantiene la esencia del azafrán y el marisco fresco, 
+            Cada plato en nuestra carta es una obra de arte. Nuestra famosa <strong>Paella Real</strong>,
+            reinterpretada con técnicas de vanguardia, mantiene la esencia del azafrán y el marisco fresco,
             presentada con una elegancia digna de estrellas Michelin.
           </p>
           <p>
-            Utilizamos ingredientes de "Kilómetro 0", apoyando a los productores locales y garantizando 
+            Utilizamos ingredientes de "Kilómetro 0", apoyando a los productores locales y garantizando
             la frescura absoluta en cada bocado.
           </p>
         </div>
@@ -71,8 +76,8 @@
         <div class="terrace-text">
           <h2>Atardeceres Inolvidables</h2>
           <p>
-            Disfrute de nuestros cócteles exclusivos y cenas románticas en nuestra terraza panorámica. 
-            Con vistas al mar y ambientación cuidadosamente iluminada, es el lugar perfecto para 
+            Disfrute de nuestros cócteles exclusivos y cenas románticas en nuestra terraza panorámica.
+            Con vistas al mar y ambientación cuidadosamente iluminada, es el lugar perfecto para
             crear recuerdos que durarán para siempre.
           </p>
         </div>

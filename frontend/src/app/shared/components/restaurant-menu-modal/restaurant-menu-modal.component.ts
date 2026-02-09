@@ -1,14 +1,18 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Local, Menu } from '../../../core/models/local.model';
 import { ReservationService } from '../../../core/services/reservation.service';
 import { AuthService } from '../../../core/services/auth.service';
+import { NotificationService } from '../../../core/services/notification.service';
+import { MenuService } from '../../../core/services/menu.service';
+import { StripeService, StripePaymentElementComponent } from 'ngx-stripe';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
     selector: 'app-restaurant-menu-modal',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, StripePaymentElementComponent],
     templateUrl: './restaurant-menu-modal.component.html',
     styleUrls: ['./restaurant-menu-modal.component.css']
 })
@@ -18,27 +22,68 @@ export class RestaurantMenuModalComponent implements OnInit {
     @Output() close = new EventEmitter<void>();
 
     activeTab: 'menu' | 'booking' = 'menu';
+
+    // Reservation data
     bookingData = {
         fecha: '',
         hora: '',
         personas: 2,
-        observaciones: ''
+        observaciones: '',
+        nombreInvitado: '',
+        emailInvitado: '',
+        telefonoInvitado: ''
     };
+
+    // Review data
+    reviewData: { [menuId: number]: { rating: number; comment: string } } = {};
+    showReviewForm: { [menuId: number]: boolean } = {};
+
+    // Stripe
+    @ViewChild(StripePaymentElementComponent) paymentElement!: StripePaymentElementComponent;
+    stripe = inject(StripeService);
+    http = inject(HttpClient); // Inject HttpClient directly for payment intent
+
+    elementsOptions: any = {
+        locale: 'es',
+        appearance: {
+            theme: 'stripe'
+        }
+    };
+    paymentElementOptions: any = {
+        layout: {
+            type: 'tabs',
+            defaultCollapsed: false,
+        }
+    };
+
+    isProcessingPayment = false;
+    showPaymentStep = false;
+    currentClientSecret: string | null = null;
 
     constructor(
         public authService: AuthService,
-        private reservationService: ReservationService
+        private reservationService: ReservationService,
+        private notificationService: NotificationService,
+        private menuService: MenuService
     ) { }
 
     availableSeats: number | null = null;
+    selectedShift: 'lunch' | 'dinner' | null = null;
+    availableTimeSlots: string[] = [];
 
     ngOnInit() {
         // Set default date to tomorrow
         const tomorrow = new Date();
         tomorrow.setDate(tomorrow.getDate() + 1);
         this.bookingData.fecha = tomorrow.toISOString().split('T')[0];
-        this.bookingData.hora = '20:00';
-        this.checkAvailability();
+
+        // Initialize review data structures
+        if (this.menus) {
+            this.menus.forEach(menu => {
+                this.reviewData[menu.id] = { rating: 5, comment: '' };
+                this.showReviewForm[menu.id] = false;
+            });
+        }
     }
 
     onClose(): void {
@@ -49,6 +94,43 @@ export class RestaurantMenuModalComponent implements OnInit {
         if ((event.target as HTMLElement).classList.contains('modal-backdrop')) {
             this.onClose();
         }
+    }
+
+    selectShift(shift: 'lunch' | 'dinner') {
+        this.selectedShift = shift;
+        this.bookingData.hora = '';
+        this.availableSeats = null;
+        this.generateTimeSlots(shift);
+    }
+
+    generateTimeSlots(shift: 'lunch' | 'dinner') {
+        this.availableTimeSlots = [];
+        let start = shift === 'lunch' ? (this.local.aperturaComida || '13:00') : (this.local.aperturaCena || '20:00');
+        let end = shift === 'lunch' ? (this.local.cierreComida || '16:00') : (this.local.cierreCena || '23:30');
+
+        // Parse HH:mm
+        const [startH, startM] = start.split(':').map(Number);
+        const [endH, endM] = end.split(':').map(Number);
+
+        let currentH = startH;
+        let currentM = startM;
+
+        while (currentH < endH || (currentH === endH && currentM < endM)) {
+            const timeStr = `${currentH.toString().padStart(2, '0')}:${currentM.toString().padStart(2, '0')}`;
+            this.availableTimeSlots.push(timeStr);
+
+            // Increment 30 mins
+            currentM += 30;
+            if (currentM >= 60) {
+                currentM -= 60;
+                currentH++;
+            }
+        }
+    }
+
+    selectTime(time: string) {
+        this.bookingData.hora = time;
+        this.checkAvailability();
     }
 
     checkAvailability() {
@@ -75,43 +157,250 @@ export class RestaurantMenuModalComponent implements OnInit {
         ];
     }
 
+    toggleReviewForm(menuId: number) {
+        this.showReviewForm[menuId] = !this.showReviewForm[menuId];
+        if (this.showReviewForm[menuId] && !this.reviewData[menuId]) {
+            this.reviewData[menuId] = { rating: 0, comment: '' };
+        }
+    }
+
+    setRating(menuId: number, rating: number) {
+        if (!this.reviewData[menuId]) this.reviewData[menuId] = { rating: 0, comment: '' };
+        this.reviewData[menuId].rating = rating;
+    }
+
+    getReviewRating(menuId: number): number {
+        return this.reviewData[menuId]?.rating || 0;
+    }
+
+    submitReview(menuId: number) {
+        if (!this.authService.isLoggedIn()) {
+            this.notificationService.showWarning('Debes iniciar sesión para valorar.');
+            return;
+        }
+
+        const data = this.reviewData[menuId];
+        this.menuService.addReview(menuId, data.rating, data.comment).subscribe({
+            next: () => {
+                this.notificationService.showSuccess('¡Valoración enviada! Gracias por tu opinión.');
+                this.showReviewForm[menuId] = false;
+                // Opcional: Recargar menú o actualizar media localmente (simple aproximación)
+            },
+            error: (err) => {
+                console.error(err);
+                if (err.error?.message) {
+                    this.notificationService.showError('Error: ' + err.error.message);
+                } else {
+                    this.notificationService.showError('Error al enviar la valoración.');
+                }
+            }
+        });
+    }
+
     formatAlergenos(alergenos: string | undefined): string[] {
         if (!alergenos) return [];
         return alergenos.split(',').map(a => a.trim());
     }
 
-    makeReservation() {
-        if (!this.authService.isLoggedIn()) {
-            alert('Debes iniciar sesión para reservar.');
-            return;
-        }
+    // Mapa de alérgenos con emojis
+    private allergenMap: { [key: string]: { emoji: string; class: string } } = {
+        'gluten': { emoji: '🌾', class: 'allergen-gluten' },
+        'crustaceos': { emoji: '🦐', class: 'allergen-crustaceos' },
+        'huevos': { emoji: '🥚', class: 'allergen-huevos' },
+        'pescado': { emoji: '🐟', class: 'allergen-pescado' },
+        'cacahuetes': { emoji: '🥜', class: 'allergen-cacahuetes' },
+        'soja': { emoji: '🫘', class: 'allergen-soja' },
+        'lacteos': { emoji: '🥛', class: 'allergen-lacteos' },
+        'frutos de cascara': { emoji: '🌰', class: 'allergen-frutos' },
+        'apio': { emoji: '🥬', class: 'allergen-apio' },
+        'mostaza': { emoji: '🟡', class: 'allergen-mostaza' },
+        'sesamo': { emoji: '⚪', class: 'allergen-sesamo' },
+        'sulfitos': { emoji: '🍷', class: 'allergen-sulfitos' },
+        'altramuces': { emoji: '🌸', class: 'allergen-altramuces' },
+        'moluscos': { emoji: '🦪', class: 'allergen-moluscos' }
+    };
 
+    getAllergenEmoji(allergen: string): string {
+        const normalized = allergen.toLowerCase().trim();
+        for (const [key, value] of Object.entries(this.allergenMap)) {
+            if (normalized.includes(key) || key.includes(normalized)) {
+                return value.emoji;
+            }
+        }
+        return '⚠️';
+    }
+
+    getAllergenClass(allergen: string): string {
+        const normalized = allergen.toLowerCase().trim();
+        for (const [key, value] of Object.entries(this.allergenMap)) {
+            if (normalized.includes(key) || key.includes(normalized)) {
+                return value.class;
+            }
+        }
+        return 'allergen-default';
+    }
+
+    // Comprueba si el usuario logueado es alérgico a este alérgeno
+    isUserAllergic(allergen: string): boolean {
+        const user = this.authService.getCurrentUser();
+        if (!user || !user.alergenos) return false;
+
+        const userAllergens = user.alergenos.toLowerCase().split(',').map((a: string) => a.trim());
+        const normalizedAllergen = allergen.toLowerCase().trim();
+
+        return userAllergens.some((ua: string) =>
+            ua.includes(normalizedAllergen) || normalizedAllergen.includes(ua)
+        );
+    }
+
+    // Comprueba si hay coincidencia entre alérgenos del menú y los del usuario
+    hasUserAllergenMatch(menuAlergenos: string): boolean {
+        if (!menuAlergenos) return false;
+        const allergens = this.formatAlergenos(menuAlergenos);
+        return allergens.some(a => this.isUserAllergic(a));
+    }
+
+    get isValidReservation(): boolean {
+        return !!(this.bookingData.fecha &&
+            this.bookingData.hora &&
+            this.bookingData.personas > 0);
+    }
+
+    initiateReservationProcess() {
         if (this.availableSeats !== null && this.bookingData.personas > this.availableSeats) {
-            alert(`Solo quedan ${this.availableSeats} plazas disponibles.`);
+            this.notificationService.showWarning(`Solo quedan ${this.availableSeats} plazas disponibles.`);
             return;
         }
 
-        const dateTime = `${this.bookingData.fecha}T${this.bookingData.hora}:00`;
-        const payload = {
-            localId: this.local.id,
-            fechaHora: dateTime,
-            numeroPersonas: this.bookingData.personas,
-            observaciones: this.bookingData.observaciones
-        };
+        // Validate basic fields
+        if (!this.isValidReservation) {
+            let missing = [];
+            if (!this.bookingData.fecha) missing.push('Fecha');
+            if (!this.bookingData.hora) missing.push('Hora');
+            if (!this.bookingData.personas || this.bookingData.personas < 1) missing.push('Personas');
 
-        this.reservationService.createReservation(payload).subscribe({
-            next: () => {
-                alert('¡Reserva realizada con éxito!');
-                this.onClose();
+            this.notificationService.showWarning(`Por favor completa: ${missing.join(', ')}`);
+            return;
+        }
+
+        // Validate guest fields if not logged in
+        if (!this.authService.isLoggedIn()) {
+            if (!this.bookingData.nombreInvitado || !this.bookingData.emailInvitado || !this.bookingData.telefonoInvitado) {
+                this.notificationService.showWarning('Por favor, completa nombre, email y teléfono para reservar.');
+                return;
+            }
+        }
+
+        // 1. Create Payment Intent
+        this.isProcessingPayment = true;
+        this.http.post<{ clientSecret: string }>('https://www.restaurant-tec.es/api/reservas/create-payment-intent', {})
+            .subscribe({
+                next: (res) => {
+                    this.currentClientSecret = res.clientSecret;
+                    this.elementsOptions.clientSecret = res.clientSecret;
+                    this.showPaymentStep = true;
+                    this.isProcessingPayment = false;
+                },
+                error: (err) => {
+                    console.error('Error creating payment intent', err);
+                    this.notificationService.showError('Error al iniciar el pago.');
+                    this.isProcessingPayment = false;
+                }
+            });
+    }
+
+    confirmPaymentAndReserve() {
+        if (!this.currentClientSecret || this.isProcessingPayment) return;
+
+        this.isProcessingPayment = true;
+
+        this.stripe.confirmPayment({
+            elements: this.paymentElement.elements,
+            confirmParams: {
+                payment_method_data: {
+                    billing_details: {
+                        name: this.authService.isLoggedIn() ? this.authService.getCurrentUser()?.nombre ?? '' : this.bookingData.nombreInvitado,
+                        email: this.authService.isLoggedIn() ? this.authService.getCurrentUser()?.email ?? '' : this.bookingData.emailInvitado
+                    }
+                }
+            },
+            redirect: 'if_required'
+        }).subscribe({
+            next: (result) => {
+                if (result.error) {
+                    this.notificationService.showError(result.error.message || 'Error en el pago');
+                    this.isProcessingPayment = false;
+                } else if (result.paymentIntent && result.paymentIntent.status === 'succeeded') {
+                    // Payment successful, create reservation
+                    this.finalizeReservation(result.paymentIntent.id);
+                }
             },
             error: (err) => {
                 console.error(err);
-                if (err.error?.message) {
-                    alert('Error: ' + err.error.message);
-                } else {
-                    alert('Error al realizar la reserva.');
-                }
+                this.notificationService.showError('Error al procesar el pago');
+                this.isProcessingPayment = false;
             }
         });
+    }
+
+    finalizeReservation(paymentIntentId: string) {
+        const dateTime = `${this.bookingData.fecha}T${this.bookingData.hora}:00`;
+
+        if (this.authService.isLoggedIn()) {
+            const payload = {
+                localId: this.local.id,
+                fechaHora: dateTime,
+                numeroPersonas: this.bookingData.personas,
+                observaciones: this.bookingData.observaciones,
+                paymentIntentId: paymentIntentId
+            };
+
+            this.reservationService.createReservation(payload).subscribe({
+                next: () => this.handleReservationSuccess(),
+                error: (err) => {
+                    this.handleReservationError(err);
+                    this.isProcessingPayment = false;
+                }
+            });
+        } else {
+            const guestPayload = {
+                localId: this.local.id,
+                fechaHora: dateTime,
+                numeroPersonas: this.bookingData.personas,
+                observaciones: this.bookingData.observaciones,
+                nombre: this.bookingData.nombreInvitado,
+                email: this.bookingData.emailInvitado,
+                telefono: this.bookingData.telefonoInvitado,
+                paymentIntentId: paymentIntentId
+            };
+
+            this.reservationService.createGuestReservation(guestPayload).subscribe({
+                next: () => this.handleReservationSuccess(),
+                error: (err) => {
+                    this.handleReservationError(err);
+                    this.isProcessingPayment = false;
+                }
+            });
+        }
+    }
+
+    private handleReservationSuccess() {
+        this.notificationService.showSuccess('¡Reserva realizada con éxito!');
+        this.isProcessingPayment = false;
+        this.showPaymentStep = false;
+        this.onClose();
+        // Reset form
+        this.bookingData.nombreInvitado = '';
+        this.bookingData.emailInvitado = '';
+        this.bookingData.telefonoInvitado = '';
+    }
+
+    private handleReservationError(err: any) {
+        console.error(err);
+        if (err.error?.message) {
+            this.notificationService.showError('Error: ' + err.error.message);
+        } else {
+            this.notificationService.showError('Error al realizar la reserva.');
+        }
     }
 }

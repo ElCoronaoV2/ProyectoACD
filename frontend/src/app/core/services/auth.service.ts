@@ -27,6 +27,8 @@ export class AuthService {
                     if (response.email) localStorage.setItem('user_email', response.email);
                     if (response.nombre) localStorage.setItem('user_name', response.nombre);
                     if (response.rol) localStorage.setItem('user_role', response.rol);
+                    if (response.alergenos) localStorage.setItem('user_alergenos', response.alergenos);
+                    if (response.id) localStorage.setItem('user_id', response.id.toString());
                 }
             })
         );
@@ -37,6 +39,8 @@ export class AuthService {
         localStorage.removeItem('user_email');
         localStorage.removeItem('user_name');
         localStorage.removeItem('user_role');
+        localStorage.removeItem('user_alergenos');
+        localStorage.removeItem('user_id');
     }
 
     isLoggedIn(): boolean {
@@ -45,6 +49,18 @@ export class AuthService {
 
     getUserRole(): string | null {
         return localStorage.getItem('user_role');
+    }
+
+    // Obtiene los datos del usuario actual desde localStorage
+    getCurrentUser(): { id?: number; email?: string; nombre?: string; alergenos?: string; rol?: string } | null {
+        if (!this.isLoggedIn()) return null;
+        return {
+            id: localStorage.getItem('user_id') ? parseInt(localStorage.getItem('user_id')!) : undefined,
+            email: localStorage.getItem('user_email') || undefined,
+            nombre: localStorage.getItem('user_name') || undefined,
+            alergenos: localStorage.getItem('user_alergenos') || undefined,
+            rol: localStorage.getItem('user_role') || undefined
+        };
     }
 
     isDirector(): boolean { return this.getUserRole() === 'DIRECTOR' || this.getUserRole() === 'ROLE_DIRECTOR'; }

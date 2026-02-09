@@ -20,6 +20,10 @@ export class ReservationService {
         return this.http.post(this.apiUrl, data, { headers: this.getHeaders() });
     }
 
+    createGuestReservation(data: any): Observable<any> {
+        return this.http.post(`${this.apiUrl}/guest`, data);
+    }
+
     getMyReservations(): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/mis-reservas`, { headers: this.getHeaders() });
     }

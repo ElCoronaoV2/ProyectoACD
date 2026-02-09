@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { UserService } from '../../core/services/user.service';
 import { ReservationService } from '../../core/services/reservation.service';
 import { AuthService } from '../../core/services/auth.service';
+import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
   selector: 'app-profile',
@@ -21,7 +22,8 @@ export class ProfileComponent implements OnInit {
   constructor(
     private userService: UserService,
     private reservationService: ReservationService,
-    private authService: AuthService
+    private authService: AuthService,
+    private notificationService: NotificationService
   ) { }
 
   ngOnInit() {
@@ -71,9 +73,9 @@ export class ProfileComponent implements OnInit {
       next: (res) => {
         this.user = res;
         this.editMode = false;
-        alert('Perfil actualizado');
+        this.notificationService.showSuccess('Perfil actualizado');
       },
-      error: (err) => alert('Error al actualizar perfil')
+      error: (err) => this.notificationService.showError('Error al actualizar perfil')
     });
   }
 

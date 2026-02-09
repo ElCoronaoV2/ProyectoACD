@@ -120,110 +120,337 @@
     color: #555;
 }
 
+/* ========== MENU SECTION - PREMIUM DESIGN ========== */
 .menu-section {
     padding: 1.5rem;
-}
-
-.menu-section h3 {
-    margin: 0 0 1rem 0;
-    font-size: 1.3rem;
-    color: #333;
+    background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%);
 }
 
 .no-menu {
     text-align: center;
-    padding: 2rem;
+    padding: 3rem 2rem;
     color: #888;
-    background: #f9f9f9;
-    border-radius: 12px;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-.menu-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+.no-menu-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.menus-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Menu Card */
+.menu-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+    position: relative;
+}
+
+.menu-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+.menu-card.unavailable {
+    opacity: 0.6;
+    filter: grayscale(30%);
+}
+
+/* Menu Card Header */
+.menu-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(135deg, #8B4513 0%, #D2691E 100%);
+    color: white;
+}
+
+.menu-title-section {
+    flex: 1;
+}
+
+.menu-title {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.menu-description {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    font-style: italic;
+}
+
+.menu-price-badge {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    text-align: center;
+    min-width: 70px;
+}
+
+.price-amount {
+    font-size: 1.5rem;
+    font-weight: 800;
+    display: block;
+}
+
+.price-currency {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* Courses Section */
+.courses-section {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
     gap: 1rem;
 }
 
-.menu-item {
-    background: #f9f9f9;
-    border-radius: 12px;
-    padding: 1rem;
-    position: relative;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.menu-item:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-}
-
-.menu-item.unavailable {
-    opacity: 0.6;
-}
-
-.menu-item-header {
+.course-item {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 12px;
+    transition: background 0.2s;
 }
 
-.menu-item-header h4 {
-    margin: 0;
-    font-size: 1rem;
+.course-item:hover {
+    background: #f0f2f5;
+}
+
+.course-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.course-icon.primer {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.course-icon.segundo {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+}
+
+.course-icon.postre {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.course-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #888;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.course-name {
+    font-size: 1.1rem;
+    font-weight: 600;
     color: #333;
 }
 
-.price {
-    font-weight: 700;
-    color: #667eea;
-    font-size: 1.1rem;
-}
-
-.description {
-    color: #666;
+.course-desc {
     font-size: 0.9rem;
-    margin: 0.5rem 0;
+    color: #666;
+    margin-top: 0.25rem;
+    font-style: italic;
 }
 
-.ingredients {
-    color: #888;
-    font-size: 0.85rem;
-    margin: 0.5rem 0;
+/* Allergens Section */
+.allergens-section {
+    padding: 1.25rem 1.5rem;
+    background: linear-gradient(180deg, #fff8e1 0%, #fffde7 100%);
+    border-top: 1px solid #ffe0b2;
 }
 
-.allergens {
-    margin-top: 0.75rem;
+.allergens-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.allergens-icon {
+    font-size: 1.2rem;
+}
+
+.allergens-title {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #e65100;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.allergens-grid {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
     gap: 0.5rem;
 }
 
-.allergen-label {
+/* Allergen Badges */
+.allergen-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 20px;
     font-size: 0.8rem;
-    color: #d97706;
+    font-weight: 600;
+    transition: transform 0.2s;
+    border: 2px solid transparent;
 }
 
-.allergen-tag {
-    background: #fef3c7;
-    color: #d97706;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
+.allergen-badge:hover {
+    transform: scale(1.05);
 }
 
-.unavailable-badge {
+.allergen-emoji {
+    font-size: 1rem;
+}
+
+.allergen-name {
+    text-transform: capitalize;
+}
+
+/* Allergen Colors */
+.allergen-gluten {
+    background: #d4a574;
+    color: #4a2c0a;
+    border-color: #b8956a;
+}
+
+.allergen-crustaceos {
+    background: #ff6b6b;
+    color: #fff;
+    border-color: #e05555;
+}
+
+.allergen-huevos {
+    background: #ffe66d;
+    color: #5d4e00;
+    border-color: #e6cf5a;
+}
+
+.allergen-pescado {
+    background: #4ecdc4;
+    color: #fff;
+    border-color: #3eb8b0;
+}
+
+.allergen-cacahuetes {
+    background: #c9b896;
+    color: #3d3015;
+    border-color: #b5a580;
+}
+
+.allergen-soja {
+    background: #90be6d;
+    color: #1a3d00;
+    border-color: #7dab5a;
+}
+
+.allergen-lacteos {
+    background: #e8f4fd;
+    color: #1565c0;
+    border-color: #90caf9;
+}
+
+.allergen-frutos {
+    background: #8b7355;
+    color: #fff;
+    border-color: #7a6348;
+}
+
+.allergen-apio {
+    background: #52b788;
+    color: #fff;
+    border-color: #40a377;
+}
+
+.allergen-mostaza {
+    background: #ffd93d;
+    color: #5d4e00;
+    border-color: #e6c435;
+}
+
+.allergen-sesamo {
+    background: #e5e5e5;
+    color: #333;
+    border-color: #ccc;
+}
+
+.allergen-sulfitos {
+    background: #722f37;
+    color: #fff;
+    border-color: #5c262d;
+}
+
+.allergen-altramuces {
+    background: #9b59b6;
+    color: #fff;
+    border-color: #8a4ba5;
+}
+
+.allergen-moluscos {
+    background: #95a5a6;
+    color: #fff;
+    border-color: #839192;
+}
+
+.allergen-default {
+    background: #ffe4b5;
+    color: #8b4513;
+    border-color: #e6cc9f;
+}
+
+/* Unavailable Overlay */
+.unavailable-overlay {
     position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    background: #ef4444;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: white;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 16px;
 }
 
 /* Responsive */
@@ -237,7 +464,101 @@
         height: 200px;
     }
 
-    .menu-grid {
-        grid-template-columns: 1fr;
+    .menu-card-header {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .menu-price-badge {
+        align-self: flex-start;
+    }
+
+    .course-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .course-icon {
+        margin: 0 auto;
+    }
+}
+
+/* Ingredientes de cada plato */
+.course-ingredients {
+    display: block;
+    font-size: 0.75rem;
+    color: #888;
+    font-style: italic;
+    margin-top: 0.25rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid #e0e0e0;
+}
+
+/* Advertencia personalizada de alérgenos del usuario */
+.user-allergy-warning {
+    display: block;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 100%);
+    color: white;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    animation: pulse-warning 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse-warning {
+
+    0%,
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.9;
+        transform: scale(1.02);
+    }
+}
+
+/* Alérgeno peligroso para el usuario */
+.allergen-danger {
+    position: relative;
+    border: 3px solid #ff0000 !important;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    animation: danger-pulse 1s ease-in-out infinite;
+}
+
+@keyframes danger-pulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+    }
+
+    50% {
+        box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+    }
+}
+
+.danger-icon {
+    font-size: 0.9rem;
+    margin-left: 0.25rem;
+    animation: shake 0.5s ease-in-out infinite;
+}
+
+@keyframes shake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    25% {
+        transform: translateX(-2px);
+    }
+
+    75% {
+        transform: translateX(2px);
     }
 }

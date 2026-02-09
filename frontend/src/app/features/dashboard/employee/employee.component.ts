@@ -13,7 +13,7 @@ import { ReservationService } from '../../../core/services/reservation.service';
 })
 export class EmployeeComponent implements OnInit {
 
-  activeTab: 'menus' | 'reservas' = 'reservas';
+  activeTab: 'menus' | 'reservas' | 'general' = 'reservas';
   myLocal: any = null;
   menus: any[] = [];
   reservations: any[] = [];
@@ -24,6 +24,11 @@ export class EmployeeComponent implements OnInit {
     precio: 0,
     descripcion: ''
   };
+
+  // General Menus
+  generalMenus: any[] = [];
+  targetLocalId: number | null = null; // Will always be myLocal.id
+  selectedGeneralMenuId: number | null = null;
 
   constructor(
     private managementService: ManagementService,
@@ -38,8 +43,10 @@ export class EmployeeComponent implements OnInit {
     this.managementService.getMyWorkRestaurant().subscribe({
       next: (local) => {
         this.myLocal = local;
+        this.targetLocalId = local.id;
         this.loadMenus();
         this.loadReservations();
+        this.loadGeneralMenus(); // Also load general menus
       },
       error: (err) => console.error("No tienes restaurante asignado", err)
     });
@@ -49,6 +56,27 @@ export class EmployeeComponent implements OnInit {
     if (!this.myLocal) return;
     this.managementService.getMenus(this.myLocal.id).subscribe({
       next: (res) => this.menus = res
+    });
+  }
+
+  loadGeneralMenus() {
+    this.managementService.getGeneralMenus().subscribe({
+      next: (res) => this.generalMenus = res,
+      error: (err) => console.error(err)
+    });
+  }
+
+  assignMenu() {
+    if (!this.selectedGeneralMenuId || !this.targetLocalId) return;
+
+    this.managementService.assignMenuToLocal(this.selectedGeneralMenuId, this.targetLocalId).subscribe({
+      next: () => {
+        alert('Menú importado correctamente');
+        this.loadGeneralMenus();
+        this.loadMenus();
+        this.selectedGeneralMenuId = null;
+      },
+      error: (err) => alert('Error al importar menú')
     });
   }
 

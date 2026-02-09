@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import * as L from 'leaflet';
 import { ManagementService } from '../../../core/services/management.service';
+import { MenuFormComponent } from '../../admin/menu/menu-form/menu-form.component';
+import { NotificationService } from '../../../core/services/notification.service';
 
 @Component({
   selector: 'app-ceo',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MenuFormComponent],
   templateUrl: './ceo.component.html',
   styleUrls: ['./ceo.component.css']
 })
@@ -44,6 +46,8 @@ export class CeoComponent implements OnInit, AfterViewInit {
     alergenos: ''
   };
 
+  showMenuWizard = false;
+
   newMenu: any = {
     nombre: '',
     tipo: 'COMIDA', // COMIDA, CENA, DESAYUNO
@@ -51,7 +55,21 @@ export class CeoComponent implements OnInit, AfterViewInit {
     descripcion: ''
   };
 
-  constructor(private managementService: ManagementService) { }
+  // Menu Scheduling (Menú del Día)
+  scheduleDate: string = '';
+  scheduleMenuId: string = '';
+  menuSchedule: any[] = [];
+  today: string = new Date().toISOString().split('T')[0];
+
+  // General Menus
+  generalMenus: any[] = [];
+  selectedGeneralMenuId: number | null = null;
+  targetLocalId: number | null = null;
+
+  constructor(
+    private managementService: ManagementService,
+    private notificationService: NotificationService
+  ) { }
 
   ngOnInit() {
     this.loadRestaurants();
@@ -108,14 +126,14 @@ export class CeoComponent implements OnInit, AfterViewInit {
   createRestaurant() {
     this.managementService.createRestaurant(this.newLocal).subscribe({
       next: (res: any) => {
-        alert('Restaurante creado con éxito');
+        this.notificationService.showSuccess('Restaurante creado con éxito');
         this.activeTab = 'restaurantes';
         this.loadRestaurants();
         this.newLocal = { nombre: '', direccion: '', capacidad: 50, latitud: null, longitud: null };
         if (this.marker) this.marker.remove();
         this.marker = undefined;
       },
-      error: (err: any) => alert('Error al crear restaurante')
+      error: (err: any) => this.notificationService.showError('Error al crear restaurante')
     });
   }
 
@@ -129,7 +147,7 @@ export class CeoComponent implements OnInit, AfterViewInit {
           this.activeTab = 'restaurantes';
         }
       },
-      error: (err) => alert('Error al eliminar restaurante')
+      error: (err) => this.notificationService.showError('Error al eliminar restaurante')
     });
   }
 
@@ -146,6 +164,30 @@ export class CeoComponent implements OnInit, AfterViewInit {
     if (tab === 'nuevo') {
       this.initMap();
     }
+    if (tab === 'general') {
+      this.loadGeneralMenus();
+    }
+  }
+
+  loadGeneralMenus() {
+    this.managementService.getGeneralMenus().subscribe({
+      next: (res) => this.generalMenus = res,
+      error: (err) => console.error(err)
+    });
+  }
+
+  assignMenu() {
+    if (!this.selectedGeneralMenuId || !this.targetLocalId) return;
+
+    this.managementService.assignMenuToLocal(this.selectedGeneralMenuId, this.targetLocalId).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Menú asignado correctamente');
+        this.loadGeneralMenus();
+        this.selectedGeneralMenuId = null;
+        this.targetLocalId = null;
+      },
+      error: (err) => this.notificationService.showError('Error al asignar menú')
+    });
   }
 
   // --- SUB TABS MANAGEMENT ---
@@ -167,19 +209,19 @@ export class CeoComponent implements OnInit, AfterViewInit {
     if (!this.selectedLocal) return;
     // Validar datos básicos
     if (!this.newEmployee.email || !this.newEmployee.password) {
-      alert("Email y Contraseña son obligatorios");
+      this.notificationService.showWarning("Email y Contraseña son obligatorios");
       return;
     }
 
     this.managementService.createEmployee(this.selectedLocal.id, this.newEmployee).subscribe({
       next: (res) => {
-        alert('Empleado creado correctamente');
+        this.notificationService.showSuccess('Empleado creado correctamente');
         this.loadEmployees(); // Reload list
         this.newEmployee = { nombre: '', email: '', telefono: '', password: '', alergenos: '' }; // Reset form
       },
       error: (err) => {
         console.error(err);
-        alert(err.error || 'Error al crear empleado');
+        this.notificationService.showError(err.error || 'Error al crear empleado');
       }
     });
   }
@@ -188,14 +230,17 @@ export class CeoComponent implements OnInit, AfterViewInit {
     if (!confirm('¿Eliminar empleado?')) return;
     this.managementService.deleteEmployee(id).subscribe({
       next: () => this.loadEmployees(),
-      error: (err) => alert('Error al eliminar empleado')
+      error: (err) => this.notificationService.showError('Error al eliminar empleado')
     });
   }
 
   loadMenus() {
     if (!this.selectedLocal) return;
     this.managementService.getMenus(this.selectedLocal.id).subscribe({
-      next: (res) => this.menus = res,
+      next: (res) => {
+        this.menus = res;
+        this.loadMenuSchedule(); // Also load schedule when menus are loaded
+      },
       error: (err) => console.error(err)
     });
   }
@@ -203,16 +248,16 @@ export class CeoComponent implements OnInit, AfterViewInit {
   createMenu() {
     if (!this.selectedLocal) return;
     if (!this.newMenu.nombre) {
-      alert("Nombre del menú obligatorio");
+      this.notificationService.showWarning("Nombre del menú obligatorio");
       return;
     }
     this.managementService.createMenu(this.selectedLocal.id, this.newMenu).subscribe({
       next: (res) => {
-        alert('Menú creado correctamente');
+        this.notificationService.showSuccess('Menú creado correctamente');
         this.loadMenus();
         this.newMenu = { nombre: '', tipo: 'COMIDA', precio: 0, descripcion: '' };
       },
-      error: (err) => alert('Error al crear menú')
+      error: (err) => this.notificationService.showError('Error al crear menú')
     });
   }
 
@@ -220,7 +265,48 @@ export class CeoComponent implements OnInit, AfterViewInit {
     if (!confirm('¿Eliminar menú?')) return;
     this.managementService.deleteMenu(id).subscribe({
       next: () => this.loadMenus(),
-      error: (err) => alert('Error al eliminar menú')
+      error: (err) => this.notificationService.showError('Error al eliminar menú')
+    });
+  }
+
+  // --- MENU SCHEDULING (Menú del Día) ---
+  loadMenuSchedule() {
+    if (!this.selectedLocal) return;
+    this.managementService.getMenuSchedule(this.selectedLocal.id).subscribe({
+      next: (res) => this.menuSchedule = res,
+      error: (err) => console.error('Error loading schedule:', err)
+    });
+  }
+
+  scheduleMenuForDate() {
+    if (!this.selectedLocal || !this.scheduleDate || !this.scheduleMenuId) return;
+
+    this.managementService.scheduleMenu(
+      this.selectedLocal.id,
+      parseInt(this.scheduleMenuId),
+      this.scheduleDate
+    ).subscribe({
+      next: (res) => {
+        this.notificationService.showSuccess('Menú programado correctamente');
+        this.loadMenuSchedule();
+        this.scheduleDate = '';
+        this.scheduleMenuId = '';
+      },
+      error: (err) => this.notificationService.showError(err.error?.error || 'Error al programar menú')
+    });
+  }
+
+  deleteSchedule(fecha: string) {
+    if (!this.selectedLocal) return;
+    if (!confirm('¿Eliminar programación?')) return;
+
+    this.managementService.deleteMenuSchedule(this.selectedLocal.id, fecha).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Programación eliminada');
+        this.loadMenuSchedule();
+      },
+      error: (err) => this.notificationService.showError('Error al eliminar programación')
     });
   }
 }
+

@@ -23,6 +23,38 @@
                 class="px-4 py-2 transition-colors">
                 🍽️ Gestión de Menús
             </button>
+            <button (click)="activeTab = 'general'"
+                [class]="activeTab === 'general' ? 'border-b-2 border-primary-600 text-primary-600 font-bold' : 'text-gray-500 hover:text-gray-700'"
+                class="px-4 py-2 transition-colors">
+                📂 Menús Generales (CEO)
+            </button>
+        </div>
+
+        <!-- VISTA GENERAL MENUS -->
+        <div *ngIf="activeTab === 'general'">
+            <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-100">
+                <h2 class="text-xl font-bold mb-4 text-indigo-900">Importar Menús Generales</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div *ngFor="let menu of generalMenus" class="bg-white p-4 rounded shadow border border-indigo-200">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="font-bold text-lg">{{ menu.nombre }}</h3>
+                            <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-bold">{{
+                                menu.precio }}€</span>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-4">{{ menu.descripcion }}</p>
+
+                        <div class="mt-auto pt-4 border-t border-gray-100">
+                            <button (click)="selectedGeneralMenuId = menu.id; assignMenu()"
+                                class="w-full bg-indigo-600 text-white px-3 py-2 rounded text-sm font-bold hover:bg-indigo-700">
+                                Importar a mi Restaurante
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="generalMenus.length === 0" class="text-center py-12 text-gray-500">
+                    <p>No hay menús generales disponibles.</p>
+                </div>
+            </div>
         </div>
 
         <!-- VISTA RESERVAS -->

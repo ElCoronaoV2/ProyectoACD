@@ -15,9 +15,17 @@
   <div #map class="leaflet-map"></div>
 
   <!-- Center button -->
-  <button *ngIf="!loading && !error" class="center-btn" (click)="centerOnAlicante()" title="Centrar en Alicante">
-    🎯
-  </button>
+  <div class="map-controls" *ngIf="!loading && !error">
+    <button class="control-btn" (click)="locateUser()" title="Mi Ubicación">
+      📍 Mi Ubicación
+    </button>
+    <button class="control-btn" (click)="sortByDistance()" title="Buscar Cercanos">
+      🔍 Buscar Cercanos
+    </button>
+    <button class="control-btn" (click)="centerOnAlicante()" title="Centrar en Alicante">
+      🎯 Centrar
+    </button>
+  </div>
 
   <!-- Menu Modal -->
   <app-restaurant-menu-modal *ngIf="showModal && selectedLocal" [local]="selectedLocal" [menus]="menuItems"

@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface LocalRepository extends JpaRepository<LocalEntity, Long> {
-    
+    java.util.List<LocalEntity> findByPropietarioId(Long propietarioId);
 }

@@ -1,17 +1,16 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, HttpClientModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
-    <div class="min-h-[90vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gray-50">
-      <div class="max-w-2xl w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl border-t-4 border-secondary-500">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div class="max-w-2xl w-full space-y-8 bg-gray-800/50 backdrop-blur-sm p-10 rounded-xl shadow-2xl border border-gray-700">
         
         <!-- ERROR STATE -->
         <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative text-center">
@@ -20,12 +19,12 @@ import { HttpClientModule } from '@angular/common/http';
         </div>
 
         <div class="text-center" *ngIf="!showSuccessModal">
-          <h2 class="mt-2 text-3xl font-extrabold text-gray-900">
+          <h2 class="mt-2 text-3xl font-extrabold text-white">
             Crear Cuenta
           </h2>
-          <p class="mt-2 text-sm text-gray-600">
+          <p class="mt-2 text-sm text-gray-400">
             ¿Ya tienes cuenta?
-            <a routerLink="/login" class="font-medium text-primary-600 hover:text-primary-500 transition-colors">
+            <a routerLink="/login" class="font-medium text-amber-500 hover:text-amber-400 transition-colors">
               Inicia sesión aquí
             </a>
           </p>
@@ -36,60 +35,64 @@ import { HttpClientModule } from '@angular/common/http';
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Username -->
             <div>
-              <label for="username" class="block text-sm font-medium text-gray-700 mb-1">Nombre de Usuario</label>
+              <label for="username" class="block text-sm font-medium text-gray-300 mb-1">Nombre de Usuario</label>
               <input id="username" type="text" formControlName="username" 
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                class="appearance-none block w-full px-3 py-2 border border-gray-600 bg-gray-700/50 rounded-md placeholder-gray-400 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm"
                 placeholder="JuanGourmet">
-              <p *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('required')" class="mt-1 text-xs text-red-600">Este campo es obligatorio</p>
+              <p *ngIf="registerForm.get('username')?.touched && registerForm.get('username')?.hasError('required')" class="mt-1 text-xs text-red-400">Este campo es obligatorio</p>
             </div>
 
             <!-- Email -->
             <div>
-              <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+              <label for="email" class="block text-sm font-medium text-gray-300 mb-1">Correo Electrónico</label>
               <input id="email" type="email" formControlName="email"
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                class="appearance-none block w-full px-3 py-2 border border-gray-600 bg-gray-700/50 rounded-md placeholder-gray-400 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm"
                 placeholder="juan@ejemplo.com">
-                 <p *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('email')" class="mt-1 text-xs text-red-600">Introduce un correo válido</p>
+                 <p *ngIf="registerForm.get('email')?.touched && registerForm.get('email')?.hasError('email')" class="mt-1 text-xs text-red-400">Introduce un correo válido</p>
             </div>
 
              <!-- Phone -->
              <div class="md:col-span-2">
-              <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+              <label for="phone" class="block text-sm font-medium text-gray-300 mb-1">Teléfono</label>
               <input id="phone" type="tel" formControlName="phone"
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                class="appearance-none block w-full px-3 py-2 border border-gray-600 bg-gray-700/50 rounded-md placeholder-gray-400 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm"
                 placeholder="+34 600 000 000">
             </div>
 
             <!-- Allergens Dropdown/Select -->
             <div class="md:col-span-2">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Alergias e Intolerancias (Selecciona las tuyas)</label>
+              <label class="block text-sm font-medium text-gray-300 mb-2">Alergias e Intolerancias (Selecciona las tuyas)</label>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div *ngFor="let allergen of allergens" 
                      (click)="toggleAllergen(allergen.id)"
-                     [class.bg-primary-50]="isSelected(allergen.id)"
-                     [class.border-primary-500]="isSelected(allergen.id)"
-                     [class.text-primary-700]="isSelected(allergen.id)"
-                     class="cursor-pointer border rounded-lg p-2 flex flex-col items-center justify-center text-center transition-all hover:shadow-md border-gray-200">
+                     [ngClass]="{
+                       'bg-amber-900 border-amber-500 text-amber-400': isSelected(allergen.id),
+                       'bg-gray-700/30 border-gray-600 text-gray-300': !isSelected(allergen.id)
+                     }"
+                     class="cursor-pointer border rounded-lg p-2 flex flex-col items-center justify-center text-center transition-all hover:shadow-md hover:border-amber-400">
                   <span class="text-2xl mb-1">{{ allergen.icon }}</span>
                   <span class="text-xs font-medium">{{ allergen.name }}</span>
                 </div>
               </div>
+              <p *ngIf="selectedAllergens.length > 0" class="mt-2 text-xs text-amber-400">
+                ✓ Seleccionados: {{ selectedAllergens.length }}
+              </p>
             </div>
 
             <!-- Passwords -->
             <div>
-              <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+              <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Contraseña</label>
               <input id="password" type="password" formControlName="password"
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                class="appearance-none block w-full px-3 py-2 border border-gray-600 bg-gray-700/50 rounded-md placeholder-gray-400 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm"
                 placeholder="••••••••">
             </div>
 
             <div>
-              <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Repetir Contraseña</label>
+              <label for="confirmPassword" class="block text-sm font-medium text-gray-300 mb-1">Repetir Contraseña</label>
               <input id="confirmPassword" type="password" formControlName="confirmPassword"
-                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                class="appearance-none block w-full px-3 py-2 border border-gray-600 bg-gray-700/50 rounded-md placeholder-gray-400 text-white focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm"
                 placeholder="••••••••">
-               <p *ngIf="registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched" class="mt-1 text-xs text-red-600">Las contraseñas no coinciden</p>
+               <p *ngIf="registerForm.errors?.['mismatch'] && registerForm.get('confirmPassword')?.touched" class="mt-1 text-xs text-red-400">Las contraseñas no coinciden</p>
             </div>
           </div>
 
@@ -97,7 +100,7 @@ import { HttpClientModule } from '@angular/common/http';
           <div class="pt-4">
             <button type="submit" 
               [disabled]="registerForm.invalid || isLoading"
-              class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-md text-white bg-secondary-500 hover:bg-secondary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-secondary-500 transition-all hover:shadow-lg hover:animate-pulsing disabled:opacity-50 disabled:cursor-not-allowed">
+              class="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-md text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-all hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
               <span *ngIf="isLoading">Procesando...</span>
               <span *ngIf="!isLoading">Crear Cuenta</span>
             </button>

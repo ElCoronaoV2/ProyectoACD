@@ -4,15 +4,15 @@ services:
         container_name: restaurant-db
         restart: always
         environment:
-            POSTGRES_DB: restaurant_tec
-            POSTGRES_USER: admin
-            POSTGRES_PASSWORD: curso
+            POSTGRES_DB: ${POSTGRES_DB:-restaurant_tec}
+            POSTGRES_USER: ${POSTGRES_USER:-admin}
+            POSTGRES_PASSWORD: ${DB_PASSWORD:-curso}
         ports:
             - "5432:5432"
         volumes:
             - db_data:/var/lib/postgresql/data
         healthcheck:
-            test: ["CMD-SHELL", "pg_isready -U admin -d restaurant_tec"]
+            test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin} -d ${POSTGRES_DB:-restaurant_tec}"]
             interval: 10s
             timeout: 5s
             retries: 5
@@ -25,11 +25,20 @@ services:
             db:
                 condition: service_healthy
         environment:
-            POSTGRES_DB: restaurant_tec
-            POSTGRES_USER: admin
-            POSTGRES_PASSWORD: curso
-            SPRING_DATASOURCE_URL: jdbc:postgresql://restaurant-db:5432/restaurant_tec
-
+            SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://restaurant-db:5432/restaurant_tec}
+            SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-admin}
+            SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-curso}
+            POSTGRES_DB: ${POSTGRES_DB:-restaurant_tec}
+            POSTGRES_USER: ${POSTGRES_USER:-admin}
+            # IA: Cambia a la IP de tu PC Windows con GPU
+            OLLAMA_URL: ${OLLAMA_URL:-http://localhost:11434/api/generate}
+            OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.1:8b}
+            JWT_SECRET: ${JWT_SECRET:?JWT_SECRET debe estar definido}
+            STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-sk_test_placeholder}
+            MAIL_USERNAME: ${MAIL_USERNAME:-cambiar-email@gmail.com}
+            MAIL_PASSWORD: ${MAIL_PASSWORD:-cambiar-password}
+        ports:
+            - "8080:8080"
 
     frontend:
         build: ./frontend

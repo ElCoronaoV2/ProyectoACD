@@ -22,14 +22,21 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/profile")
-    public ResponseEntity<UserEntity> getProfile(Authentication authentication) {
+    public ResponseEntity<com.restaurant.tec.dto.LoginResponse> getProfile(Authentication authentication) {
         UserEntity user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
-        return ResponseEntity.ok(user);
+
+        return ResponseEntity.ok(new com.restaurant.tec.dto.LoginResponse(
+                "dummy-token", // No refrescamos el token aqui
+                user.getId(),
+                user.getEmail(),
+                user.getNombre(),
+                user.getRol(),
+                user.getAlergenos()));
     }
 
     @PutMapping("/profile")
-    public ResponseEntity<UserEntity> updateProfile(@RequestBody Map<String, Object> updates,
+    public ResponseEntity<com.restaurant.tec.dto.LoginResponse> updateProfile(@RequestBody Map<String, Object> updates,
             Authentication authentication) {
         UserEntity user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
@@ -42,16 +49,14 @@ public class UserController {
         if (updates.containsKey("alergenos"))
             user.setAlergenos((String) updates.get("alergenos"));
 
-        // Save
-        // We can use UserService or Repository directly if logic is simple.
-        // Assuming UserService has save method or we use Repository.
-        // Step 35 showed UserService class. I didn't see a generic 'update' method but
-        // it might exist or I can use Repo.
-        // Safest is to use Repo for now or invoke UserService if I added update logic.
-        // I'll use repository for simplicity here as UserService might be for Auth.
-        // Wait, Step 35 showed UserService has registerUser, verifyUser etc.
-        // I'll use repository.
+        UserEntity savedUser = userRepository.save(user);
 
-        return ResponseEntity.ok(userRepository.save(user));
+        return ResponseEntity.ok(new com.restaurant.tec.dto.LoginResponse(
+                "dummy-token",
+                savedUser.getId(),
+                savedUser.getEmail(),
+                savedUser.getNombre(),
+                savedUser.getRol(),
+                savedUser.getAlergenos()));
     }
 }

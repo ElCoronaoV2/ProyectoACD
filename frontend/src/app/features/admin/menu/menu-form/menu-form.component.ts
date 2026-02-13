@@ -186,7 +186,10 @@ export class MenuFormComponent {
     }
 
     submit() {
-        if (this.menuForm.invalid) return;
+        if (this.menuForm.invalid) {
+            this.notificationService.showWarning('Por favor, completa todos los campos obligatorios correctamente.');
+            return;
+        }
 
         this.loading = true;
         const formVal = this.menuForm.value;
@@ -200,16 +203,12 @@ export class MenuFormComponent {
         const request: CreateMenuRequest = {
             ...formVal,
             localId: this.restaurantId,
-            alergenos: formVal.alergenos.join(',') // Convert array to string
+            alergenos: formVal.alergenos.join(',')
         };
-
-        console.log('📤 Submitting Menu Request:', request);
 
         this.menuService.createMenu(request).subscribe({
             next: (menu) => {
                 this.loading = false;
-                // Optionally generate PDF automatically
-                // this.menuService.generateMenuPdf(menu); 
                 this.onSaved.emit();
                 this.onClose.emit();
             },

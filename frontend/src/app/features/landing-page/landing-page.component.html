@@ -1,89 +1,189 @@
-<div class="landing-container">
+<div class="landing-container" #landingContainer>
+  <!-- Scroll Progress Bar -->
+  <div class="scroll-progress" [style.transform]="'scaleX(' + scrollProgress + ')'"></div>
+
   <!-- Hero Section -->
-  <header class="hero" style="background-image: url('assets/images/landing/landing_1.png');">
+  <header class="hero">
+    <div class="hero-bg" style="background-image: url('assets/images/landing/landing_1.png');"></div>
     <div class="hero-overlay">
       <div class="hero-content">
-        <h1 class="animate-fade-in">Restaurant Tec</h1>
-        <p class="animate-slide-up">Experiencia culinaria mediterránea de vanguardia</p>
-        <div class="hero-buttons">
-          <ng-container *ngIf="!isLoggedIn; else dashboardBtn">
-            <button class="btn-primary" routerLink="/login">Iniciar Sesión</button>
-            <button class="btn-outline" routerLink="/register">Registrarse</button>
-          </ng-container>
-          <ng-template #dashboardBtn>
-            <button class="btn-primary" [routerLink]="dashboardRoute">Ir a mi Panel</button>
-          </ng-template>
+        <div class="hero-badge reveal-up">DESDE 1985</div>
+        <h1 class="hero-title">
+          <span class="title-line reveal-up" style="--delay: 0.2s">Restaurant</span>
+          <span class="title-line title-accent reveal-up" style="--delay: 0.4s">Tec</span>
+        </h1>
+        <p class="hero-subtitle reveal-up" style="--delay: 0.6s">Experiencia culinaria mediterránea de vanguardia</p>
+        <div class="hero-buttons reveal-up" style="--delay: 0.8s">
+          <button class="btn-primary magnetic" routerLink="/restaurants">
+            <span>Ver Restaurantes</span>
+          </button>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- Historia Section -->
-  <section class="section history">
+  <!-- Cinematic Text Section -->
+  <section class="cinematic-text">
+    <div class="cinematic-content">
+      <h2 class="split-text reveal-up">
+        <span>Donde la tradición</span>
+        <span class="highlight">se encuentra</span>
+        <span>con la innovación</span>
+      </h2>
+    </div>
+  </section>
+
+  <!-- Historia Section with Parallax -->
+  <section class="section history parallax-section">
+    <div class="parallax-bg" style="background-image: url('assets/images/landing/landing_2.png');"></div>
+    <div class="parallax-overlay"></div>
     <div class="container">
-      <div class="grid-2">
-        <div class="history-text">
-          <h2>Nuestra Historia</h2>
-          <p>
-            Fundado en 1985 por la familia Martínez en el corazón de la costa mediterránea,
-            <strong>Restaurant Tec</strong> nació con una visión simple: fusionar la tradición con la innovación.
-          </p>
-          <p>
-            Lo que comenzó como una pequeña taberna pesquera se ha transformado, bajo la dirección
-            de nuestro galardonado equipo culinario, en un referente de la alta cocina.
-            Respetamos el producto local, elevando cada ingrediente a su máxima expresión.
-          </p>
-          <p>
-            Nuestra arquitectura, una mezcla de muros de piedra centenarios y diseño moderno,
-            refleja nuestra filosofía: raíces profundas y mirada al futuro.
-          </p>
-        </div>
-        <div class="history-image">
-          <img src="assets/images/landing/landing_2.png" alt="Chef preparando plato" class="rounded-shadow">
+      <div class="content-card glass-card reveal-left">
+        <div class="card-badge">NUESTRA HISTORIA</div>
+        <h2>Una Tradición Familiar</h2>
+        <p>
+          Fundado en 1985 por la familia Martínez en el corazón de la costa mediterránea,
+          <strong>Restaurant Tec</strong> nació con una visión simple: fusionar la tradición con la innovación.
+        </p>
+        <p>
+          Lo que comenzó como una pequeña taberna pesquera se ha transformado en un referente de la alta cocina.
+          Respetamos el producto local, elevando cada ingrediente a su máxima expresión.
+        </p>
+        <div class="card-stats">
+          <div class="stat">
+            <span class="stat-number counter" data-target="40">40</span>
+            <span class="stat-label">Años de Historia</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number counter" data-target="15">15</span>
+            <span class="stat-label">Chefs Expertos</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number counter" data-target="3">3</span>
+            <span class="stat-label">Estrellas Michelin</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Speciality Section -->
-  <section class="section dish-showcase">
+  <!-- Image Gallery Grid -->
+  <section class="gallery-section">
     <div class="container">
-      <h2 class="text-center">Gastronomía de Autor</h2>
-      <div class="grid-2 reverse-mobile">
-        <div class="dish-image">
-          <img src="assets/images/landing/landing_4.png" alt="Paella de autor" class="rounded-shadow">
+      <div class="gallery-header">
+        <h2 class="reveal-up">Nuestra Gastronomía</h2>
+        <p class="reveal-up" style="--delay: 0.2s">Cada plato cuenta una historia</p>
+      </div>
+      <div class="gallery-grid">
+        <div class="gallery-item reveal-up" style="--delay: 0s" (click)="openLightbox('assets/images/landing/landing_4.png', 'Paella Real')">
+          <img src="assets/images/landing/landing_4.png" alt="Paella Real">
+          <div class="gallery-item-overlay">
+            <h3>Paella Real</h3>
+            <p>Nuestra especialidad estrella</p>
+            <span class="zoom-hint">🔍 Clic para ampliar</span>
+          </div>
         </div>
-        <div class="dish-text">
-          <h3>Sabores que Cuentan Historias</h3>
-          <p>
-            Cada plato en nuestra carta es una obra de arte. Nuestra famosa <strong>Paella Real</strong>,
-            reinterpretada con técnicas de vanguardia, mantiene la esencia del azafrán y el marisco fresco,
-            presentada con una elegancia digna de estrellas Michelin.
-          </p>
-          <p>
-            Utilizamos ingredientes de "Kilómetro 0", apoyando a los productores locales y garantizando
-            la frescura absoluta en cada bocado.
-          </p>
+        <div class="gallery-item reveal-up" style="--delay: 0.1s" (click)="openLightbox('assets/images/landing/landing_2.png', 'Selección del Chef')">
+          <img src="assets/images/landing/landing_2.png" alt="Chef Selection">
+          <div class="gallery-item-overlay">
+            <h3>Chef's Selection</h3>
+            <p>Creatividad en cada bocado</p>
+            <span class="zoom-hint">🔍 Clic para ampliar</span>
+          </div>
+        </div>
+        <div class="gallery-item reveal-up" style="--delay: 0.2s" (click)="openLightbox('assets/images/landing/landing_3.png', 'Terraza Premium')">
+          <img src="assets/images/landing/landing_3.png" alt="Terraza">
+          <div class="gallery-item-overlay">
+            <h3>Terraza Premium</h3>
+            <p>Vistas al mediterráneo</p>
+            <span class="zoom-hint">🔍 Clic para ampliar</span>
+          </div>
+        </div>
+        <div class="gallery-item reveal-up" style="--delay: 0.3s" (click)="openLightbox('assets/images/landing/landing_1.png', 'Ambiente Único')">
+          <img src="assets/images/landing/landing_1.png" alt="Ambiente">
+          <div class="gallery-item-overlay">
+            <h3>Ambiente Único</h3>
+            <p>Momentos inolvidables</p>
+            <span class="zoom-hint">🔍 Clic para ampliar</span>
+          </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Terrace Section -->
-  <section class="section terrace">
+  <!-- Quote Section - Sticky -->
+  <section class="quote-section">
+    <div class="quote-sticky">
+      <blockquote class="reveal-scale">
+        <span class="quote-mark">"</span>
+        <p>La cocina es un arte que alimenta el alma tanto como el cuerpo</p>
+        <cite>— Chef Antonio Martínez, Fundador</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- Features Grid -->
+  <section class="features-section">
     <div class="container">
-      <div class="grid-2">
-        <div class="terrace-text">
-          <h2>Atardeceres Inolvidables</h2>
-          <p>
-            Disfrute de nuestros cócteles exclusivos y cenas románticas en nuestra terraza panorámica.
-            Con vistas al mar y ambientación cuidadosamente iluminada, es el lugar perfecto para
-            crear recuerdos que durarán para siempre.
-          </p>
+      <div class="features-header">
+        <h2 class="reveal-up">¿Por qué elegirnos?</h2>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card reveal-up" style="--delay: 0s">
+          <div class="feature-icon">🌊</div>
+          <h3>Producto Local</h3>
+          <p>Ingredientes frescos de la costa mediterránea, directos a tu mesa</p>
         </div>
-        <div class="terrace-image">
-          <img src="assets/images/landing/landing_3.png" alt="Terraza al atardecer" class="rounded-shadow">
+        <div class="feature-card reveal-up" style="--delay: 0.1s">
+          <div class="feature-icon">👨‍🍳</div>
+          <h3>Chefs Premiados</h3>
+          <p>Equipo culinario reconocido internacionalmente</p>
         </div>
+        <div class="feature-card reveal-up" style="--delay: 0.2s">
+          <div class="feature-icon">🌅</div>
+          <h3>Vistas al Mar</h3>
+          <p>Terraza panorámica con atardeceres inolvidables</p>
+        </div>
+        <div class="feature-card reveal-up" style="--delay: 0.3s">
+          <div class="feature-icon">🍷</div>
+          <h3>Bodega Selecta</h3>
+          <p>Más de 200 referencias de vinos nacionales e internacionales</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Terrace Section with Video/Image -->
+  <section class="section terrace-showcase">
+    <div class="terrace-content">
+      <div class="terrace-media reveal-right">
+        <img src="assets/images/landing/landing_3.png" alt="Terraza" class="terrace-image">
+      </div>
+      <div class="terrace-text reveal-left">
+        <div class="section-badge">EXPERIENCIA</div>
+        <h2>Atardeceres Inolvidables</h2>
+        <p>
+          Disfrute de nuestros cócteles exclusivos y cenas románticas en nuestra terraza panorámica.
+          Con vistas al mar y ambientación cuidadosamente iluminada, es el lugar perfecto para
+          crear recuerdos que durarán para siempre.
+        </p>
+        <button class="btn-primary magnetic" routerLink="/login">
+          <span>Únete a nosotros</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-bg"></div>
+    <div class="cta-content reveal-scale">
+      <h2>¿Listo para vivir la experiencia?</h2>
+      <p>Reserva tu mesa y descubre por qué somos el destino gastronómico preferido de la costa</p>
+      <div class="cta-buttons">
+        <a routerLink="/restaurants" class="cta-main-btn">
+          Ver Restaurantes
+        </a>
       </div>
     </div>
   </section>
@@ -91,12 +191,42 @@
   <!-- Footer -->
   <footer class="landing-footer">
     <div class="container">
-      <p>&copy; 2026 Restaurant Tec. Todos los derechos reservados.</p>
-      <div class="social-links">
-        <span>Instagram</span>
-        <span>Facebook</span>
-        <span>Twitter</span>
+      <div class="footer-content">
+        <div class="footer-brand">
+          <h3>Restaurant Tec</h3>
+          <p>Gastronomía mediterránea de autor</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-column">
+            <h4>Contacto</h4>
+            <p>info&#64;restaurant-tec.es</p>
+            <p>+34 900 123 456</p>
+          </div>
+          <div class="footer-column">
+            <h4>Horario</h4>
+            <p>Lun - Dom: 13:00 - 23:00</p>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Restaurant Tec. Todos los derechos reservados.</p>
+        <div class="social-links">
+          <a href="#" class="social-icon">Instagram</a>
+          <a href="#" class="social-icon">Facebook</a>
+          <a href="#" class="social-icon">Twitter</a>
+        </div>
       </div>
     </div>
   </footer>
+</div>
+
+<!-- Image Lightbox -->
+<div *ngIf="showLightbox" 
+     class="lightbox-backdrop" 
+     (click)="onLightboxBackdropClick($event)">
+  <div class="lightbox-content">
+    <button class="lightbox-close" (click)="closeLightbox()">✕</button>
+    <img [src]="selectedImage" [alt]="selectedImageTitle" class="lightbox-image" />
+    <p class="lightbox-title">{{ selectedImageTitle }}</p>
+  </div>
 </div>

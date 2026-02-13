@@ -82,6 +82,10 @@
                 <button type="submit" class="btn-primary" [disabled]="loading">
                     {{ loading ? 'Guardando...' : (editMode ? 'Actualizar' : 'Crear Restaurante') }}
                 </button>
+                <button *ngIf="editMode" type="button" class="btn-info" (click)="openReviewsModal()"
+                    style="background-color: #3b82f6; color: white;">
+                    💬 Reseñas
+                </button>
                 <button type="button" class="btn-secondary" (click)="closeForm()">Cancelar</button>
                 <button *ngIf="editMode" type="button" class="btn-danger" (click)="deleteLocal()" [disabled]="loading">
                     🗑️ Eliminar
@@ -89,4 +93,8 @@
             </div>
         </form>
     </div>
+
+    <app-reviews-modal *ngIf="showReviewsModal" [localId]="selectedLocalIdForReviews!"
+        (onClose)="showReviewsModal = false">
+    </app-reviews-modal>
 </div>

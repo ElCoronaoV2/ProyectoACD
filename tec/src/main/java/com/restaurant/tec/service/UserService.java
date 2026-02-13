@@ -14,6 +14,14 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Servicio para gestionar usuarios del sistema.
+ * Proporciona funcionalidades de registro, verificación de email, recuperación de contraseña
+ * y actualización de perfiles de usuario.
+ * 
+ * @author RestaurantTec Team
+ * @version 1.0
+ */
 @Service
 public class UserService {
 
@@ -32,7 +40,16 @@ public class UserService {
     @Autowired
     private com.restaurant.tec.repository.LocalRepository localRepository;
 
+    /**
+     * Registra un nuevo usuario en el sistema.
+     * Encripta la contraseña, crea el usuario y envía email de verificación.
+     * 
+     * @param request datos del registro (email, contraseña, nombre, etc.)
+     * @return UserEntity el usuario registrado
+     * @throws RuntimeException si el email ya está registrado
+     */
     @Transactional
+    @SuppressWarnings("null")
     public UserEntity registerUser(RegisterRequest request) {
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new RuntimeException("El email ya está registrado");
@@ -45,10 +62,16 @@ public class UserService {
         user.setTelefono(request.getTelefono());
         user.setAlergenos(request.getAlergenos());
 
-        // Asignar rol
+        // Asignar rol: SEGURIDAD - Solo se pueden crear usuarios normales (USER) en self-registration
+        // Los roles especiales (DIRECTOR, CEO, EMPLEADO) solo pueden crearse vía admin endpoints
         if (request.getRol() != null && !request.getRol().isEmpty()) {
+            String requestedRole = request.getRol().toUpperCase();
+            // Solo permitir USER role en registro público
+            if (requestedRole.equals("DIRECTOR") || requestedRole.equals("CEO") || requestedRole.equals("EMPLEADO")) {
+                throw new RuntimeException("No puedes crear una cuenta con rol de empleado. Contacta al administrador.");
+            }
             try {
-                user.setRol(com.restaurant.tec.entity.Role.valueOf(request.getRol()));
+                user.setRol(com.restaurant.tec.entity.Role.valueOf(requestedRole));
             } catch (IllegalArgumentException e) {
                 user.setRol(com.restaurant.tec.entity.Role.USER);
             }
@@ -156,6 +179,7 @@ public class UserService {
     }
 
     @Transactional
+    @SuppressWarnings("null")
     public UserEntity updateProfile(Long userId, String nombre, String telefono, String alergenos) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -171,6 +195,7 @@ public class UserService {
     }
 
     @Transactional
+    @SuppressWarnings("null")
     public UserEntity updateAlergenos(Long userId, String alergenos) {
         UserEntity user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));

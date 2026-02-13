@@ -16,10 +16,15 @@ public class ResenaEntity {
     @JoinColumn(name = "usuario_id", nullable = false)
     private UserEntity usuario;
 
-    // Relación con el local
+    // Relación con el local (Opcional si es reseña de menú)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "local_id", nullable = false)
+    @JoinColumn(name = "local_id", nullable = true)
     private LocalEntity local;
+
+    // Relación con el menú (Opcional si es reseña de local)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "menu_id", nullable = true)
+    private MenuEntity menu;
 
     // Puntuación de 1 a 5
     @Column(nullable = false)
@@ -37,7 +42,8 @@ public class ResenaEntity {
     }
 
     // Constructores
-    public ResenaEntity() {}
+    public ResenaEntity() {
+    }
 
     public ResenaEntity(UserEntity usuario, LocalEntity local, Integer puntuacion, String comentario) {
         this.usuario = usuario;
@@ -47,26 +53,54 @@ public class ResenaEntity {
     }
 
     // Getters y Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public UserEntity getUsuario() { return usuario; }
-    public void setUsuario(UserEntity usuario) { this.usuario = usuario; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public LocalEntity getLocal() { return local; }
-    public void setLocal(LocalEntity local) { this.local = local; }
+    public UserEntity getUsuario() {
+        return usuario;
+    }
 
-    public Integer getPuntuacion() { return puntuacion; }
-    public void setPuntuacion(Integer puntuacion) { 
+    public void setUsuario(UserEntity usuario) {
+        this.usuario = usuario;
+    }
+
+    public LocalEntity getLocal() {
+        return local;
+    }
+
+    public void setLocal(LocalEntity local) {
+        this.local = local;
+    }
+
+    public Integer getPuntuacion() {
+        return puntuacion;
+    }
+
+    public void setPuntuacion(Integer puntuacion) {
         if (puntuacion < 1 || puntuacion > 5) {
             throw new IllegalArgumentException("La puntuación debe estar entre 1 y 5");
         }
-        this.puntuacion = puntuacion; 
+        this.puntuacion = puntuacion;
     }
 
-    public String getComentario() { return comentario; }
-    public void setComentario(String comentario) { this.comentario = comentario; }
+    public String getComentario() {
+        return comentario;
+    }
 
-    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
-    public void setFechaCreacion(LocalDateTime fechaCreacion) { this.fechaCreacion = fechaCreacion; }
+    public void setComentario(String comentario) {
+        this.comentario = comentario;
+    }
+
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public void setFechaCreacion(LocalDateTime fechaCreacion) {
+        this.fechaCreacion = fechaCreacion;
+    }
 }

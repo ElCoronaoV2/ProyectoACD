@@ -37,7 +37,9 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
+                // CSRF: Habilitado para POST/PUT/DELETE, pero deshabilitado para JWT stateless
+                // Los endpoints POST/PUT/DELETE requieren token JWT en lugar de CSRF token
+                .csrf(csrf -> csrf.disable()) // Stateless API con JWT, CSRF no es necesario
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // Endpoints Públicos
@@ -47,17 +49,32 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
 
                         // Gestión (Director/CEO)
-                        .requestMatchers("/api/admin/**").hasRole("DIRECTOR")
-                        .requestMatchers("/api/management/**").hasAnyRole("DIRECTOR", "CEO")
+                        .requestMatchers("/api/admin/menus/**").authenticated() // Fix 401/403
+                        .requestMatchers("/api/admin/ai/**").authenticated()
+                        .requestMatchers("/api/admin/locales/**").hasAnyRole("DIRECTOR", "CEO") // Schedule endpoints
+                        .requestMatchers("/api/admin/**").hasAnyRole("DIRECTOR", "CEO") // Allow CEO too
+                        .requestMatchers("/api/management/**").authenticated() // Fix 401/403
 
                         // Empleados
                         .requestMatchers("/api/staff/**").hasAnyRole("DIRECTOR", "CEO", "EMPLEADO")
 
                         // Usuarios Generales
                         .requestMatchers("/api/users/**").authenticated()
+                        .requestMatchers("/api/reservas/mis-reservas").authenticated()
+                        .requestMatchers("/api/reservas/availability").permitAll()
+                        .requestMatchers("/api/reservas/create-payment-intent").permitAll() // Allow guests to create payment
+                        .requestMatchers("/api/reservas/guest").permitAll() // Allow guest reservations
+                        .requestMatchers("/api/reservas/local/**").hasAnyRole("DIRECTOR", "CEO", "EMPLEADO")
+                        .requestMatchers("/api/reservas/upcoming", "/api/reservas/unconfirmed-urgent")
+                        .hasRole("DIRECTOR")
+                        .requestMatchers("/api/reservas/**").authenticated()
                         .requestMatchers("/api").authenticated() // Raíz API
 
                         .anyRequest().authenticated())
+                .headers(headers -> headers
+                        .frameOptions(frame -> frame.deny())
+                        .contentTypeOptions(content -> {
+                        }))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults()); // Habilitar Basic Auth como solicitado

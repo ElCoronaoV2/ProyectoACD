@@ -4,17 +4,48 @@
         <div class="modal-header">
             <div class="header-content">
                 <h2>{{ local.nombre }}</h2>
-                <div class="rating">
-                    <span *ngFor="let star of getStars(local.valoracion)" class="star">{{ star }}</span>
-                    <span class="rating-value">{{ local.valoracion || 'N/A' }}</span>
+                <div class="rating-section">
+                    <div class="rating">
+                        <span *ngFor="let star of getStars(local.valoracion)" class="star">{{ star }}</span>
+                        <span class="rating-value">{{ local.valoracion || 'N/A' }}</span>
+                    </div>
+                    <button *ngIf="authService.isLoggedIn()" (click)="toggleRestaurantReviewForm()"
+                        class="rate-restaurant-btn">
+                        <span class="btn-icon">⭐</span>
+                        <span class="btn-text">{{ showRestaurantReviewForm ? 'Cancelar' : 'Valorar' }}</span>
+                    </button>
                 </div>
             </div>
             <button class="close-btn" (click)="onClose()">✕</button>
         </div>
 
+        <!-- Restaurant Review Form -->
+        <div *ngIf="showRestaurantReviewForm" class="restaurant-review-form">
+            <div class="review-form-content">
+                <h4>Valora este restaurante</h4>
+                <div class="stars-container" (mouseleave)="clearRestaurantHover()">
+                    <button *ngFor="let i of [1,2,3,4,5]" (click)="setRestaurantRating(i)"
+                        (mouseenter)="setRestaurantHover(i)" class="star-btn"
+                        [class.active]="(restaurantHoverRating || restaurantReviewData.rating) >= i">
+                        ★
+                    </button>
+                </div>
+                <textarea [(ngModel)]="restaurantReviewData.comment" rows="2" class="review-textarea"
+                    placeholder="Escribe tu opinión sobre el restaurante... (opcional)"></textarea>
+                <button (click)="submitRestaurantReview()" [disabled]="restaurantReviewData.rating === 0"
+                    class="submit-review-btn">
+                    <span>✓</span> Enviar Valoración
+                </button>
+            </div>
+        </div>
+
         <!-- Restaurant info -->
         <div class="restaurant-info">
-            <img *ngIf="local.imagenUrl" [src]="local.imagenUrl" [alt]="local.nombre" class="restaurant-image" />
+            <div *ngIf="local.imagenUrl" class="image-wrapper cursor-pointer" (click)="openImageLightbox($event)"
+                title="Clic para ampliar">
+                <img [src]="local.imagenUrl" [alt]="local.nombre" class="restaurant-image" />
+                <div class="image-zoom-icon">🔍</div>
+            </div>
             <div class="info-details">
                 <p><strong>📍 Dirección:</strong> {{ local.direccion }}</p>
                 <p *ngIf="local.horario"><strong>🕐 Horario:</strong> {{ local.horario }}</p>
@@ -46,7 +77,12 @@
             </div>
 
             <div class="menus-list" *ngIf="menus.length > 0">
-                <div *ngFor="let item of menus" class="menu-card" [class.unavailable]="!item.disponible">
+                <div *ngFor="let item of menus" class="menu-card" [class.unavailable]="!item.disponible"
+                    [class.selected]="selectedMenu?.id === item.id">
+                    <!-- Selection indicator -->
+                    <div *ngIf="selectedMenu?.id === item.id" class="selected-badge">
+                        ✓ Seleccionado
+                    </div>
                     <!-- Header del menú -->
                     <div class="menu-card-header">
                         <div class="menu-title-section">
@@ -54,38 +90,36 @@
                             <p *ngIf="item.descripcion" class="text-sm text-gray-600 mb-2">{{ item.descripcion }}</p>
 
                             <!-- Rating Section -->
-                            <div class="flex items-center justify-between mb-3">
-                                <div class="flex items-center text-yellow-500 text-sm"
+                            <div class="menu-rating-section">
+                                <div class="menu-stars"
                                     title="Valoración media: {{ item.valoracionMedia | number:'1.1-1' }}">
-                                    <span *ngFor="let star of getStars(item.valoracionMedia)" class="mr-0.5">{{ star
+                                    <span *ngFor="let star of getStars(item.valoracionMedia)" class="menu-star">{{ star
                                         }}</span>
-                                    <span class="text-gray-500 text-xs ml-1">({{ item.valoracionMedia ?
-                                        (item.valoracionMedia | number:'1.1-1') : 'Sin valoraciones' }})</span>
+                                    <span class="menu-rating-text">({{ item.valoracionMedia ? (item.valoracionMedia |
+                                        number:'1.1-1') : 'Sin valoraciones' }})</span>
                                 </div>
                                 <button *ngIf="authService.isLoggedIn()" (click)="toggleReviewForm(item.id)"
-                                    class="text-xs text-primary-600 hover:text-primary-800 font-medium underline">
-                                    {{ showReviewForm[item.id] ? 'Cancelar' : 'Valorar' }}
+                                    class="rate-menu-btn" [class.active]="showReviewForm[item.id]">
+                                    <span class="btn-icon">{{ showReviewForm[item.id] ? '✕' : '⭐' }}</span>
+                                    <span class="btn-text">{{ showReviewForm[item.id] ? 'Cancelar' : 'Valorar' }}</span>
                                 </button>
                             </div>
 
                             <!-- Review Form -->
-                            <div *ngIf="showReviewForm[item.id] && reviewData[item.id]"
-                                class="mb-4 p-3 bg-gray-50 rounded border border-gray-200">
-                                <p class="text-xs font-bold text-gray-700 mb-2">Tu valoración:</p>
-                                <div class="flex mb-2">
+                            <div *ngIf="showReviewForm[item.id] && reviewData[item.id]" class="menu-review-form">
+                                <p class="review-title">Tu valoración del menú:</p>
+                                <div class="stars-container" (mouseleave)="clearMenuHover(item.id)">
                                     <button *ngFor="let i of [1,2,3,4,5]" (click)="setRating(item.id, i)"
-                                        class="text-xl focus:outline-none transition-transform hover:scale-110"
-                                        [class.text-yellow-400]="getReviewRating(item.id) >= i"
-                                        [class.text-gray-300]="getReviewRating(item.id) < i">
+                                        (mouseenter)="setMenuHover(item.id, i)" class="star-btn"
+                                        [class.active]="(menuHoverRating[item.id] || getReviewRating(item.id)) >= i">
                                         ★
                                     </button>
                                 </div>
-                                <textarea [(ngModel)]="reviewData[item.id].comment" rows="2"
-                                    class="w-full text-xs p-2 border rounded mb-2"
+                                <textarea [(ngModel)]="reviewData[item.id].comment" rows="2" class="review-textarea"
                                     placeholder="Escribe tu opinión... (opcional)"></textarea>
                                 <button (click)="submitReview(item.id)" [disabled]="getReviewRating(item.id) === 0"
-                                    class="w-full bg-primary-600 text-white text-xs py-1.5 rounded hover:bg-primary-700 disabled:opacity-50">
-                                    Enviar Valoración
+                                    class="submit-review-btn">
+                                    <span>✓</span> Enviar Valoración
                                 </button>
                             </div>
                         </div>
@@ -157,6 +191,19 @@
                         </div>
                     </div>
 
+                    <!-- Select menu button -->
+                    <div *ngIf="item.disponible" class="menu-select-action">
+                        <button type="button" (click)="selectMenu(item)" class="select-menu-btn"
+                            [class.selected]="selectedMenu?.id === item.id">
+                            <span *ngIf="selectedMenu?.id !== item.id">📋 Seleccionar este menú</span>
+                            <span *ngIf="selectedMenu?.id === item.id">✓ Menú seleccionado</span>
+                        </button>
+                        <button *ngIf="selectedMenu?.id === item.id" type="button" (click)="goToBookingWithMenu()"
+                            class="go-to-booking-btn">
+                            🍽️ Ir a Reservar
+                        </button>
+                    </div>
+
                     <!-- Badge no disponible -->
                     <div *ngIf="!item.disponible" class="unavailable-overlay">
                         <span>🚫 No disponible temporalmente</span>
@@ -166,26 +213,61 @@
         </div>
 
         <!-- Booking Section -->
-        <div *ngIf="activeTab === 'booking'" class="p-4 bg-gray-50 rounded-lg">
-            <div *ngIf="authService.isLoggedIn(); else loginPrompt">
-                <h3 class="text-xl font-bold mb-4 text-gray-800">Realizar Reserva</h3>
+        <div *ngIf="activeTab === 'booking'" class="p-4 bg-gray-50 rounded-lg text-gray-800">
+            <div>
+                <h3 class="text-xl font-bold mb-4 text-gray-900">Realizar Reserva</h3>
+
+                <!-- Selected Menu Summary -->
+                <div *ngIf="selectedMenu" class="selected-menu-summary mb-4">
+                    <div class="selected-menu-header">
+                        <span class="selected-menu-icon">📋</span>
+                        <span class="selected-menu-title">Menú Seleccionado</span>
+                    </div>
+                    <div class="selected-menu-content">
+                        <div class="selected-menu-name">{{ selectedMenu.nombre }}</div>
+                        <div class="selected-menu-price">{{ selectedMenu.precio | number:'1.2-2' }} €</div>
+                        <div *ngIf="selectedMenu.primerPlato" class="selected-menu-item">
+                            <span class="item-label">1º:</span> {{ selectedMenu.primerPlato }}
+                        </div>
+                        <div *ngIf="selectedMenu.segundoPlato" class="selected-menu-item">
+                            <span class="item-label">2º:</span> {{ selectedMenu.segundoPlato }}
+                        </div>
+                        <div *ngIf="selectedMenu.postre" class="selected-menu-item">
+                            <span class="item-label">Postre:</span> {{ selectedMenu.postre }}
+                        </div>
+                    </div>
+                    <button type="button" (click)="selectedMenu = null" class="remove-menu-btn">
+                        ✕ Quitar menú
+                    </button>
+                </div>
+
+                <!-- No menu selected info -->
+                <div *ngIf="!selectedMenu" class="no-menu-selected mb-4">
+                    <p class="text-sm text-gray-500">
+                        💡 <span class="font-medium">Sugerencia:</span> Puedes seleccionar un menú en la pestaña "Carta
+                        / Menú" antes de reservar.
+                    </p>
+                </div>
+
                 <form (submit)="showPaymentStep ? confirmPaymentAndReserve() : initiateReservationProcess()"
                     class="space-y-4">
                     <!-- Reservation Form Fields (Hide when paying) -->
                     <div *ngIf="!showPaymentStep">
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">Fecha</label>
+                                <label class="block text-sm font-bold text-gray-800 mb-1">Fecha</label>
                                 <input [(ngModel)]="bookingData.fecha" name="fecha" type="date"
-                                    (change)="checkAvailability()" class="w-full p-2 border rounded shadow-sm" required>
+                                    (change)="checkAvailability()"
+                                    class="w-full p-2 border rounded shadow-sm text-gray-900" required>
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">Turno</label>
+                                <label class="block text-sm font-bold text-gray-800 mb-1">Turno</label>
                                 <div class="flex space-x-2">
                                     <button type="button" (click)="selectShift('lunch')"
                                         [class.bg-primary-600]="selectedShift === 'lunch'"
                                         [class.text-white]="selectedShift === 'lunch'"
                                         [class.bg-gray-200]="selectedShift !== 'lunch'"
+                                        [class.text-gray-800]="selectedShift !== 'lunch'"
                                         class="flex-1 py-2 rounded font-medium transition">
                                         ☀️ Comida
                                     </button>
@@ -193,6 +275,7 @@
                                         [class.bg-primary-600]="selectedShift === 'dinner'"
                                         [class.text-white]="selectedShift === 'dinner'"
                                         [class.bg-gray-200]="selectedShift !== 'dinner'"
+                                        [class.text-gray-800]="selectedShift !== 'dinner'"
                                         class="flex-1 py-2 rounded font-medium transition">
                                         🌙 Cena
                                     </button>
@@ -202,12 +285,13 @@
 
                         <!-- Time Slots -->
                         <div *ngIf="selectedShift" class="mb-4">
-                            <label class="block text-sm font-bold text-gray-700 mb-2">Selecciona Hora:</label>
+                            <label class="block text-sm font-bold text-gray-800 mb-2">Selecciona Hora:</label>
                             <div class="grid grid-cols-4 gap-2">
                                 <button *ngFor="let time of availableTimeSlots" type="button" (click)="selectTime(time)"
                                     [class.bg-secondary-500]="bookingData.hora === time"
                                     [class.text-white]="bookingData.hora === time"
                                     [class.bg-gray-100]="bookingData.hora !== time"
+                                    [class.text-gray-800]="bookingData.hora !== time"
                                     class="py-1 px-2 rounded text-sm hover:bg-secondary-200 transition">
                                     {{ time }}
                                 </button>
@@ -220,29 +304,29 @@
 
                             <!-- Guest Info (Only if not logged in) -->
                             <div *ngIf="!authService.isLoggedIn()"
-                                class="guest-info-section p-3 bg-blue-50 rounded-lg border border-blue-100 mb-2">
+                                class="guest-info-section p-3 bg-blue-50 rounded-lg border border-blue-100 mb-2 text-gray-800">
                                 <p class="text-sm text-blue-800 mb-3 font-medium">👋 Completa tus datos para reservar
                                     como
                                     invitado:</p>
 
                                 <div class="mb-3">
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">Nombre *</label>
+                                    <label class="block text-sm font-bold text-gray-800 mb-1">Nombre *</label>
                                     <input [(ngModel)]="bookingData.nombreInvitado" name="nombreInvitado" type="text"
-                                        class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-primary-500"
+                                        class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-primary-500 text-gray-900"
                                         placeholder="Tu nombre completo" required>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">Email *</label>
+                                    <label class="block text-sm font-bold text-gray-800 mb-1">Email *</label>
                                     <input [(ngModel)]="bookingData.emailInvitado" name="emailInvitado" type="email"
-                                        class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-primary-500"
+                                        class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-primary-500 text-gray-900"
                                         placeholder="correo@ejemplo.com" required>
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="block text-sm font-bold text-gray-700 mb-1">Teléfono *</label>
+                                    <label class="block text-sm font-bold text-gray-800 mb-1">Teléfono *</label>
                                     <input [(ngModel)]="bookingData.telefonoInvitado" name="telefonoInvitado" type="tel"
-                                        class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-primary-500"
+                                        class="w-full p-2 border rounded shadow-sm focus:ring-2 focus:ring-primary-500 text-gray-900"
                                         placeholder="600123456" required>
                                 </div>
                             </div>
@@ -258,14 +342,14 @@
                             </div>
 
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">Personas</label>
+                                <label class="block text-sm font-bold text-gray-800 mb-1">Personas</label>
                                 <input [(ngModel)]="bookingData.personas" name="personas" type="number" min="1" max="20"
-                                    class="w-full p-2 border rounded shadow-sm" required>
+                                    class="w-full p-2 border rounded shadow-sm text-gray-900" required>
                             </div>
                             <div>
-                                <label class="block text-sm font-bold text-gray-700 mb-1">Observaciones</label>
+                                <label class="block text-sm font-bold text-gray-800 mb-1">Observaciones</label>
                                 <textarea [(ngModel)]="bookingData.observaciones" name="observaciones" rows="3"
-                                    class="w-full p-2 border rounded shadow-sm"
+                                    class="w-full p-2 border rounded shadow-sm text-gray-900"
                                     placeholder="Alergias, mesa preferida..."></textarea>
                             </div>
                         </div>
@@ -319,15 +403,24 @@
                     </div>
                 </form>
             </div>
-            <ng-template #loginPrompt>
-                <div class="text-center py-8">
-                    <p class="text-gray-600 mb-4">Debes iniciar sesión para realizar una reserva.</p>
-                    <a href="/login"
-                        class="inline-block bg-secondary-500 text-white px-6 py-2 rounded-full font-bold shadow hover:bg-secondary-600 transition">
-                        Iniciar Sesión
-                    </a>
-                </div>
-            </ng-template>
         </div>
+    </div>
+</div>
+
+<!-- Image Lightbox -->
+<div *ngIf="showImageLightbox && local.imagenUrl"
+    class="lightbox-backdrop fixed inset-0 bg-black/90 flex items-center justify-center p-4" style="z-index: 2000;"
+    (click)="onLightboxBackdropClick($event)">
+    <div class="relative max-w-4xl max-h-[90vh]">
+        <!-- Close button -->
+        <button (click)="closeImageLightbox()"
+            class="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors text-xl font-bold bg-black/50 rounded-full w-10 h-10 flex items-center justify-center">
+            ✕
+        </button>
+        <!-- Large image -->
+        <img [src]="local.imagenUrl" [alt]="local.nombre"
+            class="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl" />
+        <!-- Restaurant name caption -->
+        <p class="text-white text-center mt-4 text-lg font-semibold">{{ local.nombre }}</p>
     </div>
 </div>

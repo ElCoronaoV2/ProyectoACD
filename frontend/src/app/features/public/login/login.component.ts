@@ -1,24 +1,23 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
-import { HttpClientModule } from '@angular/common/http';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, HttpClientModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   template: `
-    <div class="min-h-[80vh] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div class="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-2xl border-t-4 border-secondary-500">
+    <div class="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+      <div class="max-w-md w-full space-y-8 bg-gray-800/50 backdrop-blur-sm p-10 rounded-xl shadow-2xl border border-gray-700">
         <div class="text-center">
-          <h2 class="mt-2 text-3xl font-extrabold text-gray-900">
+          <h2 class="mt-2 text-3xl font-extrabold text-white">
             Iniciar Sesión
           </h2>
-          <p class="mt-2 text-sm text-gray-600">
+          <p class="mt-2 text-sm text-gray-400">
             ¿No tienes cuenta?
-            <a routerLink="/register" class="font-medium text-primary-600 hover:text-primary-500 transition-colors">
+            <a routerLink="/register" class="font-medium text-amber-500 hover:text-amber-400 transition-colors">
               Regístrate aquí
             </a>
           </p>
@@ -43,25 +42,25 @@ import { HttpClientModule } from '@angular/common/http';
         <form class="mt-8 space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
           <div class="rounded-md shadow-sm -space-y-px">
             <div class="mb-4">
-              <label for="email-address" class="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico</label>
+              <label for="email-address" class="block text-sm font-medium text-gray-300 mb-1">Correo Electrónico</label>
               <input id="email-address" name="email" type="email" autocomplete="email" required formControlName="email"
-                class="appearance-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                [ngClass]="{'border-red-500': loginForm.get('email')?.invalid && loginForm.get('email')?.touched, 'border-gray-300': !(loginForm.get('email')?.invalid && loginForm.get('email')?.touched)}"
+                class="appearance-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700/50 placeholder-gray-400 text-white rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm"
+                [ngClass]="{'border-red-500': loginForm.get('email')?.invalid && loginForm.get('email')?.touched, 'border-gray-600': !(loginForm.get('email')?.invalid && loginForm.get('email')?.touched)}"
                 placeholder="ejemplo@correo.com">
               <!-- Mensajes de error para el email -->
-              <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
+              <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched" class="mt-1 text-sm text-red-400">
                 <span *ngIf="loginForm.get('email')?.errors?.['required']">El correo electrónico es obligatorio.</span>
                 <span *ngIf="loginForm.get('email')?.errors?.['email']">Debes introducir un correo electrónico válido (ej: usuario&#64;dominio.com).</span>
               </div>
             </div>
             <div>
-              <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
+              <label for="password" class="block text-sm font-medium text-gray-300 mb-1">Contraseña</label>
               <input id="password" name="password" type="password" autocomplete="current-password" required formControlName="password"
-                class="appearance-none relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 rounded-md focus:outline-none focus:ring-primary-500 focus:border-primary-500 focus:z-10 sm:text-sm"
-                [ngClass]="{'border-red-500': loginForm.get('password')?.invalid && loginForm.get('password')?.touched, 'border-gray-300': !(loginForm.get('password')?.invalid && loginForm.get('password')?.touched)}"
+                class="appearance-none relative block w-full px-3 py-2 border border-gray-600 bg-gray-700/50 placeholder-gray-400 text-white rounded-md focus:outline-none focus:ring-amber-500 focus:border-amber-500 focus:z-10 sm:text-sm"
+                [ngClass]="{'border-red-500': loginForm.get('password')?.invalid && loginForm.get('password')?.touched, 'border-gray-600': !(loginForm.get('password')?.invalid && loginForm.get('password')?.touched)}"
                 placeholder="••••••••">
               <!-- Mensajes de error para la contraseña -->
-              <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="mt-1 text-sm text-red-600">
+              <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched" class="mt-1 text-sm text-red-400">
                 <span *ngIf="loginForm.get('password')?.errors?.['required']">La contraseña es obligatoria.</span>
                 <span *ngIf="loginForm.get('password')?.errors?.['minlength']">La contraseña debe tener al menos 6 caracteres.</span>
               </div>
@@ -71,14 +70,14 @@ import { HttpClientModule } from '@angular/common/http';
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <input id="remember-me" name="remember-me" type="checkbox"
-                class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
-              <label for="remember-me" class="ml-2 block text-sm text-gray-900">
+                class="h-4 w-4 text-amber-500 focus:ring-amber-500 border-gray-600 bg-gray-700 rounded">
+              <label for="remember-me" class="ml-2 block text-sm text-gray-300">
                 Recordarme
               </label>
             </div>
 
             <div class="text-sm">
-              <a routerLink="/forgot-password" class="font-medium text-primary-600 hover:text-primary-500 transition-colors">
+              <a routerLink="/forgot-password" class="font-medium text-amber-500 hover:text-amber-400 transition-colors">
                 ¿Olvidaste tu contraseña?
               </a>
             </div>
@@ -87,7 +86,7 @@ import { HttpClientModule } from '@angular/common/http';
           <div>
             <button type="submit" 
               [disabled]="loginForm.invalid || isLoading"
-              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-all hover:animate-pulsing disabled:opacity-50 disabled:cursor-not-allowed">
+              class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-amber-600 hover:bg-amber-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
               <span *ngIf="isLoading">Cargando...</span>
               <span *ngIf="!isLoading">Entrar</span>
             </button>

@@ -10,6 +10,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.lang.NonNull;
 
 @Component
 public class ActivityInterceptor implements HandlerInterceptor {
@@ -21,7 +22,8 @@ public class ActivityInterceptor implements HandlerInterceptor {
     private UserRepository userRepository;
 
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+    public boolean preHandle(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response,
+            @NonNull Object handler) {
         String ip = request.getRemoteAddr();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 

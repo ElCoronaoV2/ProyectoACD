@@ -14,6 +14,11 @@ public class LocalResponse {
     private String imagenUrl;
     private Double valoracion;
 
+    private java.time.LocalTime aperturaComida;
+    private java.time.LocalTime cierreComida;
+    private java.time.LocalTime aperturaCena;
+    private java.time.LocalTime cierreCena;
+
     // Constructores
     public LocalResponse() {
     }
@@ -121,5 +126,37 @@ public class LocalResponse {
 
     public void setValoracion(Double valoracion) {
         this.valoracion = valoracion;
+    }
+
+    public java.time.LocalTime getAperturaComida() {
+        return aperturaComida;
+    }
+
+    public void setAperturaComida(java.time.LocalTime aperturaComida) {
+        this.aperturaComida = aperturaComida;
+    }
+
+    public java.time.LocalTime getCierreComida() {
+        return cierreComida;
+    }
+
+    public void setCierreComida(java.time.LocalTime cierreComida) {
+        this.cierreComida = cierreComida;
+    }
+
+    public java.time.LocalTime getAperturaCena() {
+        return aperturaCena;
+    }
+
+    public void setAperturaCena(java.time.LocalTime aperturaCena) {
+        this.aperturaCena = aperturaCena;
+    }
+
+    public java.time.LocalTime getCierreCena() {
+        return cierreCena;
+    }
+
+    public void setCierreCena(java.time.LocalTime cierreCena) {
+        this.cierreCena = cierreCena;
     }
 }

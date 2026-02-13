@@ -1,6 +1,6 @@
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold text-gray-800">Panel de Empleado</h1>
+        <h1 class="text-3xl font-bold text-white">Panel de Empleado</h1>
         <div *ngIf="myLocal" class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-bold">
             🏢 {{ myLocal.nombre }}
         </div>
@@ -11,137 +11,192 @@
     </div>
 
     <div *ngIf="myLocal">
-        <!-- Tabs -->
-        <div class="flex space-x-4 mb-6 border-b">
+        <!-- Main Tabs -->
+        <div class="flex space-x-1 mb-6 bg-white/10 p-1 rounded-xl w-fit">
             <button (click)="activeTab = 'reservas'"
-                [class]="activeTab === 'reservas' ? 'border-b-2 border-primary-600 text-primary-600 font-bold' : 'text-gray-500 hover:text-gray-700'"
-                class="px-4 py-2 transition-colors">
+                [class]="activeTab === 'reservas' ? 'bg-primary-600 text-white shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10'"
+                class="px-6 py-2 rounded-lg transition-all font-medium">
                 📅 Reservas
             </button>
             <button (click)="activeTab = 'menus'"
-                [class]="activeTab === 'menus' ? 'border-b-2 border-primary-600 text-primary-600 font-bold' : 'text-gray-500 hover:text-gray-700'"
-                class="px-4 py-2 transition-colors">
-                🍽️ Gestión de Menús
+                [class]="activeTab === 'menus' ? 'bg-primary-600 text-white shadow-lg' : 'text-white/70 hover:text-white hover:bg-white/10'"
+                class="px-6 py-2 rounded-lg transition-all font-medium">
+                🍽️ Menú del Día
             </button>
-            <button (click)="activeTab = 'general'"
-                [class]="activeTab === 'general' ? 'border-b-2 border-primary-600 text-primary-600 font-bold' : 'text-gray-500 hover:text-gray-700'"
-                class="px-4 py-2 transition-colors">
-                📂 Menús Generales (CEO)
-            </button>
-        </div>
-
-        <!-- VISTA GENERAL MENUS -->
-        <div *ngIf="activeTab === 'general'">
-            <div class="bg-indigo-50 p-6 rounded-lg border border-indigo-100">
-                <h2 class="text-xl font-bold mb-4 text-indigo-900">Importar Menús Generales</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div *ngFor="let menu of generalMenus" class="bg-white p-4 rounded shadow border border-indigo-200">
-                        <div class="flex justify-between items-start mb-2">
-                            <h3 class="font-bold text-lg">{{ menu.nombre }}</h3>
-                            <span class="bg-indigo-100 text-indigo-800 text-xs px-2 py-1 rounded font-bold">{{
-                                menu.precio }}€</span>
-                        </div>
-                        <p class="text-sm text-gray-600 mb-4">{{ menu.descripcion }}</p>
-
-                        <div class="mt-auto pt-4 border-t border-gray-100">
-                            <button (click)="selectedGeneralMenuId = menu.id; assignMenu()"
-                                class="w-full bg-indigo-600 text-white px-3 py-2 rounded text-sm font-bold hover:bg-indigo-700">
-                                Importar a mi Restaurante
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                <div *ngIf="generalMenus.length === 0" class="text-center py-12 text-gray-500">
-                    <p>No hay menús generales disponibles.</p>
-                </div>
-            </div>
         </div>
 
         <!-- VISTA RESERVAS -->
         <div *ngIf="activeTab === 'reservas'">
+
+            <!-- Reservation Sub-Tabs -->
+            <div class="flex space-x-4 mb-4 border-b border-white/20 pb-2">
+                <button (click)="activeReservationTab = 'hoy'"
+                    [class]="activeReservationTab === 'hoy' ? 'border-b-2 border-white text-white font-bold' : 'text-white/60 hover:text-white'"
+                    class="px-4 py-2 transition-colors">
+                    Hoy ({{ todayReservations.length }})
+                </button>
+                <button (click)="activeReservationTab = 'proximas'"
+                    [class]="activeReservationTab === 'proximas' ? 'border-b-2 border-white text-white font-bold' : 'text-white/60 hover:text-white'"
+                    class="px-4 py-2 transition-colors">
+                    Próximas ({{ upcomingReservations.length }})
+                </button>
+                <button (click)="activeReservationTab = 'historial'"
+                    [class]="activeReservationTab === 'historial' ? 'border-b-2 border-white text-white font-bold' : 'text-white/60 hover:text-white'"
+                    class="px-4 py-2 transition-colors">
+                    Historial
+                </button>
+            </div>
+
             <div class="space-y-4">
-                <div *ngFor="let res of reservations" class="bg-white p-4 rounded shadow border-l-4" [ngClass]="{
+                <!-- Determine which list to show -->
+                <ng-container
+                    *ngFor="let res of (activeReservationTab === 'hoy' ? todayReservations : (activeReservationTab === 'proximas' ? upcomingReservations : historyReservations))">
+                    <div class="bg-white p-4 rounded-lg shadow border-l-4" [ngClass]="{
                         'border-green-500': res.estado === 'CONFIRMADA',
+                        'border-purple-500': res.estado === 'ASISTIDO',
+                        'border-gray-500': res.estado === 'NO_ASISTIDO',
                         'border-yellow-500': res.estado === 'PENDIENTE',
-                        'border-red-500': res.estado === 'CANCELADA'
+                        'border-red-500': res.estado === 'CANCELADA',
+                        'border-blue-500': res.estado === 'COMPLETADA'
                      }">
-                    <div class="flex justify-between items-center mobile-col">
-                        <div>
-                            <p class="font-bold text-lg">{{ res.fechaHora | date:'medium' }}</p>
-                            <p class="text-gray-600">{{ res.numeroPersonas }} personas - {{ res.usuario?.nombre ||
-                                'Cliente' }}</p>
-                            <p *ngIf="res.observaciones" class="text-sm italic text-gray-500">"{{ res.observaciones }}"
-                            </p>
-                        </div>
-                        <div class="flex items-center space-x-2 mt-2 md:mt-0">
-                            <span class="px-2 py-1 rounded text-xs font-bold" [ngClass]="{
-                                    'bg-green-100 text-green-800': res.estado === 'CONFIRMADA',
-                                    'bg-yellow-100 text-yellow-800': res.estado === 'PENDIENTE',
-                                    'bg-red-100 text-red-800': res.estado === 'CANCELADA'
-                                  }">
-                                {{ res.estado }}
-                            </span>
-                            <div *ngIf="res.estado === 'PENDIENTE'">
-                                <button (click)="confirmReservation(res.id)"
-                                    class="text-green-600 font-bold hover:underline mr-2">Confirmar</button>
-                                <button (click)="cancelReservation(res.id)"
-                                    class="text-red-600 font-bold hover:underline">Cancelar</button>
+                        <div class="flex justify-between items-start flex-wrap gap-4">
+                            <div class="flex-1">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <span class="text-lg font-bold text-gray-800">{{ getReservationName(res) }}</span>
+                                    <span class="px-2 py-1 text-xs font-bold rounded-full"
+                                        [class.bg-green-100]="res.estado === 'CONFIRMADA'"
+                                        [class.text-green-800]="res.estado === 'CONFIRMADA'"
+                                        [class.bg-purple-100]="res.estado === 'ASISTIDO'"
+                                        [class.text-purple-800]="res.estado === 'ASISTIDO'"
+                                        [class.bg-gray-100]="res.estado === 'NO_ASISTIDO'"
+                                        [class.text-gray-800]="res.estado === 'NO_ASISTIDO'"
+                                        [class.bg-yellow-100]="res.estado === 'PENDIENTE'"
+                                        [class.text-yellow-800]="res.estado === 'PENDIENTE'"
+                                        [class.bg-red-100]="res.estado === 'CANCELADA'"
+                                        [class.text-red-800]="res.estado === 'CANCELADA'"
+                                        [class.bg-blue-100]="res.estado === 'COMPLETADA'"
+                                        [class.text-blue-800]="res.estado === 'COMPLETADA'">
+                                        {{ res.estado.replace('_', ' ') }}
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-600">
+                                    <div>
+                                        <span class="font-medium text-gray-500">Fecha:</span>
+                                        <p class="font-bold text-gray-800">{{ res.fechaHora | date:'dd/MM/yyyy' }}</p>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium text-gray-500">Hora:</span>
+                                        <p class="font-bold text-gray-800">{{ res.fechaHora | date:'HH:mm' }}</p>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium text-gray-500">Turno:</span>
+                                        <p class="font-bold text-gray-800">{{ getShiftLabel(res.fechaHora) }}</p>
+                                    </div>
+                                    <div>
+                                        <span class="font-medium text-gray-500">Personas:</span>
+                                        <p class="font-bold text-gray-800">👥 {{ res.numeroPersonas }}</p>
+                                    </div>
+                                </div>
+                                <p *ngIf="res.observaciones" class="mt-2 text-sm text-gray-500 italic">
+                                    💬 {{ res.observaciones }}
+                                </p>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="flex flex-col gap-2">
+                                <!-- Show Attendance Buttons ONLY for Today's Confirmed/Pending reservations -->
+                                <div *ngIf="activeReservationTab === 'hoy' && (res.estado === 'CONFIRMADA' || res.estado === 'PENDIENTE')"
+                                    class="flex gap-2">
+                                    <button (click)="markAttendance(res.id, true)"
+                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow font-bold text-sm transition flex items-center gap-2">
+                                        <span>🙋‍♂️</span> Confirmar Asistencia
+                                    </button>
+                                </div>
+
+                                <div *ngIf="res.estado === 'PENDIENTE' || res.estado === 'CONFIRMADA'"
+                                    class="flex justify-end">
+                                    <button (click)="cancelReservation(res.id)"
+                                        class="text-red-500 hover:text-red-700 hover:underline text-xs font-medium px-2 py-1">
+                                        Cancelar reserva
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div *ngIf="reservations.length === 0" class="text-center py-10 text-gray-500">
-                    No hay reservas registradas.
+                </ng-container>
+
+                <div *ngIf="(activeReservationTab === 'hoy' ? todayReservations : (activeReservationTab === 'proximas' ? upcomingReservations : historyReservations)).length === 0"
+                    class="text-center py-12 text-white/50">
+                    <p class="text-4xl mb-2">📭</p>
+                    <p>No hay reservas en esta sección.</p>
                 </div>
             </div>
         </div>
 
         <!-- VISTA MENUS -->
         <div *ngIf="activeTab === 'menus'">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <!-- Lista Menus -->
-                <div class="lg:col-span-2 space-y-4">
-                    <h3 class="font-bold text-lg mb-2">Menús Disponibles</h3>
-                    <div *ngFor="let menu of menus"
-                        class="bg-white border rounded p-4 flex justify-between items-center shadow-sm">
-                        <div class="flex-1">
-                            <div class="flex justify-between">
-                                <p class="font-bold">{{ menu.nombre }}</p>
-                                <span class="text-green-600 font-bold">{{ menu.precio }}€</span>
-                            </div>
-                            <p class="text-xs text-gray-500 uppercase font-bold">{{ menu.tipo }}</p>
-                            <p class="text-sm text-gray-600 mt-1">{{ menu.descripcion }}</p>
+            <div class="space-y-4">
+                <h3 class="font-bold text-lg mb-2 text-white">Menú Programado para Hoy</h3>
+
+                <div *ngFor="let menu of menus"
+                    class="bg-white border rounded-xl overflow-hidden shadow-lg transform transition hover:scale-[1.01]">
+                    <!-- Header with Gradient matching PDF style -->
+                    <div class="bg-gradient-to-r from-orange-800 via-orange-600 to-amber-600 p-4 text-white">
+                        <div class="flex justify-between items-start">
+                            <h4 class="text-xl font-bold">{{ menu.nombre }}</h4>
+                            <span class="bg-white/20 px-3 py-1 rounded-full font-bold text-lg backdrop-blur-sm">
+                                {{ menu.precio }}€
+                            </span>
                         </div>
-                        <button (click)="deleteMenu(menu.id)"
-                            class="ml-4 text-red-500 hover:text-red-700 font-bold p-2">✕</button>
+                        <p class="text-white/80 text-sm mt-1">{{ menu.descripcion }}</p>
+                    </div>
+
+                    <div class="p-6 space-y-6">
+                        <!-- Platos -->
+                        <div class="grid md:grid-cols-3 gap-6">
+                            <!-- Primero -->
+                            <div class="space-y-2">
+                                <h5 class="font-bold text-amber-700 flex items-center gap-2 border-b pb-1">
+                                    🍽️ Primer Plato
+                                </h5>
+                                <p class="font-medium text-gray-800">{{ menu.primerPlato }}</p>
+                                <p class="text-sm text-gray-500 italic">{{ menu.primerPlatoDesc }}</p>
+                            </div>
+                            <!-- Segundo -->
+                            <div class="space-y-2">
+                                <h5 class="font-bold text-amber-700 flex items-center gap-2 border-b pb-1">
+                                    🥘 Segundo Plato
+                                </h5>
+                                <p class="font-medium text-gray-800">{{ menu.segundoPlato }}</p>
+                                <p class="text-sm text-gray-500 italic">{{ menu.segundoPlatoDesc }}</p>
+                            </div>
+                            <!-- Postre -->
+                            <div class="space-y-2">
+                                <h5 class="font-bold text-amber-700 flex items-center gap-2 border-b pb-1">
+                                    🍰 Postre
+                                </h5>
+                                <p class="font-medium text-gray-800">{{ menu.postre }}</p>
+                                <p class="text-sm text-gray-500 italic">{{ menu.postreDesc }}</p>
+                            </div>
+                        </div>
+
+                        <!-- Alergenos -->
+                        <div *ngIf="menu.alergenos" class="mt-4 pt-4 border-t border-gray-100">
+                            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Alérgenos</p>
+                            <div class="flex flex-wrap gap-2">
+                                <span *ngFor="let alg of menu.alergenos.split(',')"
+                                    class="px-2 py-1 bg-orange-50 text-orange-700 text-xs rounded border border-orange-100 flex items-center gap-1">
+                                    ⚠️ {{ alg.trim() }}
+                                </span>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Formulario Nuevo Menu -->
-                <div class="bg-green-50 p-5 rounded-lg h-fit">
-                    <h3 class="font-bold text-lg mb-4 text-green-800">Nuevo Menú</h3>
-                    <form (submit)="createMenu()">
-                        <div class="space-y-3">
-                            <input [(ngModel)]="newMenu.nombre" name="menuName" placeholder="Nombre del menú"
-                                class="input-field-sm w-full p-2 border rounded" required>
-                            <textarea [(ngModel)]="newMenu.descripcion" name="menuDesc" placeholder="Descripción"
-                                class="input-field-sm w-full p-2 border rounded h-20"></textarea>
-                            <div class="flex space-x-2">
-                                <select [(ngModel)]="newMenu.tipo" name="menuType"
-                                    class="input-field-sm flex-1 p-2 border rounded">
-                                    <option value="COMIDA">Comida</option>
-                                    <option value="CENA">Cena</option>
-                                    <option value="DESAYUNO">Desayuno</option>
-                                </select>
-                                <input [(ngModel)]="newMenu.precio" name="menuPrice" type="number" placeholder="€"
-                                    class="input-field-sm w-20 p-2 border rounded" required>
-                            </div>
-                            <button type="submit"
-                                class="w-full bg-green-600 text-white py-2 rounded font-bold hover:bg-green-700 transition">
-                                Añadir Menú
-                            </button>
-                        </div>
-                    </form>
+                <div *ngIf="menus.length === 0"
+                    class="text-center py-12 bg-white/5 rounded-xl border border-white/10 text-white/60">
+                    <p class="text-5xl mb-4">📅</p>
+                    <p class="text-xl">No hay menú programado para el día de hoy.</p>
                 </div>
             </div>
         </div>

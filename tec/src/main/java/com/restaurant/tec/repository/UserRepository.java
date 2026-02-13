@@ -12,4 +12,8 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     long countByRol(com.restaurant.tec.entity.Role rol);
 
     long countByEnabled(boolean enabled);
+
+    @org.springframework.data.jpa.repository.Query("SELECT u FROM UserEntity u LEFT JOIN FETCH u.restauranteTrabajo WHERE u.email = :email")
+    Optional<UserEntity> findWithRestaurantByEmail(
+            @org.springframework.data.repository.query.Param("email") String email);
 }

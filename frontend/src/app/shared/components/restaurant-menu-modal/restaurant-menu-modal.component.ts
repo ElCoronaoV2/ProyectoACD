@@ -8,6 +8,7 @@ import { NotificationService } from '../../../core/services/notification.service
 import { MenuService } from '../../../core/services/menu.service';
 import { StripeService, StripePaymentElementComponent } from 'ngx-stripe';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-restaurant-menu-modal',
@@ -38,6 +39,9 @@ export class RestaurantMenuModalComponent implements OnInit {
     reviewData: { [menuId: number]: { rating: number; comment: string } } = {};
     showReviewForm: { [menuId: number]: boolean } = {};
 
+    // Selected menu for reservation
+    selectedMenu: Menu | null = null;
+
     // Stripe
     @ViewChild(StripePaymentElementComponent) paymentElement!: StripePaymentElementComponent;
     stripe = inject(StripeService);
@@ -59,6 +63,15 @@ export class RestaurantMenuModalComponent implements OnInit {
     isProcessingPayment = false;
     showPaymentStep = false;
     currentClientSecret: string | null = null;
+
+    // Lightbox para imagen
+    showImageLightbox = false;
+
+    // Restaurant review
+    showRestaurantReviewForm = false;
+    restaurantReviewData = { rating: 0, comment: '' };
+    restaurantHoverRating = 0;
+    menuHoverRating: { [menuId: number]: number } = {};
 
     constructor(
         public authService: AuthService,
@@ -88,6 +101,22 @@ export class RestaurantMenuModalComponent implements OnInit {
 
     onClose(): void {
         this.close.emit();
+    }
+
+    openImageLightbox(event: MouseEvent): void {
+        event.stopPropagation();
+        event.preventDefault();
+        this.showImageLightbox = true;
+    }
+
+    closeImageLightbox(): void {
+        this.showImageLightbox = false;
+    }
+
+    onLightboxBackdropClick(event: MouseEvent): void {
+        if ((event.target as HTMLElement).classList.contains('lightbox-backdrop')) {
+            this.closeImageLightbox();
+        }
     }
 
     onBackdropClick(event: MouseEvent): void {
@@ -197,6 +226,71 @@ export class RestaurantMenuModalComponent implements OnInit {
         });
     }
 
+    // Restaurant review methods
+    toggleRestaurantReviewForm(): void {
+        this.showRestaurantReviewForm = !this.showRestaurantReviewForm;
+        if (this.showRestaurantReviewForm) {
+            this.restaurantReviewData = { rating: 0, comment: '' };
+        }
+    }
+
+    setRestaurantRating(rating: number): void {
+        this.restaurantReviewData.rating = rating;
+    }
+
+    submitRestaurantReview(): void {
+        if (!this.authService.isLoggedIn()) {
+            this.notificationService.showWarning('Debes iniciar sesión para valorar.');
+            return;
+        }
+
+        if (this.restaurantReviewData.rating === 0) {
+            this.notificationService.showWarning('Por favor, selecciona una puntuación.');
+            return;
+        }
+
+        // Enviar valoración al backend
+        this.http.post(`https://www.restaurant-tec.es/api/locales/${this.local.id}/reviews`, {
+            rating: this.restaurantReviewData.rating,
+            comment: this.restaurantReviewData.comment
+        }).subscribe({
+            next: () => {
+                this.notificationService.showSuccess('¡Gracias por valorar el restaurante!');
+                this.showRestaurantReviewForm = false;
+                this.restaurantReviewData = { rating: 0, comment: '' };
+            },
+            error: (err) => {
+                console.error(err);
+                if (err.error?.message) {
+                    this.notificationService.showError('Error: ' + err.error.message);
+                } else {
+                    this.notificationService.showError('Error al enviar la valoración.');
+                }
+            }
+        });
+    }
+
+    // Hover methods for Restaurant
+    setRestaurantHover(rating: number) {
+        this.restaurantHoverRating = rating;
+    }
+
+    clearRestaurantHover() {
+        this.restaurantHoverRating = 0;
+    }
+
+    // Hover methods for Menu
+    setMenuHover(menuId: number, rating: number) {
+        this.menuHoverRating[menuId] = rating;
+    }
+
+    clearMenuHover(menuId: number) {
+        if (this.menuHoverRating[menuId]) {
+            delete this.menuHoverRating[menuId];
+        }
+    }
+
+
     formatAlergenos(alergenos: string | undefined): string[] {
         if (!alergenos) return [];
         return alergenos.split(',').map(a => a.trim());
@@ -260,10 +354,72 @@ export class RestaurantMenuModalComponent implements OnInit {
         return allergens.some(a => this.isUserAllergic(a));
     }
 
+    selectMenu(menu: Menu): void {
+        if (this.selectedMenu?.id === menu.id) {
+            this.selectedMenu = null; // Deselect if clicking same menu
+        } else {
+            this.selectedMenu = menu;
+            this.notificationService.showSuccess(`Menú "${menu.nombre}" seleccionado`);
+        }
+    }
+
+    goToBookingWithMenu(): void {
+        this.activeTab = 'booking';
+    }
+
     get isValidReservation(): boolean {
         return !!(this.bookingData.fecha &&
             this.bookingData.hora &&
             this.bookingData.personas > 0);
+    }
+
+    // Validación de formato de email
+    private isValidEmail(email: string): boolean {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email.trim());
+    }
+
+    // Validación de formato de teléfono (mínimo 9 dígitos, solo números)
+    private isValidPhone(phone: string): boolean {
+        const cleanPhone = phone.replace(/[\s\-\(\)]/g, ''); // Elimina espacios, guiones, paréntesis
+        const phoneRegex = /^\+?[0-9]{9,15}$/;
+        return phoneRegex.test(cleanPhone);
+    }
+
+    // Validación de nombre (mínimo 2 caracteres, solo letras y espacios)
+    private isValidName(name: string): boolean {
+        const trimmedName = name.trim();
+        return trimmedName.length >= 2 && /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/.test(trimmedName);
+    }
+
+    // Método principal de validación de datos del invitado
+    validateGuestData(): { valid: boolean; errors: string[] } {
+        const errors: string[] = [];
+
+        if (!this.authService.isLoggedIn()) {
+            // Validar nombre
+            if (!this.bookingData.nombreInvitado || !this.bookingData.nombreInvitado.trim()) {
+                errors.push('El nombre es obligatorio');
+            } else if (!this.isValidName(this.bookingData.nombreInvitado)) {
+                errors.push('El nombre debe tener al menos 2 caracteres y solo letras');
+            }
+
+            // Validar email
+            if (!this.bookingData.emailInvitado || !this.bookingData.emailInvitado.trim()) {
+                errors.push('El email es obligatorio');
+            } else if (!this.isValidEmail(this.bookingData.emailInvitado)) {
+                errors.push('El formato del email no es válido (ej: correo@ejemplo.com)');
+            }
+
+            // Validar teléfono
+            if (!this.bookingData.telefonoInvitado || !this.bookingData.telefonoInvitado.trim()) {
+                errors.push('El teléfono es obligatorio');
+            } else if (!this.isValidPhone(this.bookingData.telefonoInvitado)) {
+                errors.push('El teléfono debe tener entre 9 y 15 dígitos');
+            }
+        }
+
+        return { valid: errors.length === 0, errors };
     }
 
     initiateReservationProcess() {
@@ -283,17 +439,19 @@ export class RestaurantMenuModalComponent implements OnInit {
             return;
         }
 
-        // Validate guest fields if not logged in
-        if (!this.authService.isLoggedIn()) {
-            if (!this.bookingData.nombreInvitado || !this.bookingData.emailInvitado || !this.bookingData.telefonoInvitado) {
-                this.notificationService.showWarning('Por favor, completa nombre, email y teléfono para reservar.');
-                return;
-            }
+        // Validate guest fields with format validation if not logged in
+        const guestValidation = this.validateGuestData();
+        if (!guestValidation.valid) {
+            // Mostrar cada error en una notificación separada o todos juntos
+            guestValidation.errors.forEach(error => {
+                this.notificationService.showWarning(error);
+            });
+            return;
         }
 
         // 1. Create Payment Intent
         this.isProcessingPayment = true;
-        this.http.post<{ clientSecret: string }>('https://www.restaurant-tec.es/api/reservas/create-payment-intent', {})
+        this.http.post<{ clientSecret: string }>(`${environment.apiUrl}/reservas/create-payment-intent`, {})
             .subscribe({
                 next: (res) => {
                     this.currentClientSecret = res.clientSecret;
@@ -347,13 +505,18 @@ export class RestaurantMenuModalComponent implements OnInit {
         const dateTime = `${this.bookingData.fecha}T${this.bookingData.hora}:00`;
 
         if (this.authService.isLoggedIn()) {
-            const payload = {
+            const payload: any = {
                 localId: this.local.id,
                 fechaHora: dateTime,
                 numeroPersonas: this.bookingData.personas,
                 observaciones: this.bookingData.observaciones,
                 paymentIntentId: paymentIntentId
             };
+
+            // Include selected menu if any
+            if (this.selectedMenu) {
+                payload.menuId = this.selectedMenu.id;
+            }
 
             this.reservationService.createReservation(payload).subscribe({
                 next: () => this.handleReservationSuccess(),
@@ -363,7 +526,7 @@ export class RestaurantMenuModalComponent implements OnInit {
                 }
             });
         } else {
-            const guestPayload = {
+            const guestPayload: any = {
                 localId: this.local.id,
                 fechaHora: dateTime,
                 numeroPersonas: this.bookingData.personas,
@@ -373,6 +536,11 @@ export class RestaurantMenuModalComponent implements OnInit {
                 telefono: this.bookingData.telefonoInvitado,
                 paymentIntentId: paymentIntentId
             };
+
+            // Include selected menu if any
+            if (this.selectedMenu) {
+                guestPayload.menuId = this.selectedMenu.id;
+            }
 
             this.reservationService.createGuestReservation(guestPayload).subscribe({
                 next: () => this.handleReservationSuccess(),

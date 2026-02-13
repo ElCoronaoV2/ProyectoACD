@@ -99,17 +99,14 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     }
 
     this.loading = true;
-    console.log('Loading users with role:', this.selectedRole || 'ALL');
 
     this.usersSubscription = this.adminService.getAllUsers(this.selectedRole || undefined).subscribe({
       next: (data) => {
-        console.log('Users received:', data.length);
         this.users = data;
         this.filteredUsers = data;
         this.loading = false;
       },
-      error: (err) => {
-        console.error('Error loading users:', err);
+      error: () => {
         this.loading = false;
       }
     });
@@ -119,9 +116,8 @@ export class UserManagementComponent implements OnInit, OnDestroy {
     this.localService.getLocales().subscribe({
       next: (data) => {
         this.locales = data;
-        console.log('Locales loaded:', this.locales.length);
       },
-      error: (err) => console.error('Error loading locales:', err)
+      error: () => {}
     });
   }
 

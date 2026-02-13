@@ -1,7 +1,17 @@
 package com.restaurant.tec.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+/**
+ * Entidad que representa un restaurante (local).
+ * Incluye información de ubicación, capacidad por turno, horarios y relaciones
+ * con propietario.
+ * Contiene coordenadas GPS y coordenadas en mapa interactivo.
+ * 
+ * @author RestaurantTec Team
+ * @version 1.0
+ */
 @Entity
 @Table(name = "locales")
 public class LocalEntity {
@@ -17,17 +27,54 @@ public class LocalEntity {
     private String direccion;
 
     @Column(nullable = false)
-    private Integer capacidad;
+    private Integer capacidad; // Default implementation
+
+    // Capacidad por turno
+    private Integer capacidadComida;
+    private Integer capacidadCena;
 
     // Horario en formato "Lun-Vie: 12:00-23:00, Sab-Dom: 13:00-00:00"
     @Column(length = 500)
     private String horario;
+
+    // Horarios de turnos (Comida y Cena)
+    private java.time.LocalTime aperturaComida; // e.g. 13:00
+    private java.time.LocalTime cierreComida; // e.g. 16:00
+    private java.time.LocalTime aperturaCena; // e.g. 20:00
+    private java.time.LocalTime cierreCena; // e.g. 23:30
 
     // Coordenadas GPS para mapa
     private Double latitud;
     private Double longitud;
 
     // Posición en el mapa estático (porcentaje 0-100)
+    // Coordenadas en mapa imagen (0-100%)
+    private Double mapaX;
+    private Double mapaY;
+
+    // Relación OneToMany con Reviews
+    @OneToMany(mappedBy = "local", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<ResenaEntity> reviews = new java.util.ArrayList<>();
+
+    // Valoración media (Calculada o almacenada) -- Removed duplicate
+    // private Double valoracion;
+
+    // Métodos helper
+    public void addReview(ResenaEntity review) {
+        reviews.add(review);
+        review.setLocal(this);
+        recalculateRating();
+    }
+
+    public void recalculateRating() {
+        if (reviews.isEmpty()) {
+            this.valoracion = 0.0;
+        } else {
+            double sum = reviews.stream().mapToInt(ResenaEntity::getPuntuacion).sum();
+            this.valoracion = Math.round((sum / reviews.size()) * 10.0) / 10.0;
+        }
+    }
+
     private Double posX;
     private Double posY;
 
@@ -36,12 +83,36 @@ public class LocalEntity {
     private String imagenUrl;
 
     // Valoración promedio (1.0 - 5.0)
+    @Transient
     private Double valoracion;
 
     // Propietario (CEO) del restaurante
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "propietario_id")
+    @JsonIgnoreProperties({ "hibernateLazyInitializer", "handler" })
     private UserEntity propietario;
+
+    @org.hibernate.annotations.Formula("(SELECT count(u.id) FROM usuarios u WHERE u.restaurante_trabajo_id = id AND u.rol = 'EMPLEADO')")
+    private Integer numeroEmpleados;
+
+    public Integer getNumeroEmpleados() {
+        return numeroEmpleados;
+    }
+
+    public void setNumeroEmpleados(Integer numeroEmpleados) {
+        this.numeroEmpleados = numeroEmpleados;
+    }
+
+    @org.hibernate.annotations.Formula("(SELECT count(r.id) FROM reservas r WHERE r.local_id = id AND r.estado = 'CONFIRMADA')")
+    private Integer reservasConfirmadas;
+
+    public Integer getReservasConfirmadas() {
+        return reservasConfirmadas;
+    }
+
+    public void setReservasConfirmadas(Integer reservasConfirmadas) {
+        this.reservasConfirmadas = reservasConfirmadas;
+    }
 
     // Constructores
     public LocalEntity() {
@@ -84,6 +155,22 @@ public class LocalEntity {
 
     public void setCapacidad(Integer capacidad) {
         this.capacidad = capacidad;
+    }
+
+    public Integer getCapacidadComida() {
+        return capacidadComida;
+    }
+
+    public void setCapacidadComida(Integer capacidadComida) {
+        this.capacidadComida = capacidadComida;
+    }
+
+    public Integer getCapacidadCena() {
+        return capacidadCena;
+    }
+
+    public void setCapacidadCena(Integer capacidadCena) {
+        this.capacidadCena = capacidadCena;
     }
 
     public String getHorario() {
@@ -148,5 +235,37 @@ public class LocalEntity {
 
     public void setPropietario(UserEntity propietario) {
         this.propietario = propietario;
+    }
+
+    public java.time.LocalTime getAperturaComida() {
+        return aperturaComida;
+    }
+
+    public void setAperturaComida(java.time.LocalTime aperturaComida) {
+        this.aperturaComida = aperturaComida;
+    }
+
+    public java.time.LocalTime getCierreComida() {
+        return cierreComida;
+    }
+
+    public void setCierreComida(java.time.LocalTime cierreComida) {
+        this.cierreComida = cierreComida;
+    }
+
+    public java.time.LocalTime getAperturaCena() {
+        return aperturaCena;
+    }
+
+    public void setAperturaCena(java.time.LocalTime aperturaCena) {
+        this.aperturaCena = aperturaCena;
+    }
+
+    public java.time.LocalTime getCierreCena() {
+        return cierreCena;
+    }
+
+    public void setCierreCena(java.time.LocalTime cierreCena) {
+        this.cierreCena = cierreCena;
     }
 }

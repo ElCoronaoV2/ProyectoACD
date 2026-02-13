@@ -2,42 +2,41 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Local, CreateLocalRequest, Menu } from '../models/local.model';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class LocalService {
-    private baseUrl = '/api';
+    private readonly apiUrl = environment.apiUrl;
 
     constructor(private http: HttpClient) { }
 
-    // Obtener todos los locales
     getLocales(): Observable<Local[]> {
-        return this.http.get<Local[]>(`${this.baseUrl}/locales`);
+        return this.http.get<Local[]>(`${this.apiUrl}/locales`);
     }
 
-    // Obtener un local por ID
     getLocal(id: number): Observable<Local> {
-        return this.http.get<Local>(`${this.baseUrl}/locales/${id}`);
+        return this.http.get<Local>(`${this.apiUrl}/locales/${id}`);
     }
 
-    // Crear un nuevo local (admin)
     createLocal(request: CreateLocalRequest): Observable<Local> {
-        return this.http.post<Local>(`${this.baseUrl}/admin/locales`, request);
+        return this.http.post<Local>(`${this.apiUrl}/admin/locales`, request);
     }
 
-    // Actualizar un local (admin)
     updateLocal(id: number, request: CreateLocalRequest): Observable<Local> {
-        return this.http.put<Local>(`${this.baseUrl}/admin/locales/${id}`, request);
+        return this.http.put<Local>(`${this.apiUrl}/admin/locales/${id}`, request);
     }
 
-    // Eliminar un local (admin)
     deleteLocal(id: number): Observable<void> {
-        return this.http.delete<void>(`${this.baseUrl}/admin/locales/${id}`);
+        return this.http.delete<void>(`${this.apiUrl}/admin/locales/${id}`);
     }
 
-    // Obtener menús de un local
     getMenusByLocal(localId: number): Observable<Menu[]> {
-        return this.http.get<Menu[]>(`${this.baseUrl}/locales/${localId}/menus`);
+        return this.http.get<Menu[]>(`${this.apiUrl}/locales/${localId}/menus`);
+    }
+
+    getReviews(localId: number): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/locales/${localId}/reviews`);
     }
 }

@@ -5,12 +5,14 @@ import { provideNgxStripe } from 'ngx-stripe';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withInterceptors([authInterceptor])),
-    provideNgxStripe('pk_test_51SpGLHLP1o0EDopZYjwkq8bA36EBeJBhqcSKb2xj7ADT1uRPDEJk3YMHi40W1RRN6JhbjuBTS6QKFyZJHASXDUKz004dAR6G7l')
+    // Usar clave de Stripe desde environment (que debe estar en variables de entorno en build)
+    provideNgxStripe(environment.stripePublicKey)
   ]
 };

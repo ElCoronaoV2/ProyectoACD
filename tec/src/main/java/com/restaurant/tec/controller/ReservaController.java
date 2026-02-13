@@ -3,7 +3,10 @@ package com.restaurant.tec.controller;
 import com.restaurant.tec.entity.ReservaEntity;
 import com.restaurant.tec.entity.UserEntity;
 import com.restaurant.tec.repository.UserRepository;
+import com.restaurant.tec.service.PaymentService;
 import com.restaurant.tec.service.ReservaService;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +18,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Controlador REST para gestionar reservas de restaurantes.
+ * Proporciona endpoints para crear, consultar y gestionar reservas, incluyendo integración con pagos.
+ * 
+ * @author RestaurantTec Team
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/api/reservas")
 public class ReservaController {
@@ -23,11 +33,51 @@ public class ReservaController {
     private ReservaService reservaService;
 
     @Autowired
+    private PaymentService paymentService;
+
+    @Autowired
     private UserRepository userRepository;
+
+    /**
+     * Crea un PaymentIntent de Stripe para procesar el pago de una reserva.
+     * Monto fijo de 1 euro (100 céntimos).
+     * 
+     * @param payload datos del pago (puede estar vacío, monto es fijo)
+     * @return ResponseEntity con el clientSecret para completar el pago
+     */
+    @PostMapping("/create-payment-intent")
+    public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody Map<String, Object> payload) {
+        try {
+            // Monto fijo de 1 euro (100 centavos)
+            PaymentIntent intent = paymentService.createPaymentIntent(100L, "eur", "Reserva Restaurante");
+            return ResponseEntity.ok(Map.of("clientSecret", intent.getClientSecret()));
+        } catch (StripeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // Helper para convertir a DTO
+    private com.restaurant.tec.dto.ReservaDTO mapToDTO(ReservaEntity entity) {
+        return new com.restaurant.tec.dto.ReservaDTO(
+                entity.getId(),
+                entity.getUsuario() != null ? entity.getUsuario().getId() : null,
+                entity.getUsuario() != null ? entity.getUsuario().getNombre() : null,
+                entity.getLocal() != null ? entity.getLocal().getId() : null,
+                entity.getLocal() != null ? entity.getLocal().getNombre() : null,
+                entity.getFechaHora(),
+                entity.getNumeroPersonas(),
+                entity.getObservaciones(),
+                entity.getEstado().name(),
+                entity.getEstadoPago(),
+                entity.getNombreInvitado(),
+                entity.getEmailInvitado(),
+                entity.getTelefonoInvitado(),
+                entity.getAsistenciaConfirmada());
+    }
 
     // Crear reserva (Cliente)
     @PostMapping
-    public ResponseEntity<ReservaEntity> createReserva(@RequestBody Map<String, Object> payload,
+    public ResponseEntity<com.restaurant.tec.dto.ReservaDTO> createReserva(@RequestBody Map<String, Object> payload,
             Authentication authentication) {
         UserEntity user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
@@ -37,31 +87,59 @@ public class ReservaController {
         LocalDateTime fechaHora = LocalDateTime.parse(fechaStr);
         Integer personas = Integer.valueOf(payload.get("numeroPersonas").toString());
         String observaciones = (String) payload.get("observaciones");
+        String paymentIntentId = (String) payload.get("paymentIntentId");
 
-        return ResponseEntity
-                .ok(reservaService.createReserva(user.getId(), localId, fechaHora, personas, observaciones));
+        ReservaEntity created = reservaService.createReserva(user.getId(), localId, fechaHora, personas, observaciones,
+                paymentIntentId);
+        return ResponseEntity.ok(mapToDTO(created));
+    }
+
+    // Crear reserva (Invitado - Sin Login)
+    @PostMapping("/guest")
+    public ResponseEntity<com.restaurant.tec.dto.ReservaDTO> createGuestReserva(
+            @RequestBody com.restaurant.tec.dto.GuestReservationRequest request) {
+        ReservaEntity created = reservaService.createGuestReservation(
+                request.getNombre(),
+                request.getEmail(),
+                request.getTelefono(),
+                request.getLocalId(),
+                request.getFechaHora(),
+                request.getNumeroPersonas(),
+                request.getObservaciones(),
+                request.getPaymentIntentId());
+        return ResponseEntity.ok(mapToDTO(created));
     }
 
     // Mis Reservas (Cliente)
     @GetMapping("/mis-reservas")
-    public ResponseEntity<List<ReservaEntity>> getMyReservas(Authentication authentication) {
+    public ResponseEntity<List<com.restaurant.tec.dto.ReservaDTO>> getMyReservas(Authentication authentication) {
         UserEntity user = userRepository.findByEmail(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
-        return ResponseEntity.ok(reservaService.getReservasByUser(user.getId()));
+        List<ReservaEntity> entities = reservaService.getReservasByUser(user.getId());
+        List<com.restaurant.tec.dto.ReservaDTO> dtos = entities.stream()
+                .map(this::mapToDTO)
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     // Reservas de un local (Empleado/CEO)
     @GetMapping("/local/{localId}")
-    public ResponseEntity<List<ReservaEntity>> getReservasByLocal(@PathVariable Long localId,
+    public ResponseEntity<List<com.restaurant.tec.dto.ReservaDTO>> getReservasByLocal(@PathVariable Long localId,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
-        // TODO: Agregar validación de permisos (si el usuario trabaja en este local o
-        // es CEO)
+
+        List<ReservaEntity> entities;
         if (start != null && end != null) {
-            return ResponseEntity.ok(reservaService.getReservasByLocalAndDateRange(localId, start, end));
+            entities = reservaService.getReservasByLocalAndDateRange(localId, start, end);
+        } else {
+            entities = reservaService.getReservasByLocal(localId);
         }
-        return ResponseEntity.ok(reservaService.getReservasByLocal(localId));
+
+        List<com.restaurant.tec.dto.ReservaDTO> dtos = entities.stream()
+                .map(this::mapToDTO)
+                .collect(java.util.stream.Collectors.toList());
+        return ResponseEntity.ok(dtos);
     }
 
     // Verificar disponibilidad (Público/Frontend)
@@ -72,23 +150,34 @@ public class ReservaController {
         return ResponseEntity.ok(reservaService.getRemainingCapacity(localId, fechaHora));
     }
 
-    // Endpoint para n8n: Reservas confirmadas próximas (para recordatorios)
+    // Endpoint para n8n: Reservas confirmadas próximas
     @GetMapping("/upcoming")
-    public ResponseEntity<List<ReservaEntity>> getUpcomingReservas(@RequestParam(defaultValue = "120") int minutes) {
-        return ResponseEntity.ok(reservaService.getConfirmedReservasInNextMinutes(minutes));
+    public ResponseEntity<List<com.restaurant.tec.dto.ReservaDTO>> getUpcomingReservas(
+            @RequestParam(defaultValue = "120") int minutes) {
+        List<ReservaEntity> entities = reservaService.getConfirmedReservasInNextMinutes(minutes);
+        return ResponseEntity.ok(entities.stream().map(this::mapToDTO).collect(java.util.stream.Collectors.toList()));
     }
 
-    // Endpoint para n8n: Reservas pendientes urgentes (para cancelación automática)
+    // Endpoint para n8n: Reservas pendientes urgentes
     @GetMapping("/unconfirmed-urgent")
-    public ResponseEntity<List<ReservaEntity>> getUrgentPendingReservas(
+    public ResponseEntity<List<com.restaurant.tec.dto.ReservaDTO>> getUrgentPendingReservas(
             @RequestParam(defaultValue = "30") int minutes) {
-        return ResponseEntity.ok(reservaService.getPendingReservasStartingIn(minutes));
+        List<ReservaEntity> entities = reservaService.getPendingReservasStartingIn(minutes);
+        return ResponseEntity.ok(entities.stream().map(this::mapToDTO).collect(java.util.stream.Collectors.toList()));
     }
 
     // Actualizar estado (Empleado/CEO)
     @PutMapping("/{id}/estado")
-    public ResponseEntity<ReservaEntity> updateEstado(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+    public ResponseEntity<com.restaurant.tec.dto.ReservaDTO> updateEstado(@PathVariable Long id,
+            @RequestBody Map<String, String> payload) {
         ReservaEntity.EstadoReserva estado = ReservaEntity.EstadoReserva.valueOf(payload.get("estado"));
-        return ResponseEntity.ok(reservaService.updateEstado(id, estado));
+        ReservaEntity updated = reservaService.updateEstado(id, estado);
+        return ResponseEntity.ok(mapToDTO(updated));
+    }
+
+    @PostMapping("/{id}/confirm")
+    public ResponseEntity<Void> confirmAttendance(@PathVariable Long id) {
+        reservaService.confirmAttendance(id);
+        return ResponseEntity.ok().build();
     }
 }

@@ -6,19 +6,23 @@ public class LoginResponse {
 
     private String token;
     private String type = "Bearer";
+    private Long id;
     private String email;
     private String nombre;
     private Role rol;
+    private String alergenos;
 
     // Constructores
     public LoginResponse() {
     }
 
-    public LoginResponse(String token, String email, String nombre, Role rol) {
+    public LoginResponse(String token, Long id, String email, String nombre, Role rol, String alergenos) {
         this.token = token;
+        this.id = id;
         this.email = email;
         this.nombre = nombre;
         this.rol = rol;
+        this.alergenos = alergenos;
     }
 
     // Getters y Setters
@@ -36,6 +40,14 @@ public class LoginResponse {
 
     public void setType(String type) {
         this.type = type;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getEmail() {
@@ -60,5 +72,13 @@ public class LoginResponse {
 
     public void setRol(Role rol) {
         this.rol = rol;
+    }
+
+    public String getAlergenos() {
+        return alergenos;
+    }
+
+    public void setAlergenos(String alergenos) {
+        this.alergenos = alergenos;
     }
 }

@@ -13,22 +13,17 @@ import { ReservationService } from '../../../core/services/reservation.service';
 })
 export class EmployeeComponent implements OnInit {
 
-  activeTab: 'menus' | 'reservas' | 'general' = 'reservas';
+  activeTab: 'reservas' | 'menus' = 'reservas';
+  activeReservationTab: 'hoy' | 'proximas' | 'historial' = 'hoy';
+
   myLocal: any = null;
-  menus: any[] = [];
-  reservations: any[] = [];
+  menus: any[] = []; // Will store only today's menu(s)
 
-  newMenu: any = {
-    nombre: '',
-    tipo: 'COMIDA',
-    precio: 0,
-    descripcion: ''
-  };
-
-  // General Menus
-  generalMenus: any[] = [];
-  targetLocalId: number | null = null; // Will always be myLocal.id
-  selectedGeneralMenuId: number | null = null;
+  // Reservation lists
+  allReservations: any[] = [];
+  todayReservations: any[] = [];
+  upcomingReservations: any[] = [];
+  historyReservations: any[] = [];
 
   constructor(
     private managementService: ManagementService,
@@ -43,10 +38,8 @@ export class EmployeeComponent implements OnInit {
     this.managementService.getMyWorkRestaurant().subscribe({
       next: (local) => {
         this.myLocal = local;
-        this.targetLocalId = local.id;
         this.loadMenus();
         this.loadReservations();
-        this.loadGeneralMenus(); // Also load general menus
       },
       error: (err) => console.error("No tienes restaurante asignado", err)
     });
@@ -54,63 +47,70 @@ export class EmployeeComponent implements OnInit {
 
   loadMenus() {
     if (!this.myLocal) return;
-    this.managementService.getMenus(this.myLocal.id).subscribe({
+    // Fetch ONLY public menus (which returns scheduled menu for today)
+    this.managementService.getPublicMenus(this.myLocal.id).subscribe({
       next: (res) => this.menus = res
-    });
-  }
-
-  loadGeneralMenus() {
-    this.managementService.getGeneralMenus().subscribe({
-      next: (res) => this.generalMenus = res,
-      error: (err) => console.error(err)
-    });
-  }
-
-  assignMenu() {
-    if (!this.selectedGeneralMenuId || !this.targetLocalId) return;
-
-    this.managementService.assignMenuToLocal(this.selectedGeneralMenuId, this.targetLocalId).subscribe({
-      next: () => {
-        alert('Menú importado correctamente');
-        this.loadGeneralMenus();
-        this.loadMenus();
-        this.selectedGeneralMenuId = null;
-      },
-      error: (err) => alert('Error al importar menú')
     });
   }
 
   loadReservations() {
     if (!this.myLocal) return;
     this.reservationService.getLocalReservations(this.myLocal.id).subscribe({
-      next: (res) => this.reservations = res
+      next: (res) => {
+        this.allReservations = res;
+        this.filterReservations();
+      }
     });
   }
 
-  // Menus CRUD
-  createMenu() {
-    if (!this.myLocal) return;
-    this.managementService.createMenu(this.myLocal.id, this.newMenu).subscribe({
-      next: () => {
-        alert('Menú creado');
-        this.loadMenus();
-        this.newMenu = { nombre: '', tipo: 'COMIDA', precio: 0, descripcion: '' };
-      },
-      error: () => alert('Error al crear menú')
+  filterReservations() {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+
+    this.todayReservations = [];
+    this.upcomingReservations = [];
+    this.historyReservations = [];
+
+    this.allReservations.forEach(res => {
+      const resDate = new Date(res.fechaHora);
+      const resDateStr = res.fechaHora.split('T')[0];
+
+      // Logic:
+      // History: 
+      //  - Status is COMPLETED, CANCELLED, ASISTIDO, NO_ASISTIDO
+      //  - OR Date is in the past (yesterday or before) - regardless of status? 
+      //    User said: "al pasar de dia, se van a esa subclase...". 
+      //    So if date < today, it is history.
+
+      if (resDateStr < todayStr) {
+        this.historyReservations.push(res);
+      } else if (resDateStr === todayStr) {
+        // Today
+        // If status is final (ASISTIDO/NO_ASISTIDO/CANCELADA), maybe move to history? 
+        // User said: "se marca... y pasa a historial".
+        // So if status is ASISTIDO or NO_ASISTIDO, it goes to history?
+        // "si ha venido... se pasa a la subclase de historial" -> YES.
+
+        if (['ASISTIDO', 'NO_ASISTIDO', 'CANCELADA', 'COMPLETADA'].includes(res.estado)) {
+          this.historyReservations.push(res);
+        } else {
+          this.todayReservations.push(res);
+        }
+      } else {
+        // Future (Tomorrow onwards)
+        this.upcomingReservations.push(res);
+      }
     });
+
+    // Sort
+    this.todayReservations.sort((a, b) => new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime());
+    this.upcomingReservations.sort((a, b) => new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime());
+    this.historyReservations.sort((a, b) => new Date(b.fechaHora).getTime() - new Date(a.fechaHora).getTime()); // Newest first
   }
 
-  deleteMenu(id: number) {
-    if (confirm('¿Eliminar menú?')) {
-      this.managementService.deleteMenu(id).subscribe({
-        next: () => this.loadMenus()
-      });
-    }
-  }
-
-  // Reservations Logic
-  confirmReservation(id: number) {
-    this.reservationService.updateStatus(id, 'CONFIRMADA').subscribe({
+  markAttendance(resId: number, asisitio: boolean) {
+    const status = asisitio ? 'ASISTIDO' : 'NO_ASISTIDO';
+    this.reservationService.updateStatus(resId, status).subscribe({
       next: () => this.loadReservations()
     });
   }
@@ -121,5 +121,16 @@ export class EmployeeComponent implements OnInit {
         next: () => this.loadReservations()
       });
     }
+  }
+
+  getShiftLabel(fechaHora: string): string {
+    const hour = new Date(fechaHora).getHours();
+    return hour < 17 ? '☀️ Comida' : '🌙 Cena';
+  }
+
+  getReservationName(res: any): string {
+    if (res.nombreUsuario) return res.nombreUsuario;
+    if (res.nombreInvitado) return res.nombreInvitado + ' (Invitado)';
+    return 'Sin nombre';
   }
 }

@@ -3,6 +3,14 @@ package com.restaurant.tec.entity;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
+/**
+ * Entidad que representa un usuario del sistema.
+ * Incluye información de autenticación, datos personales, alérgenos y roles.
+ * Soporta múltiples roles: USER, CEO, DIRECTOR, EMPLEADO, ADMIN.
+ * 
+ * @author RestaurantTec Team
+ * @version 1.0
+ */
 @Entity
 @Table(name = "usuarios")
 public class UserEntity {

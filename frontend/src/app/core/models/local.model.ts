@@ -10,6 +10,7 @@ export interface Local {
     posY?: number;
     imagenUrl?: string;
     valoracion?: number;
+    distance?: number; // Distance in km from user
 
     // Shift Hours
     aperturaComida?: string;

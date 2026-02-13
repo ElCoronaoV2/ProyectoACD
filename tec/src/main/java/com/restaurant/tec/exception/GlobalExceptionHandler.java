@@ -12,9 +12,22 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Manejador global de excepciones para la aplicación.
+ * Captura y formatea errores de autenticación y runtime en respuestas HTTP consistentes.
+ * 
+ * @author RestaurantTec Team
+ * @version 1.0
+ */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * Maneja excepciones de credenciales inválidas.
+     * 
+     * @param ex excepción de credenciales incorrectas
+     * @return ResponseEntity con mensaje de error formateado (401 Unauthorized)
+     */
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<Map<String, String>> handleBadCredentials(BadCredentialsException ex) {
         Map<String, String> response = new HashMap<>();
@@ -23,6 +36,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
+    /**
+     * Maneja excepciones de usuario no encontrado.
+     * 
+     * @param ex excepción de usuario no encontrado
+     * @return ResponseEntity con mensaje de error formateado (401 Unauthorized)
+     */
     @ExceptionHandler(UsernameNotFoundException.class)
     public ResponseEntity<Map<String, String>> handleUserNotFound(UsernameNotFoundException ex) {
         Map<String, String> response = new HashMap<>();
@@ -31,6 +50,12 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
+    /**
+     * Maneja excepciones de cuenta deshabilitada (no verificada).
+     * 
+     * @param ex excepción de cuenta deshabilitada
+     * @return ResponseEntity con mensaje de error formateado (403 Forbidden)
+     */
     @ExceptionHandler(DisabledException.class)
     public ResponseEntity<Map<String, String>> handleDisabledAccount(DisabledException ex) {
         Map<String, String> response = new HashMap<>();

@@ -18,7 +18,7 @@ public class StaffController {
 
     @GetMapping("/my-restaurant")
     public ResponseEntity<LocalEntity> getMyRestaurant(Authentication authentication) {
-        UserEntity employee = userRepository.findByEmail(authentication.getName())
+        UserEntity employee = userRepository.findWithRestaurantByEmail(authentication.getName())
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
 
         if (employee.getRestauranteTrabajo() == null) {

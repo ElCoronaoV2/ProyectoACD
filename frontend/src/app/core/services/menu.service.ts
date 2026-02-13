@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Menu, CreateMenuRequest } from '../models/menu.model';
+import { environment } from '../../../environments/environment';
 import jsPDF from 'jspdf';
 
 // Mapa de alérgenos con emojis y colores
@@ -26,16 +27,10 @@ const ALLERGEN_DATA: { [key: string]: { emoji: string; color: string; label: str
     providedIn: 'root'
 })
 export class MenuService {
-    private apiUrl = 'https://www.restaurant-tec.es/api/admin/menus';
-    private publicApiUrl = 'https://www.restaurant-tec.es/api/menus';
+    private readonly apiUrl = `${environment.apiUrl}/admin/menus`;
+    private readonly publicApiUrl = `${environment.apiUrl}/menus`;
 
     constructor(private http: HttpClient) { }
-
-    private getHeaders() {
-        return {
-            headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
-        };
-    }
 
     createMenu(menu: CreateMenuRequest): Observable<Menu> {
         return this.http.post<Menu>(this.apiUrl, menu);
@@ -50,7 +45,7 @@ export class MenuService {
     }
 
     addReview(menuId: number, puntuacion: number, comentario: string): Observable<any> {
-        return this.http.post(`${this.publicApiUrl}/${menuId}/resenas`, { puntuacion, comentario }, this.getHeaders());
+        return this.http.post(`${this.publicApiUrl}/${menuId}/resenas`, { puntuacion, comentario });
     }
 
     getMenuById(id: number): Observable<Menu> {

@@ -4,11 +4,12 @@ import { FormsModule } from '@angular/forms';
 import * as L from 'leaflet';
 import { LocalService } from '../../core/services/local.service';
 import { Local, CreateLocalRequest } from '../../core/models/local.model';
+import { ReviewsModalComponent } from '../../shared/components/reviews-modal/reviews-modal.component';
 
 @Component({
     selector: 'app-admin-map',
     standalone: true,
-    imports: [CommonModule, FormsModule],
+    imports: [CommonModule, FormsModule, ReviewsModalComponent],
     templateUrl: './admin-map.component.html',
     styleUrls: ['./admin-map.component.css']
 })
@@ -251,5 +252,16 @@ export class AdminMapComponent implements OnInit, AfterViewInit, OnDestroy {
 
     centerOnAlicante(): void {
         this.map.setView(this.alicanteCenter, this.defaultZoom);
+    }
+
+    // Reviews Modal State
+    showReviewsModal = false;
+    selectedLocalIdForReviews: number | null = null;
+
+    openReviewsModal() {
+        if (this.selectedLocal) {
+            this.selectedLocalIdForReviews = this.selectedLocal.id;
+            this.showReviewsModal = true;
+        }
     }
 }

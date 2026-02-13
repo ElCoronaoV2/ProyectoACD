@@ -83,8 +83,6 @@ export class ForgotPasswordComponent {
                 this.notification = 'Si el correo existe en nuestra base de datos, recibirás las instrucciones en breve.';
                 this.forgotForm.reset();
             }, 2000);
-
-            console.log('Sending recovery email to:', this.forgotForm.value.email);
         }
     }
 }

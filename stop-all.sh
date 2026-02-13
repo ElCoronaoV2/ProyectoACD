@@ -7,6 +7,20 @@
 echo "🛑 Deteniendo Restaurant-tec..."
 echo ""
 
+# ============================================
+# Cargar variables de entorno desde .env
+# ============================================
+PROJECT_DIR="/home/proyectoacd/ProyectoACD"
+if [ -f "$PROJECT_DIR/.env" ]; then
+    set -a
+    source "$PROJECT_DIR/.env"
+    set +a
+    echo "✓ Variables de entorno cargadas desde .env"
+else
+    echo "⚠️  Nota: archivo .env no encontrado"
+fi
+echo ""
+
 # Colores
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'

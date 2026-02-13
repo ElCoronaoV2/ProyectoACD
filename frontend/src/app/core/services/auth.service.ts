@@ -2,16 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = 'https://www.restaurant-tec.es/api/auth';
-    // Use http://localhost:8080/api/auth for local dev if needed, 
-    // but since we deploy to domain, let's try relative or configured URL.
-    // Actually, since it's served from same domain via Nginx proxy, 
-    // we can just use /api/auth
+    private readonly apiUrl = `${environment.apiUrl}/auth`;
 
     constructor(private http: HttpClient) { }
 
@@ -68,12 +65,11 @@ export class AuthService {
     isEmployee(): boolean { return this.getUserRole() === 'EMPLEADO' || this.getUserRole() === 'ROLE_EMPLEADO'; }
     isClient(): boolean { return this.getUserRole() === 'USER' || this.getUserRole() === 'ROLE_CLIENTE' || !this.getUserRole(); }
 
-    verifyEmail(token: string): Observable<any> {
-        return this.http.get(`${this.apiUrl}/verify?token=${token}`);
+    verifyEmail(token: string): Observable<string> {
+        return this.http.get(`${this.apiUrl}/verify?token=${token}`, { responseType: 'text' });
     }
 
     forgotPassword(email: string): Observable<any> {
-        // Note: Backend expects param 'email'
         return this.http.post(`${this.apiUrl}/forgot-password?email=${email}`, {});
     }
 

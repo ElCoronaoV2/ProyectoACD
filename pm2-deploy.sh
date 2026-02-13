@@ -8,6 +8,19 @@ PROJECT_DIR="/home/proyectoacd/ProyectoACD"
 FRONTEND_DIR="$PROJECT_DIR/frontend"
 BACKEND_DIR="$PROJECT_DIR/tec"
 
+# ============================================
+# Cargar variables de entorno desde .env
+# ============================================
+if [ -f "$PROJECT_DIR/.env" ]; then
+    set -a
+    source "$PROJECT_DIR/.env"
+    set +a
+    echo "✓ Variables de entorno cargadas desde .env"
+else
+    echo "⚠️  Advertencia: archivo .env no encontrado en $PROJECT_DIR"
+    echo "   El despliegue puede fallar si falta configuración"
+fi
+
 # Colores
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -163,6 +176,11 @@ show_usage() {
     echo "  frontend  Solo compilar y desplegar frontend"
     echo "  backend   Solo compilar y desplegar backend"
     echo "  status    Ver estado de servicios"
+    echo ""
+    echo "Notas:"
+    echo "  • Variables de entorno se cargan automáticamente desde .env"
+    echo "  • Asegúrate de que .env existe en $PROJECT_DIR"
+    echo "  • Puedes crear .env con: cp .env.example .env"
     echo ""
 }
 

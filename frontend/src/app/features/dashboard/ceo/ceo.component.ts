@@ -4,12 +4,14 @@ import { FormsModule } from '@angular/forms';
 import * as L from 'leaflet';
 import { ManagementService } from '../../../core/services/management.service';
 import { MenuFormComponent } from '../../admin/menu/menu-form/menu-form.component';
+import { ReviewsModalComponent } from '../../../shared/components/reviews-modal/reviews-modal.component';
 import { NotificationService } from '../../../core/services/notification.service';
+import { ReservationService } from '../../../core/services/reservation.service';
 
 @Component({
   selector: 'app-ceo',
   standalone: true,
-  imports: [CommonModule, FormsModule, MenuFormComponent],
+  imports: [CommonModule, FormsModule, MenuFormComponent, ReviewsModalComponent],
   templateUrl: './ceo.component.html',
   styleUrls: ['./ceo.component.css']
 })
@@ -22,6 +24,12 @@ export class CeoComponent implements OnInit, AfterViewInit {
   activeTab: string = 'restaurantes';
   restaurantes: any[] = [];
   selectedLocal: any = null;
+  isEditMode: boolean = false;
+  editData: any = {};
+
+  // Review Modal State
+  showReviewsModal = false;
+  selectedLocalIdForReviews: number | null = null;
 
   newLocal: any = {
     nombre: '',
@@ -34,9 +42,10 @@ export class CeoComponent implements OnInit, AfterViewInit {
   };
 
   // Gestión Sub-state
-  activeManagementTab: 'info' | 'employees' | 'menus' = 'info';
+  activeManagementTab: 'info' | 'employees' | 'menus' | 'reservas' = 'info';
   employees: any[] = [];
   menus: any[] = [];
+  reservations: any[] = [];
 
   newEmployee: any = {
     nombre: '',
@@ -63,12 +72,12 @@ export class CeoComponent implements OnInit, AfterViewInit {
 
   // General Menus
   generalMenus: any[] = [];
-  selectedGeneralMenuId: number | null = null;
-  targetLocalId: number | null = null;
+  targetLocals: { [key: number]: number } = {};
 
   constructor(
     private managementService: ManagementService,
-    private notificationService: NotificationService
+    private notificationService: NotificationService,
+    private reservationService: ReservationService
   ) { }
 
   ngOnInit() {
@@ -89,6 +98,8 @@ export class CeoComponent implements OnInit, AfterViewInit {
       error: (err: any) => console.error(err)
     });
   }
+
+
 
   // Se llama cuando user cambia a tab 'nuevo'
   initMap() {
@@ -124,6 +135,19 @@ export class CeoComponent implements OnInit, AfterViewInit {
   }
 
   createRestaurant() {
+    if (!this.newLocal.nombre || !this.newLocal.direccion) {
+      this.notificationService.showWarning('Nombre y dirección son obligatorios');
+      return;
+    }
+    if (!this.newLocal.latitud || !this.newLocal.longitud) {
+      this.notificationService.showWarning('Debes seleccionar una ubicación en el mapa');
+      return;
+    }
+    if (this.newLocal.capacidad <= 0) {
+      this.notificationService.showWarning('La capacidad debe ser mayor a 0');
+      return;
+    }
+
     this.managementService.createRestaurant(this.newLocal).subscribe({
       next: (res: any) => {
         this.notificationService.showSuccess('Restaurante creado con éxito');
@@ -138,9 +162,21 @@ export class CeoComponent implements OnInit, AfterViewInit {
   }
 
   deleteRestaurant(id: number) {
-    if (!confirm('¿Seguro que quieres eliminar este restaurante?')) return;
+    const restaurantName = this.selectedLocal?.nombre || 'este restaurante';
+    const confirmMessage = `¿Estás seguro de que quieres eliminar "${restaurantName}"?\n\nEsta acción no se puede deshacer y eliminará:\n- Todos los menús asociados\n- Todas las reservas\n- Todos los empleados asignados\n\nEscribe el nombre del restaurante para confirmar.`;
+
+    const userInput = prompt(confirmMessage);
+
+    if (userInput !== restaurantName) {
+      if (userInput !== null) {
+        this.notificationService.showWarning('El nombre no coincide. Eliminación cancelada.');
+      }
+      return;
+    }
+
     this.managementService.deleteRestaurant(id).subscribe({
       next: () => {
+        this.notificationService.showSuccess('Restaurante eliminado correctamente');
         this.loadRestaurants();
         if (this.selectedLocal?.id === id) {
           this.selectedLocal = null;
@@ -148,6 +184,58 @@ export class CeoComponent implements OnInit, AfterViewInit {
         }
       },
       error: (err) => this.notificationService.showError('Error al eliminar restaurante')
+    });
+  }
+
+  enableEditMode() {
+    this.isEditMode = true;
+    // Copy current data to editData
+    this.editData = {
+      nombre: this.selectedLocal.nombre,
+      direccion: this.selectedLocal.direccion,
+      capacidad: this.selectedLocal.capacidad,
+      horario: this.selectedLocal.horario || '',
+      imagenUrl: this.selectedLocal.imagenUrl || '',
+      latitud: this.selectedLocal.latitud,
+      longitud: this.selectedLocal.longitud,
+      aperturaComida: this.selectedLocal.aperturaComida,
+      cierreComida: this.selectedLocal.cierreComida,
+      aperturaCena: this.selectedLocal.aperturaCena,
+      cierreCena: this.selectedLocal.cierreCena
+    };
+  }
+
+  cancelEdit() {
+    this.isEditMode = false;
+    this.editData = {};
+  }
+
+  updateRestaurant() {
+    if (!this.selectedLocal || !this.editData.nombre || !this.editData.direccion) {
+      this.notificationService.showWarning('Nombre y dirección son obligatorios');
+      return;
+    }
+    if (this.editData.capacidad !== undefined && this.editData.capacidad <= 0) {
+      this.notificationService.showWarning('La capacidad debe ser mayor a 0');
+      return;
+    }
+    if (this.editData.latitud === undefined || this.editData.longitud === undefined) {
+      this.notificationService.showWarning('La ubicación es obligatoria');
+      return;
+    }
+
+    this.managementService.updateRestaurant(this.selectedLocal.id, this.editData).subscribe({
+      next: (res) => {
+        this.notificationService.showSuccess('Restaurante actualizado correctamente');
+        this.isEditMode = false;
+        this.loadRestaurants();
+        // Update selectedLocal with new data
+        this.selectedLocal = { ...this.selectedLocal, ...this.editData };
+      },
+      error: (err) => {
+        console.error(err);
+        this.notificationService.showError('Error al actualizar restaurante');
+      }
     });
   }
 
@@ -176,25 +264,108 @@ export class CeoComponent implements OnInit, AfterViewInit {
     });
   }
 
-  assignMenu() {
-    if (!this.selectedGeneralMenuId || !this.targetLocalId) return;
+  assignMenu(menuId: number) {
+    const targetId = this.targetLocals[menuId];
+    if (!targetId) {
+      this.notificationService.showWarning('Selecciona un restaurante destino');
+      return;
+    }
 
-    this.managementService.assignMenuToLocal(this.selectedGeneralMenuId, this.targetLocalId).subscribe({
-      next: () => {
-        this.notificationService.showSuccess('Menú asignado correctamente');
-        this.loadGeneralMenus();
-        this.selectedGeneralMenuId = null;
-        this.targetLocalId = null;
+    console.log('🔄 Importando menú:', { menuId, targetId });
+
+    this.managementService.assignMenuToLocal(menuId, targetId).subscribe({
+      next: (response: any) => {
+        console.log('✅ Menú importado:', response);
+        const mensaje = response?.message || 'Menú importado correctamente';
+        this.notificationService.showSuccess(mensaje);
+        // Limpiar selección solo para este menú
+        delete this.targetLocals[menuId];
       },
-      error: (err) => this.notificationService.showError('Error al asignar menú')
+      error: (err) => {
+        console.error('❌ Error al importar menú:', err);
+        const errorMsg = err.error?.error || err.error?.message || err.error || 'Error al importar menú';
+        this.notificationService.showError(errorMsg);
+      }
     });
   }
 
   // --- SUB TABS MANAGEMENT ---
-  setManagementTab(tab: 'info' | 'employees' | 'menus') {
+  setManagementTab(tab: 'info' | 'employees' | 'menus' | 'reservas') {
     this.activeManagementTab = tab;
     if (tab === 'employees') this.loadEmployees();
     if (tab === 'menus') this.loadMenus();
+    if (tab === 'reservas') this.loadReservations();
+  }
+
+  // Reservations Logic
+  activeReservationTab: 'hoy' | 'proximas' | 'historial' = 'hoy';
+  allReservations: any[] = [];
+  todayReservations: any[] = [];
+  upcomingReservations: any[] = [];
+  historyReservations: any[] = [];
+
+  loadReservations() {
+    if (!this.selectedLocal) return;
+    this.reservationService.getLocalReservations(this.selectedLocal.id).subscribe({
+      next: (res) => {
+        this.allReservations = res;
+        this.filterReservations();
+      },
+      error: (err) => console.error('Error loading reservations:', err)
+    });
+  }
+
+  filterReservations() {
+    const now = new Date();
+    const todayStr = now.toISOString().split('T')[0];
+
+    this.todayReservations = [];
+    this.upcomingReservations = [];
+    this.historyReservations = [];
+
+    this.allReservations.forEach(res => {
+      const resDate = new Date(res.fechaHora);
+      const resDateStr = res.fechaHora.split('T')[0];
+
+      if (resDateStr < todayStr) {
+        this.historyReservations.push(res);
+      } else if (resDateStr === todayStr) {
+        if (['ASISTIDO', 'NO_ASISTIDO', 'CANCELADA', 'COMPLETADA'].includes(res.estado)) {
+          this.historyReservations.push(res);
+        } else {
+          this.todayReservations.push(res);
+        }
+      } else {
+        this.upcomingReservations.push(res);
+      }
+    });
+
+    // Sort
+    this.todayReservations.sort((a, b) => new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime());
+    this.upcomingReservations.sort((a, b) => new Date(a.fechaHora).getTime() - new Date(b.fechaHora).getTime());
+    this.historyReservations.sort((a, b) => new Date(b.fechaHora).getTime() - new Date(a.fechaHora).getTime());
+  }
+
+  markAttendance(resId: number, asisitio: boolean) {
+    const status = asisitio ? 'ASISTIDO' : 'NO_ASISTIDO';
+    this.reservationService.updateStatus(resId, status).subscribe({
+      next: () => {
+        this.notificationService.showSuccess('Asistencia confirmada. Reserva movida al historial.');
+        this.loadReservations();
+      },
+      error: () => this.notificationService.showError('Error al actualizar reserva')
+    });
+  }
+
+  getShiftLabel(fechaHora: string): string {
+    const hour = new Date(fechaHora).getHours();
+    return hour < 17 ? '☀️ Comida' : '🌙 Cena';
+  }
+
+  getReservationName(res: any): string {
+    if (res.nombreUsuario) return res.nombreUsuario;
+    if (res.nombreInvitado) return res.nombreInvitado + ' (Invitado)';
+    return 'Sin nombre';
   }
 
   loadEmployees() {
@@ -251,6 +422,11 @@ export class CeoComponent implements OnInit, AfterViewInit {
       this.notificationService.showWarning("Nombre del menú obligatorio");
       return;
     }
+    if (this.newMenu.precio < 0) {
+      this.notificationService.showWarning("El precio no puede ser negativo");
+      return;
+    }
+
     this.managementService.createMenu(this.selectedLocal.id, this.newMenu).subscribe({
       next: (res) => {
         this.notificationService.showSuccess('Menú creado correctamente');
@@ -292,7 +468,13 @@ export class CeoComponent implements OnInit, AfterViewInit {
         this.scheduleDate = '';
         this.scheduleMenuId = '';
       },
-      error: (err) => this.notificationService.showError(err.error?.error || 'Error al programar menú')
+      error: (err) => {
+        if (err.status === 400) {
+          this.notificationService.showError('Ya existe un menú programado para esta fecha. Elimínalo primero si deseas cambiarlo.');
+        } else {
+          this.notificationService.showError(err.error?.error || 'Error al programar menú');
+        }
+      }
     });
   }
 
@@ -307,6 +489,12 @@ export class CeoComponent implements OnInit, AfterViewInit {
       },
       error: (err) => this.notificationService.showError('Error al eliminar programación')
     });
+  }
+
+  openReviewsModal(localId: number, event?: Event) {
+    if (event) event.stopPropagation();
+    this.selectedLocalIdForReviews = localId;
+    this.showReviewsModal = true;
   }
 }
 
